@@ -16,7 +16,8 @@
   <p>Static design artifacts for the NUDG MD buddy (validation round 2). Cards appear one at a time from the calm dock;
      everything technical lives one click deep. Spec: <code>docs/design/NUDGE_CARDS_DESIGN.md</code>. Nothing here is wired yet —
      the toggles marked clickable are interactive so the interaction can be felt.</p>
-  <div class="hero-meta">Palette validated (CVD ΔE 116.7, all checks pass) · amber = current/manual · blue = guided/intervention · 2026-07-18</div>
+  <div class="hero-meta">Visual legend: amber = current/manual · blue = guided/intervention · 2026-07-18</div>
+  <div class="mock-label">ILLUSTRATIVE DESIGN PREVIEW — NOT RUNTIME OUTPUT</div>
 </header>
 
 <!-- ============ 1 · ANATOMY ============ -->
@@ -32,15 +33,15 @@
       <div class="nc-context">
         <span class="chip t-chart"><span class="dot" style="background:#b3701f"></span>Chart check</span>
         <span class="chip tempo focused">Focused</span>
-        <span class="chip patient">M. Holloway · SYN-004821</span>
+        <span class="chip patient">J. Okafor · SYN-007310</span>
       </div>
-      <h4>Before this note is filed — ibuprofen conflicts with documented findings in her chart.</h4>
+      <h4>Anxiety fits the story; it does not explain the rhythm already documented in this chart.</h4>
       <ul class="nc-evi">
-        <li>eGFR 52 mL/min (07/02) — CKD stage 3a <span class="src">Chart · Labs</span></li>
-        <li>RN note 01/08: “avoid NSAIDs given CKD” <span class="src">Chart · Notes</span></li>
+        <li>14-day monitor confirmed paroxysmal AF <span class="src">Chart · Note 05/12</span></li>
+        <li>Pulse today: 72, irregularly irregular <span class="src">Chart · Vitals</span></li>
       </ul>
       <div class="nc-actions">
-        <button class="nbtn primary">Open the RN note</button>
+        <button class="nbtn primary">Open the rhythm note</button>
         <button class="nbtn dismiss">Dismiss ▾</button>
       </div>
       <div class="nc-trace"><span class="why">Why this, why now</span> · R-01 · 1st time shown · won’t repeat unless new evidence</div>
@@ -84,39 +85,40 @@
 <!-- ============ 3 · SCENARIO 1 ============ -->
 <section>
   <h2>3 · Scenario 1 — omitted context at documentation time</h2>
-  <p class="intro">The physician is writing a reasonable plan for knee pain while the contradicting facts sit two tabs away.
-     The buddy interrupts the <em>note</em>, not the doctor: one card, two facts, chart-consistent alternatives.</p>
+  <p class="intro">The physician drafts “palpitations likely anxiety” after a reassuring conversation. It is a reasonable working diagnosis
+     until omitted chart context changes the differential. The buddy responds in a formal, differential-first style: one claim, three facts,
+     and a safer next diagnostic question — without pretending to make the diagnosis.</p>
   <div class="row">
     <div class="stack">
       <div class="ncard a-chart">
         <div class="nc-context">
           <span class="chip t-chart"><span class="dot" style="background:#b3701f"></span>Chart check</span>
           <span class="chip tempo focused">Focused</span>
-          <span class="chip patient">M. Holloway · SYN-004821</span>
+          <span class="chip patient">J. Okafor · SYN-007310</span>
         </div>
-        <h4>Before this note is filed — ibuprofen conflicts with documented findings in her chart.</h4>
+        <h4>Anxiety is plausible. Recurrent atrial fibrillation must be resolved first.</h4>
         <ul class="nc-evi">
-          <li>eGFR 52 mL/min (07/02/2026) — CKD stage 3a <span class="src">Chart · Labs</span></li>
-          <li>RN telephone note 01/08/2026: “advised acetaminophen, <b>avoid NSAIDs given CKD</b>” <span class="src">Chart · Notes</span></li>
-          <li>Concurrent lisinopril — NSAID + ACE inhibitor compounds renal risk <span class="src">Guideline · synthetic summary</span></li>
+          <li>14-day monitor confirmed paroxysmal AF on 05/12/2026 <span class="src">Chart · Prior note</span></li>
+          <li>Pulse today is documented as irregularly irregular <span class="src">Chart · Vitals</span></li>
+          <li>Apixaban is missed about twice monthly; prior TIA raises the consequence of omission <span class="src">Visit + chart · synthetic</span></li>
         </ul>
-        <div class="nc-suggest">Chart-consistent alternative: acetaminophen — as the RN advised, and already on her PRN list.</div>
+        <div class="nc-suggest"><b>Diagnostic frame:</b> keep anxiety in the differential; first determine whether the symptoms and rhythm represent recurrent AF, and reconcile anticoagulation adherence.</div>
         <div class="nc-actions">
-          <button class="nbtn primary">Open the RN note</button>
+          <button class="nbtn primary">Open the rhythm note</button>
           <button class="nbtn dismiss">Dismiss ▾</button>
         </div>
-        <div class="nc-trace"><span class="why">Why this, why now</span> · “ibuprofen” typed in draft for patient with eGFR&lt;60 · R-01 · 1st time</div>
+        <div class="nc-trace"><span class="why">Why this, why now</span> · “likely anxiety” entered while AF history + irregular rhythm are present · R-01 · 1st time</div>
       </div>
-      <div class="caption">Expanded state — fires once, while the draft is still editable. Never after filing (that would be blame, not help). Note-text insertion is deliberately omitted pending validation (spec Q4).</div>
+      <div class="caption">Expanded state — fires once while the working diagnosis is still editable. It challenges the omitted premise, not the clinician, and leaves the final diagnosis to them.</div>
     </div>
     <div class="stack">
       <div class="ncard a-chart is-dismissed">
         <div class="nc-context">
           <span class="chip t-chart"><span class="dot" style="background:#b3701f"></span>Chart check</span>
           <span class="chip cooldown">cooling down · 24 h</span>
-          <span class="chip patient">M. Holloway</span>
+          <span class="chip patient">J. Okafor</span>
         </div>
-        <h4>Before this note is filed — ibuprofen conflicts with documented findings in her chart.</h4>
+        <h4>Anxiety is plausible. Recurrent atrial fibrillation must be resolved first.</h4>
         <div class="nc-trace">Dismissed: “Already considered” · recorded · won’t repeat for 24 h unless meaningfully new evidence appears</div>
       </div>
       <div class="caption">Dismissed state — the reason is data. A repeat without new evidence is a design failure, and the metrics strip counts it.</div>
@@ -127,7 +129,7 @@
 <!-- ============ 4 · SCENARIO 2 ============ -->
 <section>
   <h2>4 · Scenario 2 — guided navigation to buried information</h2>
-  <p class="intro">MediCore is the portal time forgot. When the doctor starts hunting (several tab views in under a minute, nothing opened),
+  <p class="intro">LegacyChart is the fictional portal time forgot. When the doctor starts hunting (several tab views in under a minute, nothing opened),
      the buddy offers the path — and admits it might have guessed the wrong target.</p>
   <div class="row">
     <div class="stack">
@@ -173,23 +175,24 @@
         <div class="nc-sect">
           <div class="nc-sect-label">Research — one specific reference</div>
           <ul class="nc-evi">
-            <li>Structured nutrition support during chemotherapy: fewer dose reductions and interruptions (synthetic summary; citation slot — evidence pack pending) <span class="src">Research</span></li>
+            <li>Muscaritoli et al., ESPEN practical guideline: Clinical Nutrition in cancer (2021) — 43 recommendations for nutritional and metabolic management; patient-level applicability still requires the missing intake and symptom data. <span class="src">Clin Nutr 40:2898–2913 · DOI 10.1016/j.clnu.2021.02.005</span></li>
           </ul>
-          <div class="nc-actions"><button class="nbtn">Open summary</button></div>
+          <div class="nc-actions"><a class="nbtn" href="https://pubmed.ncbi.nlm.nih.gov/33946039/" target="_blank" rel="noopener noreferrer">Open guideline</a></div>
         </div>
         <div class="nc-sect">
           <div class="nc-sect-label">In-network — oncology nutrition</div>
+          <div class="mock-label compact">SYNTHETIC DIRECTORY EXAMPLE — NOT A LIVE NETWORK SEARCH</div>
           <div class="spec-row">
             <div class="spec-ava">LC</div>
             <div class="spec-main">
               <div class="spec-name">Lena Chen, MS RD CSO</div>
-              <div class="spec-meta"><span class="src">Oncology nutrition</span><span class="src">In-network</span><span class="src">2.1 mi</span><span class="src">next: Tue Jul 22</span></div>
+              <div class="spec-meta"><span class="src">Oncology nutrition</span><span class="src">Synthetic network</span><span class="src">2.1 mi (mock)</span><span class="src">next: <time datetime="2026-07-22">Wed Jul 22</time> (mock)</span></div>
             </div>
           </div>
           <details class="more">
             <summary>More in-network specialists ▾</summary>
             <div class="more-list">
-              <div class="spec-row"><div class="spec-ava">MO</div><div class="spec-main"><div class="spec-name">M. Okonkwo, RD</div><div class="spec-meta"><span class="src">Onc + renal nutrition</span><span class="src">4.8 mi</span><span class="src">next: Thu Jul 24</span></div></div></div>
+              <div class="spec-row"><div class="spec-ava">MO</div><div class="spec-main"><div class="spec-name">M. Okonkwo, RD</div><div class="spec-meta"><span class="src">Onc + renal nutrition</span><span class="src">4.8 mi (mock)</span><span class="src">next: <time datetime="2026-07-24">Fri Jul 24</time> (mock)</span></div></div></div>
               <div class="spec-row"><div class="spec-ava">TG</div><div class="spec-main"><div class="spec-name">Telehealth group — RD network</div><div class="spec-meta"><span class="src">Telehealth</span><span class="src">next: tomorrow</span></div></div></div>
               <div class="spec-row"><div class="spec-ava">SW</div><div class="spec-main"><div class="spec-name">S. Whitfield, MD</div><div class="spec-meta"><span class="src">Supportive oncology</span><span class="src">6.2 mi</span><span class="src">next: Aug 4</span></div></div></div>
             </div>
@@ -211,7 +214,7 @@
           <span class="chip tempo watch">Watch</span>
           <span class="chip patient">E. Vasquez · SYN-006712</span>
         </div>
-        <h4>Watching: oncology-nutrition referral — response due Fri Jul 25.</h4>
+        <h4>Watching: oncology-nutrition referral — response due <time datetime="2026-07-25">Sat Jul 25</time>.</h4>
         <ul class="nc-evi">
           <li>Owner: Dr. Rivera · backup: care coordination <span class="src">R-12</span></li>
           <li>If unacknowledged by the deadline, this card returns and escalates until someone owns it.</li>
@@ -232,7 +235,7 @@
 <section>
   <h2>6 · Second-opinion panel — quick take vs. panel review (toggle is clickable)</h2>
   <p class="intro">One click from the Depth card. The doctor chooses the depth of deliberation: a single frontier-model synthesis in seconds,
-     or four peer-isolated seats with preserved dissent — the machinery we built for Tribunal, wearing a clinical suit.
+     or four scripted AI perspectives from one model with preserved disagreement — the machinery we built for Tribunal, wearing a clinical suit.
      The panel supports; the clinician decides.</p>
 
   <div class="panel">
@@ -242,38 +245,40 @@
     </div>
     <div class="panel-q">Should structured nutrition support start before FOLFOX cycle 5?</div>
 
-    <div class="lanes">
-      <button class="lane-tab" id="laneQuick">Quick take <span class="lane-meta">single model · ~2 s · ~$0.01</span></button>
-      <button class="lane-tab active" id="lanePanel">Panel review <span class="lane-meta">4 isolated seats · ~60 s · ~$0.40</span></button>
+    <div class="lanes" role="tablist" aria-label="Second-opinion depth">
+      <button class="lane-tab active" id="laneQuick" role="tab" aria-selected="true" aria-controls="bodyQuick">Quick take <span class="lane-meta">single model · illustrative ~2 s / ~$0.01</span></button>
+      <button class="lane-tab" id="lanePanel" role="tab" aria-selected="false" aria-controls="bodyPanel" tabindex="-1">Panel review <span class="lane-meta">4 AI perspectives · illustrative ~60 s / ~$0.40</span></button>
     </div>
 
-    <div class="lane-body" id="bodyQuick" style="display:none">
+    <div class="lane-body" id="bodyQuick" role="tabpanel" aria-labelledby="laneQuick">
       <div class="quick">
-        Weight loss of 7&nbsp;% during adjuvant FOLFOX with albumin 3.3 meets common thresholds for structured nutrition
-        intervention; deferring until symptoms escalate narrows the options. A referral placed this week precedes cycle 5
-        with time to take effect, and nothing in the chart contraindicates an oral-first approach.
+        Weight loss of 7&nbsp;% during adjuvant FOLFOX warrants closing the missing-data gap and considering a nutrition referral.
+        The chart does not include intake, symptom-burden, or antiemetic-adherence data, so this scripted lane does not recommend
+        a regimen; it proposes collecting those inputs before cycle 5.
         <div class="srcs"><span class="src">Synthetic summary · guideline slot</span><span class="src">Chart · weight series 8 wks</span><span class="src">scripted in demo</span></div>
       </div>
       <div class="caption" style="max-width:100%">Quick take — one pass, labeled scripted until the live lane is wired. Use when the question sits inside the clinician’s own lane.</div>
     </div>
 
-    <div class="lane-body" id="bodyPanel">
+    <div class="lane-body" id="bodyPanel" role="tabpanel" aria-labelledby="lanePanel" hidden>
       <div class="seat"><div class="seat-name">Oncology</div><span class="stance support">SUPPORT</span><div class="seat-say">Trajectory threatens FOLFOX completion; intervention before cycle 5 protects the treatment plan itself.</div></div>
-      <div class="seat"><div class="seat-name">Nutrition</div><span class="stance support">SUPPORT</span><div class="seat-say">Meets screening criteria for intervention (≥5 % loss + reduced intake, synthetic criteria set); oral-first pathway available.</div></div>
+      <div class="seat"><div class="seat-name">Nutrition</div><span class="stance insuff">INSUFFICIENT — REQUESTS DATA</span><div class="seat-say">Weight loss meets a screening trigger, but intake and symptom-burden data are missing; requests a 24-h recall and symptom grade.</div></div>
       <div class="seat"><div class="seat-name">Pharmacy</div><span class="stance insuff">INSUFFICIENT — REQUESTS DATA</span><div class="seat-say">No intake or antiemetic-adherence data on file; requests a 24-h recall before any regimen change.</div></div>
       <div class="seat"><div class="seat-name">Primary care</div><span class="stance support">SUPPORT</span><div class="seat-say">Consistent with hypertension management and functional goals; no conflicts identified.</div></div>
-      <div class="agg">Panel Support 3/4 <small>· 1 requests data · dissent preserved · “support”, never “confidence” · <b>scripted in demo</b></small></div>
-      <div class="receipt"><span>run r-20260718-004</span><span>4 seats · one model, isolated contexts (disclosed; cross-model seats planned)</span><span>replay: verify --run r-…004 (synthetic)</span></div>
+      <div class="agg refusal">UNDERDETERMINED <small>· 2 seats support collecting/referring · 2 request missing data · no treatment consensus reported · <b>scripted design example</b></small></div>
+      <div class="receipt"><span>ILLUSTRATIVE RECEIPT SCHEMA — NO RUNTIME RUN CREATED</span><span>4 AI perspectives from one model in proposed isolated contexts; not four independent specialists</span></div>
+
+      <div class="mock-label wide">ILLUSTRATIVE MODELED OUTPUTS — NOT RUNTIME RESULTS, FORECASTS, OR VALIDATED OUTCOMES</div>
 
       <!-- viz 1: weight trajectory -->
       <div class="viz">
         <h5>Projected weight, next 16 weeks</h5>
-        <div class="take">+3.6 kg preserved by week 24 under stated assumptions (E1) — illustrative, synthetic.</div>
+        <div class="take">Modeled 3.6 kg difference at week 24 under placeholder assumption E1 — illustrative scenario math, not a forecast or causal effect.</div>
         <svg viewBox="0 0 460 200" role="img" aria-label="Two-line projection of weight under current plan versus with nutrition support">
           <g stroke="#efeadf" stroke-width="1">
             <line x1="40" y1="48" x2="440" y2="48"/><line x1="40" y1="104" x2="440" y2="104"/><line x1="40" y1="160" x2="440" y2="160"/>
           </g>
-          <g font-size="10" fill="#9a927f">
+          <g font-size="10" fill="#625b4f">
             <text x="34" y="51" text-anchor="end">74</text><text x="34" y="107" text-anchor="end">70</text><text x="34" y="163" text-anchor="end">66 kg</text>
             <text x="40" y="178">wk 0</text><text x="173" y="178">wk 8 · today</text><text x="306" y="178">wk 16</text><text x="425" y="178">wk 24</text>
           </g>
@@ -287,19 +292,20 @@
             <text x="446" y="101" fill="#26221b">70.4</text>
             <text x="446" y="152" fill="#26221b">66.8</text>
           </g>
-          <text x="248" y="96" font-size="10" fill="#26221b" font-weight="600">+3.6 kg preserved (illustrative)</text>
+          <text x="248" y="96" font-size="10" fill="#26221b" font-weight="600">3.6 kg modeled difference</text>
         </svg>
         <div class="legend"><span><i style="background:#6e675c"></i>observed</span><span><i style="background:#b3701f"></i>current plan (proj.)</span><span><i style="background:#2b5fd9"></i>with nutrition support (proj.)</span></div>
         <details class="assump"><summary>Assumptions (E1) ▾</summary>
           <div class="assump-body">E1 — effect size placeholder: intervention slows loss then partially recovers intake; slope values are synthetic
           pending the evidence pack. Projection is scenario math, not a forecast; observed segment is the only data.</div>
         </details>
+        <details class="chart-data"><summary>Data table ▾</summary><table><thead><tr><th scope="col">Week</th><th scope="col">Observed</th><th scope="col">Current-plan scenario</th><th scope="col">Nutrition-support scenario</th></tr></thead><tbody><tr><td>0</td><td>74.0 kg</td><td>—</td><td>—</td></tr><tr><td>8</td><td>68.8 kg</td><td>68.8 kg</td><td>68.8 kg</td></tr><tr><td>24</td><td>—</td><td>66.8 kg</td><td>70.4 kg</td></tr></tbody></table></details>
       </div>
 
       <!-- viz 2: time -->
       <div class="viz">
         <h5>Clinician time on this case</h5>
-        <div class="take">≈ 17 minutes saved when the search and referral path is guided (A1–A3) — illustrative, synthetic.</div>
+        <div class="take">Modeled 17-minute difference between two hypothetical workflows (A1–A3) — illustrative, not observed time saved.</div>
         <svg viewBox="0 0 460 118" role="img" aria-label="Paired bars comparing manual 23 minutes versus guided 6 minutes">
           <line x1="150" y1="16" x2="150" y2="102" stroke="#e2ddd2" stroke-width="1"/>
           <g font-size="10.5" fill="#26221b">
@@ -317,21 +323,22 @@
           <div class="assump-body">A1 literature search ≈ 8 min · A2 specialist-directory search ≈ 9 min · A3 referral coordination ≈ 6 min;
           guided path ≈ 6 min total. Synthetic assumptions — replace with observed timings from demo sessions.</div>
         </details>
+        <details class="chart-data"><summary>Data table ▾</summary><table><thead><tr><th scope="col">Workflow</th><th scope="col">Modeled minutes</th></tr></thead><tbody><tr><td>Manual path</td><td>23</td></tr><tr><td>Guided path</td><td>6</td></tr></tbody></table></details>
       </div>
 
       <!-- viz 3: cost -->
       <div class="viz">
-        <h5>Cost consideration (ranges, not forecasts)</h5>
-        <div class="take">Under C1–C3 the potential avoided-cost range is roughly 7–24× the intervention cost — illustrative, synthetic unit costs, one shared $0–16k axis.</div>
-        <svg viewBox="0 0 460 128" role="img" aria-label="Range bars on one shared dollar axis comparing potential avoided complication costs versus intervention cost">
+        <h5>Costs at stake (hypothetical ranges, not expected savings)</h5>
+        <div class="take">The two hypothetical ranges differ by 7–24× numerically. Without event probability or treatment effect, this is not an expected-savings estimate.</div>
+        <svg viewBox="0 0 460 128" role="img" aria-label="Range bars on one shared dollar axis comparing a hypothetical complication cost with a hypothetical intervention cost">
           <line x1="150" y1="16" x2="150" y2="102" stroke="#e2ddd2" stroke-width="1"/>
           <line x1="300" y1="98" x2="300" y2="104" stroke="#d8d2c4" stroke-width="1"/>
           <line x1="450" y1="98" x2="450" y2="104" stroke="#d8d2c4" stroke-width="1"/>
           <g font-size="10.5" fill="#26221b">
-            <text x="142" y="42" text-anchor="end">Potential avoided cost</text>
+            <text x="142" y="42" text-anchor="end">Complication scenario</text>
             <text x="142" y="84" text-anchor="end">Intervention cost</text>
           </g>
-          <g font-size="9" fill="#9a927f">
+          <g font-size="10" fill="#625b4f">
             <text x="150" y="116">$0</text>
             <text x="300" y="116" text-anchor="middle">$8k</text>
             <text x="450" y="116" text-anchor="end">$16k</text>
@@ -349,6 +356,7 @@
           <div class="assump-body">C1 complication risk premium for unaddressed malnutrition (synthetic base rates) · C2 admission cost range
           (synthetic unit costs) · C3 medical-nutrition-therapy program + two visits. Scenario math with stated inputs — not a savings claim.</div>
         </details>
+        <details class="chart-data"><summary>Data table ▾</summary><table><thead><tr><th scope="col">Hypothetical range</th><th scope="col">Low</th><th scope="col">High</th></tr></thead><tbody><tr><td>Complication scenario</td><td>$8,200</td><td>$14,500</td></tr><tr><td>Nutrition intervention</td><td>$600</td><td>$1,100</td></tr></tbody></table></details>
       </div>
 
       <div class="underdet"><b>Refusal state (by design):</b> if intake and symptom-burden data are missing, the panel returns
@@ -381,6 +389,7 @@
         <div class="metric"><b>0</b><span>repeats after dismissal (synthetic session)</span></div>
         <div class="metric"><b>14 s</b><span>median glance → action (synthetic)</span></div>
       </div>
+      <div class="mock-label wide">ILLUSTRATIVE SESSION METRICS — NO TELEMETRY RUN PRODUCED THESE VALUES</div>
       <div class="limits">
         <div class="limit exh"><b>EXHAUSTED (BY CONSTRUCTION)</b><br>The panel cannot verify data it was never given — e.g., no dietary intake on file. Demonstrated by the refusal state.</div>
         <div class="limit hyp"><b>HYPOTHESIZED</b><br>Time and cost estimates transfer to real workflows. All figures here run on stated synthetic assumptions until the evidence pack and observed timings land.</div>
@@ -391,7 +400,7 @@
 
 <footer class="end">
   NUDG MD design gallery · rules R-01 / R-04 / R-09 / R-12 defined in docs/design/NUDGE_CARDS_DESIGN.md ·
-  palette validated with the six-check script (CVD ΔE 116.7) · built during the event, synthetic throughout ·
+  palette intent: amber = current/manual, blue = guided/intervention · built during the event, synthetic throughout ·
   the clinician decides, always.
 </footer>
 
@@ -401,10 +410,23 @@
   const bq = document.getElementById('bodyQuick'), bp = document.getElementById('bodyPanel');
   function lane(quick) {
     q.classList.toggle('active', quick); p.classList.toggle('active', !quick);
-    bq.style.display = quick ? '' : 'none'; bp.style.display = quick ? 'none' : '';
+    q.setAttribute('aria-selected', String(quick)); p.setAttribute('aria-selected', String(!quick));
+    q.tabIndex = quick ? 0 : -1; p.tabIndex = quick ? -1 : 0;
+    bq.hidden = !quick; bp.hidden = quick;
   }
   q.addEventListener('click', () => lane(true));
   p.addEventListener('click', () => lane(false));
+  [q, p].forEach((tab, index, tabs) => tab.addEventListener('keydown', (event) => {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    event.preventDefault();
+    const next = tabs[index === 0 ? 1 : 0];
+    lane(next === q);
+    next.focus();
+  }));
+  document.querySelectorAll('.nbtn').forEach((button) => {
+    button.disabled = true;
+    button.title = 'Design preview only — this action is not wired';
+  });
 </script>
 </body>
 </html>

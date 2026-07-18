@@ -26,8 +26,8 @@
   stroke-linecap: round; stroke-linejoin: round; pointer-events: none;
 }
 #nudgOrb svg { width: 26px; height: 26px; }
-#nudgOrb.nudg-bloom { animation: nudgBloom 0.55s ease; }
-@keyframes nudgBloom {
+#nudgOrb.nudg-bloom svg, #nudgCur.nudg-bloom svg { animation: nudgGlyphBloom 0.55s ease; transform-origin: center; }
+@keyframes nudgGlyphBloom {
   0% { transform: scale(1); }
   40% { transform: scale(1.16); }
   100% { transform: scale(1); }
@@ -36,7 +36,7 @@
 .nudg-badge {
   position: absolute; top: -5px; right: -5px;
   min-width: 19px; height: 19px; padding: 0 5px; border-radius: 10px;
-  background: #d84b33; color: #fff; border: 2px solid #fff;
+  background: #b73825; color: #fff; border: 2px solid #fff;
   font-size: 10.5px; font-weight: 700; line-height: 15px; text-align: center;
   pointer-events: none;
 }
@@ -51,13 +51,13 @@
   cursor: pointer; opacity: 0.55; user-select: none;
   transition: opacity 0.25s ease;
   will-change: transform;
+  pointer-events: none;
 }
 #nudgCur svg { width: 17px; height: 17px; }
 #nudgCur.nudg-alive { opacity: 0.98; }
 #nudgCur.nudg-typing { opacity: 0.1; }
 #nudgCur.nudg-gone { opacity: 0; }
 #nudgCur .nudg-badge { top: -6px; right: -8px; transform: scale(0.9); }
-#nudgCur.nudg-bloom { animation: nudgBloom 0.55s ease; }
 
 /* ---------- Popover ---------- */
 #nudgPop {
@@ -71,10 +71,10 @@
   padding: 11px 14px 9px; border-bottom: 1px solid #f0ece2;
 }
 .nudg-pop-title { font-size: 12.5px; font-weight: 700; letter-spacing: 0.02em; }
-.nudg-pop-title span { color: #8d8574; font-weight: 500; margin-left: 6px; font-size: 11px; }
+.nudg-pop-title span { color: #6e675c; font-weight: 500; margin-left: 6px; font-size: 11px; }
 #nudgPop button.nudg-close {
   background: none; border: none; padding: 2px 6px; margin: 0; cursor: pointer;
-  color: #8d8574; font-size: 15px; line-height: 1; font-family: inherit;
+  color: #6e675c; font-size: 15px; line-height: 1; font-family: inherit;
 }
 #nudgPop button.nudg-close:hover { color: #26221b; }
 .nudg-list { max-height: 264px; overflow-y: auto; }
@@ -85,13 +85,19 @@
 .nudg-dot.ehr { background: #0a246a; }
 .nudg-dot.buddy { background: #2b5fd9; }
 .nudg-item-text { font-size: 12.5px; line-height: 1.45; }
-.nudg-item-time { font-size: 10.5px; color: #8d8574; margin-top: 2px; }
+.nudg-item-time { font-size: 10.5px; color: #6e675c; margin-top: 2px; }
 .nudg-empty { padding: 18px 16px; font-size: 12.5px; line-height: 1.55; color: #6e675c; }
 .nudg-pop-foot {
   padding: 7px 12px; background: #faf7f0; border-top: 1px solid #f0ece2;
-  font-size: 9.5px; color: #8d8574; text-align: center; letter-spacing: 0.03em;
+  font-size: 9.5px; color: #625b4f; text-align: center; letter-spacing: 0.03em;
 }
-.nudg-pop-foot a { color: #2b5fd9; cursor: pointer; text-decoration: underline; }
+.nudg-pop-foot button {
+  border: 0; background: transparent; color: #214ba8; cursor: pointer; text-decoration: underline;
+  font: inherit; padding: 0;
+}
+#nudgOrb:focus-visible, #nudgCur:focus-visible, #nudgPop button:focus-visible {
+  outline: 3px solid #ffbf00; outline-offset: 2px;
+}
 
 /* ---------- Toast ---------- */
 #nudgToast {
@@ -101,3 +107,130 @@
   opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease;
 }
 #nudgToast.nudg-show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ---------- Popover views (Nudges | Activity) ---------- */
+.nudg-tabs { display: flex; gap: 4px; padding: 8px 10px 0; }
+.nudg-tab {
+  font: inherit; font-size: 11px; font-weight: 600; cursor: pointer;
+  border: none; border-radius: 999px; padding: 5px 12px; background: transparent; color: #6e675c;
+}
+.nudg-tab.active { background: #f2eee5; color: #26221b; }
+#nudgCards { max-height: 420px; overflow-y: auto; padding: 10px; }
+#nudgPop.nudg-pop-wide { width: 448px; }
+
+/* ---------- Runtime nudge cards ---------- */
+.nbc {
+  background: #fff; border: 1px solid #e2ddd2; border-left-width: 3px; border-radius: 12px;
+  padding: 11px 12px 9px; margin-bottom: 10px; box-shadow: 0 3px 12px rgba(38, 34, 27, 0.07);
+}
+.nbc:last-child { margin-bottom: 0; }
+.nbc.a-chart { border-left-color: #b3701f; }
+.nbc.a-nav { border-left-color: #2b5fd9; }
+.nbc.a-depth { border-left-color: #6b4fd8; }
+.nbc.a-watch { border-left-color: #2e7d4f; }
+.nbc-ctx { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.nbc-chip {
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.05em; border-radius: 999px;
+  padding: 2px 8px; border: 1px solid #e2ddd2; color: #6e675c; background: #fff; white-space: nowrap;
+}
+.nbc-chip.t-chart { color: #85520f; border-color: #e5cba1; }
+.nbc-chip.t-nav { color: #214ba8; border-color: #c4d2f4; }
+.nbc-chip.t-depth { color: #53409e; border-color: #d4cbf2; }
+.nbc-chip.t-watch { color: #226240; border-color: #bedecb; }
+.nbc-chip.pt { margin-left: auto; font-weight: 500; max-width: 46%; overflow: hidden; text-overflow: ellipsis; }
+.nbc h4 { font-size: 13.5px; font-weight: 650; line-height: 1.4; margin: 8px 0 0; color: #26221b; }
+.nbc-evi { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.nbc-evi li { font-size: 12px; line-height: 1.5; color: #3a352c; display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; justify-content: space-between; }
+.nbc-src { font-size: 9.5px; color: #6e675c; border: 1px solid #e9e3d6; background: #faf7f0; border-radius: 999px; padding: 1px 7px; white-space: nowrap; }
+.nbc-frame { font-size: 12px; line-height: 1.5; color: #3a352c; background: #faf7f0; border: 1px solid #efeadf; border-radius: 8px; padding: 6px 9px; margin-top: 8px; }
+.nbc-steps { list-style: none; counter-reset: ns; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.nbc-steps li { counter-increment: ns; display: flex; gap: 8px; font-size: 12px; color: #3a352c; align-items: baseline; }
+.nbc-steps li::before {
+  content: counter(ns); flex: none; width: 16px; height: 16px; border-radius: 50%;
+  background: #eef2fc; color: #214ba8; font-size: 9.5px; font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center; transform: translateY(2px);
+}
+.nbc-spec { display: flex; gap: 8px; margin-top: 8px; align-items: flex-start; }
+.nbc-ava {
+  flex: none; width: 26px; height: 26px; border-radius: 50%; background: #e8f0ed; color: #0e6a58;
+  font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+}
+.nbc-spec-name { font-size: 12px; font-weight: 650; color: #26221b; }
+.nbc-spec-meta { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+.nbc-sect { margin-top: 9px; padding-top: 8px; border-top: 1px dashed #e9e3d6; }
+.nbc-sect-label { font-size: 9px; font-weight: 700; letter-spacing: 0.09em; color: #6e675c; }
+.nbc-more { margin-top: 6px; }
+.nbc-more summary { cursor: pointer; font-size: 11px; color: #214ba8; font-weight: 600; list-style: none; }
+.nbc-more summary::-webkit-details-marker { display: none; }
+.nbc-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.nbc-btn {
+  font: inherit; font-size: 11px; font-weight: 650; cursor: pointer;
+  border-radius: 999px; padding: 5px 11px; border: 1px solid #e2ddd2; background: #fff; color: #26221b;
+}
+.nbc-btn.primary { background: #26221b; border-color: #26221b; color: #fff; }
+.nbc-btn.quiet { color: #6e675c; }
+.nbc-btn:disabled { opacity: 0.55; cursor: default; }
+.nbc-trace {
+  margin-top: 9px; padding-top: 7px; border-top: 1px solid #f0ece2;
+  font-size: 9.5px; color: #625b4f; line-height: 1.5;
+}
+.nbc-dismiss-menu { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+.nudg-cards-empty { padding: 16px 12px; font-size: 12px; line-height: 1.55; color: #6e675c; }
+
+/* ---------- Peek (the nudge itself, sliding in near the buddy) ---------- */
+#nudgPeek {
+  position: fixed; z-index: 2147483001; width: 296px;
+  background: #fff; border: 1px solid #e2ddd2; border-left-width: 3px; border-radius: 12px;
+  box-shadow: 0 12px 34px rgba(38, 34, 27, 0.22); padding: 10px 12px;
+  opacity: 0; transform: translateY(8px); transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+#nudgPeek.nudg-show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+#nudgPeek .nbc-ctx { margin-bottom: 6px; }
+#nudgPeek h4 { font-size: 12.5px; font-weight: 650; line-height: 1.4; margin: 0; color: #26221b; }
+#nudgPeek .nbc-actions { margin-top: 8px; }
+
+/* ---------- Second-opinion panel (runtime) ---------- */
+.nbp-head { font-size: 13px; font-weight: 650; color: #26221b; }
+.nbp-q { font-size: 11.5px; color: #6e675c; margin-top: 3px; line-height: 1.45; }
+.nbp-lanes { display: flex; gap: 5px; margin-top: 9px; background: #f2eee5; border-radius: 999px; padding: 3px; width: max-content; }
+.nbp-lane {
+  font: inherit; font-size: 10.5px; font-weight: 650; cursor: pointer;
+  border: none; border-radius: 999px; padding: 5px 11px; background: transparent; color: #6e675c;
+}
+.nbp-lane.active { background: #fff; color: #26221b; box-shadow: 0 1px 4px rgba(38, 34, 27, 0.12); }
+.nbp-body { margin-top: 10px; }
+.nbp-quick { font-size: 12px; line-height: 1.6; color: #3a352c; background: #faf7f0; border: 1px solid #efeadf; border-radius: 10px; padding: 10px 12px; }
+.nbp-seat { display: flex; gap: 8px; padding: 8px 2px; border-bottom: 1px solid #f0ece2; align-items: flex-start; }
+.nbp-seat:last-of-type { border-bottom: none; }
+.nbp-seat-name { flex: none; width: 84px; font-size: 11px; font-weight: 650; color: #26221b; padding-top: 1px; }
+.nbp-stance { flex: none; font-size: 9px; font-weight: 700; letter-spacing: 0.05em; border-radius: 999px; padding: 2px 7px; border: 1px solid; }
+.nbp-stance.support { color: #226240; border-color: #bedecb; background: #f3faf5; }
+.nbp-stance.insufficient { color: #85520f; border-color: #e5cba1; background: #fdf7ec; }
+.nbp-stance.oppose { color: #8f1d16; border-color: #e6b8b5; background: #fdf1f0; }
+.nbp-say { font-size: 11px; color: #3a352c; line-height: 1.5; }
+.nbp-agg { margin-top: 8px; background: #f6f3ea; border: 1px solid #efeadf; border-radius: 8px; padding: 7px 10px; font-size: 11.5px; font-weight: 650; color: #26221b; }
+.nbp-agg small { font-weight: 500; color: #6e675c; }
+.nbp-receipt { margin-top: 6px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 9px; color: #625b4f; line-height: 1.6; }
+.nb-mode {
+  display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 0.05em;
+  border-radius: 999px; padding: 2px 8px; margin-bottom: 6px; border: 1px solid;
+}
+.nb-mode.live { color: #226240; border-color: #bedecb; background: #f3faf5; }
+.nb-mode.scripted { color: #85520f; border-color: #e5cba1; background: #fdf7ec; }
+.nbp-spin {
+  width: 14px; height: 14px; border-radius: 50%; border: 2px solid #e2ddd2; border-top-color: #2b5fd9;
+  animation: nudgSpin 0.8s linear infinite; display: inline-block; vertical-align: -3px; margin-right: 6px;
+}
+@keyframes nudgSpin { to { transform: rotate(360deg); } }
+.nbp-back { margin-bottom: 8px; }
+
+/* ---------- EHR spotlight (driven by buddy commands) ---------- */
+.nudg-spotlight { outline: 3px solid #2b5fd9 !important; outline-offset: -1px; transition: outline-color 0.4s ease; }
+.nudg-spotlight td { background: #d9e5f5 !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  #nudgOrb, #nudgCur, #nudgToast, #nudgPeek { transition: none; }
+  #nudgOrb.nudg-bloom svg, #nudgCur.nudg-bloom svg { animation: none; }
+  .nbp-spin { animation-duration: 1.6s; }
+}

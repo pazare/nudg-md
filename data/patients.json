@@ -10,6 +10,30 @@
     {
       "mrn": "SYN-004821",
       "name": "Margaret Holloway",
+      "depthPack": {
+        "placeholder": "This pack exercises rule R-09 end to end. Swap in the oncology case from the research when it lands.",
+        "headline": "A1c 8.4 and climbing: The plan names diet but gives it no owner.",
+        "gap": "You reinforced diet today. A renal dietitian can own it between visits: Targets, follow-up, and the CKD-safe food space.",
+        "question": "Should a renal dietitian own the nutrition plan before the 3-month recheck?",
+        "research": {
+          "title": "Structured nutrition therapy in T2DM with CKD: Guideline synthesis",
+          "cite": "Synthetic summary: The real citation lands with the evidence pack",
+          "url": ""
+        },
+        "specialists": [
+          { "initials": "RO", "name": "R. Osei, RD CSR", "tags": ["Renal nutrition", "Synthetic network", "1.4 mi (mock)", "next: Mon Jul 20 (mock)"] },
+          { "initials": "LN", "name": "L. Nakamura, RD CDCES", "tags": ["Diabetes + kidney", "Synthetic network", "3.2 mi (mock)", "next: Wed Jul 22 (mock)"] },
+          { "initials": "TG", "name": "Telehealth dietitian group", "tags": ["Telehealth", "Synthetic network", "next: tomorrow (mock)"] },
+          { "initials": "AB", "name": "A. Boyd, MD — nephrology clinic RD team", "tags": ["Clinic-embedded", "Synthetic network", "5.9 mi (mock)", "next: Aug 3 (mock)"] }
+        ],
+        "quickScripted": "Yes: Her HbA1c rose to 8.4% despite lifestyle-only reinforcement, and CKD 3a narrows the safe diet space (protein, potassium, sodium). A renal dietitian referral this week gives the new empagliflozin a fair three-month test. Nothing in this synthetic chart argues for waiting. (Scripted synthetic answer: The clinician decides.)",
+        "seats": [
+          { "id": "endo", "name": "Endocrinology", "stance": "support", "rationale": "The A1c trend plus a new SGLT2 inhibitor favors structured nutrition therapy now; lifestyle-only has not held." },
+          { "id": "renal", "name": "Nephrology", "stance": "support", "rationale": "CKD 3a with albuminuria: Protein, potassium, and sodium targets need professional guidance." },
+          { "id": "pharm", "name": "Pharmacy", "stance": "insufficient", "rationale": "No dietary intake is documented in this synthetic chart.", "requests": "A brief diet recall before layering changes." },
+          { "id": "pcp", "name": "Primary care", "stance": "support", "rationale": "Fits her walking program and knee limits; no conflicts found." }
+        ]
+      },
       "dob": "1954-03-22",
       "age": 72,
       "sex": "F",
@@ -231,7 +255,7 @@
       "mrn": "SYN-009467",
       "name": "Ethan Park",
       "dob": "1992-09-30",
-      "age": 34,
+      "age": 33,
       "sex": "M",
       "phone": "(415) 555-0664",
       "pcp": "Rivera, Alex MD",
@@ -260,7 +284,7 @@
       ],
       "note": {
         "cc": "Asthma follow-up and medication refills.",
-        "hpi": "Mr. Park is a 34-year-old man with asthma and generalized anxiety disorder presenting for refills and asthma review. Since spring his albuterol use has increased to about three times per week with occasional nighttime symptoms roughly once a month, worse with pollen and exercise. No urgent visits or oral steroids. Anxiety remains well controlled on sertraline 50 mg; sleep is good apart from the asthma awakenings; no medication side effects.",
+        "hpi": "Mr. Park is a 33-year-old man with asthma and generalized anxiety disorder presenting for refills and asthma review. Since spring his albuterol use has increased to about three times per week with occasional nighttime symptoms roughly once a month, worse with pollen and exercise. No urgent visits or oral steroids. Anxiety remains well controlled on sertraline 50 mg; sleep is good apart from the asthma awakenings; no medication side effects.",
         "ros": "Respiratory: intermittent wheeze and chest tightness as above; no fevers or productive cough. Psychiatric: mood stable, no anhedonia, no suicidal ideation. All other systems reviewed and negative.",
         "exam": "BP 118/72, HR 68. Comfortable, speaking in full sentences. Lungs: clear at rest, no wheezes today. Heart regular. No accessory muscle use.",
         "ap": [
@@ -288,7 +312,7 @@
       "mrn": "SYN-005583",
       "name": "Priya Natarajan",
       "dob": "1981-11-02",
-      "age": 45,
+      "age": 44,
       "sex": "F",
       "phone": "(415) 555-0925",
       "pcp": "Rivera, Alex MD",
@@ -322,26 +346,26 @@
       ],
       "note": {
         "cc": "Annual preventive examination.",
-        "hpi": "Ms. Natarajan is a 45-year-old woman with prediabetes, treated hypothyroidism, hyperlipidemia, and a family history of premature coronary disease (father, MI at 52), here for her annual physical. She feels well. She exercises twice weekly and has held her weight steady. No chest pain, palpitations, cold intolerance, or menstrual changes. She asks specifically what screenings are due at 45.",
+        "hpi": "Ms. Natarajan is a 44-year-old woman with prediabetes, treated hypothyroidism, hyperlipidemia, and a family history of premature coronary disease (father, MI at 52), here for her annual physical. She feels well. She exercises twice weekly and has held her weight steady. No chest pain, palpitations, cold intolerance, or menstrual changes. She asks what screening will become due when she turns 45 on November 2.",
         "ros": "Complete review of systems performed and negative in detail, including constitutional, cardiovascular, endocrine, and gastrointestinal systems.",
         "exam": "BP 122/76, HR 70, BMI 26.2. General, cardiac, pulmonary, abdominal, thyroid, skin, and lymphatic examinations normal. No thyromegaly or nodules.",
         "ap": [
           "Prediabetes (HbA1c 5.9, was 5.8): continue lifestyle focus — offered structured Diabetes Prevention Program referral; repeat HbA1c in 6 months.",
-          "Hyperlipidemia with family history of premature CAD (LDL 128): 10-year ASCVD risk calculated at 6.8% (borderline). Shared decision-making held — patient chose a 6-month intensive lifestyle trial before deciding on a statin; recheck lipids then. Would favor statin initiation if LDL remains ≥130 or risk factors progress.",
+          "Hyperlipidemia with family history of premature CAD (LDL 128): the displayed synthetic chart does not document every input needed to reproduce a 10-year ASCVD estimate, so no exact percentage is asserted. Continue lifestyle work, verify the complete risk inputs, and then use shared decision-making about statin therapy.",
           "Hypothyroidism: TSH 3.4 in range — continue levothyroxine 75 mcg daily; annual TSH.",
-          "Preventive, age 45: colorectal cancer screening now due — colonoscopy referral placed today (patient preferred colonoscopy over FIT). Mammogram scheduled. Cervical screening up to date (2025). Dental and eye reminders given.",
+          "Preventive, currently age 44: average-risk colorectal cancer screening begins at 45. Discussed colonoscopy and stool-based options now; plan to initiate screening on or after her November 2 birthday unless an earlier indication emerges. Mammogram scheduled. Cervical screening up to date (2025). Dental and eye reminders given.",
           "Follow-up: 6 months for lipid and A1c recheck; annual physical in 12 months."
         ]
       },
       "qa": [
         {
           "keys": ["colon", "colorectal", "screen", "colonoscopy", "45"],
-          "a": "Yes — average-risk colorectal cancer screening now starts at age 45, and she turned 45 in November. Today's plan places a colonoscopy referral (her stated preference over stool-based testing). (Synthetic demo summary — confirm against current USPSTF/ACS guidance.)",
+          "a": "Average-risk colorectal cancer screening begins at age 45. She is 44 on the demo date and turns 45 on November 2, so the synthetic plan discusses options now and starts screening on or after that birthday unless an earlier indication emerges. (Synthetic demo summary — confirm against current guidance.)",
           "sources": ["USPSTF colorectal screening (summary)", "Today's visit (synthetic transcript)"]
         },
         {
           "keys": ["statin", "ascvd", "cholesterol", "ldl", "lipid"],
-          "a": "Her LDL is 128 with a calculated 10-year ASCVD risk of 6.8% (borderline) and a father with MI at 52 as a risk enhancer. The documented shared decision is a 6-month lifestyle trial with lipid recheck, with statin initiation favored if LDL stays ≥130 or risk progresses. (Synthetic demo summary.)",
+          "a": "Her LDL is 128 and her father had an MI at 52, but the displayed synthetic chart does not document every input needed to reproduce an exact 10-year ASCVD estimate. The safe next step is to verify the complete inputs and use shared decision-making rather than present an unsupported percentage. (Synthetic demo summary.)",
           "sources": ["Chart — labs 07/01/2026", "ACC/AHA prevention guideline (summary)"]
         },
         {
@@ -350,7 +374,7 @@
           "sources": ["Chart — labs 07/01/2026"]
         }
       ],
-      "aiFallback": "Grounded in this visit and the synthetic chart: Ms. Natarajan's annual centers on borderline cardiovascular risk (LDL 128, family history), prediabetes at 5.9%, and the age-45 colorectal screening milestone — the draft places that referral today. Ask me about the statin decision, her screening checklist, or the A1c plan."
+      "aiFallback": "In this scripted synthetic visit, Ms. Natarajan is 44, has LDL 128 with a family history of premature coronary disease, and turns 45 on November 2. The draft verifies complete cardiovascular-risk inputs before giving a percentage and plans colorectal screening on or after her birthday. Ask about the screening timeline, risk discussion, or A1c plan."
     }
   ]
 }

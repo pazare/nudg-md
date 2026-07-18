@@ -1,4 +1,4 @@
-/* MediCore legacy EHR — synthetic demo logic. */
+/* LegacyChart fictional legacy EHR — synthetic demo logic. */
 "use strict";
 const APP_ID = "ehr";
 
@@ -9,7 +9,7 @@ const esc = (s) =>
 let DATA = null;
 let current = null; // open patient
 let cart = [];      // pending orders
-const sessionStart = Date.now();
+let sessionStart = Date.now();
 
 const ORDER_CATALOG = {
   Laboratory: ["HbA1c", "Basic metabolic panel", "CBC with differential", "Lipid panel", "TSH", "Urine albumin/creatinine ratio"],
@@ -30,10 +30,32 @@ function status(msg) {
   $("statusMsg").textContent = msg;
 }
 function store(key, fallback) {
-  try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch (e) { return fallback; }
+  try { return JSON.parse(sessionStorage.getItem(key)) ?? fallback; } catch (e) { return fallback; }
 }
 function save(key, val) {
-  localStorage.setItem(key, JSON.stringify(val));
+  sessionStorage.setItem(key, JSON.stringify(val));
+}
+function ageOn(dob, date) {
+  const birth = new Date(`${dob}T00:00:00Z`);
+  const asOf = new Date(`${date}T00:00:00Z`);
+  let age = asOf.getUTCFullYear() - birth.getUTCFullYear();
+  if (asOf.getUTCMonth() < birth.getUTCMonth() ||
+      (asOf.getUTCMonth() === birth.getUTCMonth() && asOf.getUTCDate() < birth.getUTCDate())) age -= 1;
+  return age;
+}
+function makeRowsInteractive(container, onActivate) {
+  container.querySelectorAll("tr.click").forEach((row) => {
+    row.tabIndex = 0;
+    row.setAttribute("role", "button");
+    const activate = () => onActivate(row);
+    row.addEventListener("click", activate);
+    row.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter" || ev.key === " ") {
+        ev.preventDefault();
+        activate();
+      }
+    });
+  });
 }
 
 /* ---------------- Home: schedule + lookup ---------------- */
@@ -43,14 +65,12 @@ function renderSchedule() {
     "<tr><th>Time</th><th>Patient</th><th>MRN</th><th>DOB</th><th>Reason for Visit</th><th>Status</th></tr>" +
     DATA.patients
       .map(
-        (p) => `<tr class="click" data-mrn="${esc(p.mrn)}">
+        (p) => `<tr class="click" data-mrn="${esc(p.mrn)}" aria-label="Open chart for ${esc(p.name)}, ${esc(p.mrn)}">
           <td>${esc(p.time)}</td><td>${esc(lastFirst(p.name))}</td><td>${esc(p.mrn)}</td>
           <td>${esc(p.dob)}</td><td>${esc(p.reason)}</td><td>${esc(p.status)}</td></tr>`
       )
       .join("");
-  t.querySelectorAll("tr.click").forEach((r) =>
-    r.addEventListener("click", () => openChart(r.dataset.mrn))
-  );
+  makeRowsInteractive(t, (row) => openChart(row.dataset.mrn));
 }
 
 function lastFirst(name) {
@@ -86,24 +106,27 @@ function doSearch() {
     "<tr><th>Patient</th><th>MRN</th><th>DOB</th><th>Sex</th><th>PCP</th></tr>" +
     hits
       .map(
-        (p) => `<tr class="click" data-mrn="${esc(p.mrn)}">
+        (p) => `<tr class="click" data-mrn="${esc(p.mrn)}" aria-label="Open chart for ${esc(p.name)}, ${esc(p.mrn)}">
           <td>${esc(lastFirst(p.name))}</td><td>${esc(p.mrn)}</td><td>${esc(p.dob)}</td>
           <td>${esc(p.sex)}</td><td>${esc(p.pcp)}</td></tr>`
       )
       .join("");
-  table.querySelectorAll("tr.click").forEach((r) =>
-    r.addEventListener("click", () => openChart(r.dataset.mrn))
-  );
+  makeRowsInteractive(table, (row) => openChart(row.dataset.mrn));
 }
 
 /* ---------------- Chart ---------------- */
 function openChart(mrn) {
-  current = DATA.patients.find((p) => p.mrn === mrn);
-  if (!current) return;
+  const next = DATA.patients.find((p) => p.mrn === mrn);
+  if (!next) {
+    status(`Unable to open chart: unknown synthetic MRN ${mrn}.`);
+    return false;
+  }
+  current = next;
   cart = [];
   $("viewHome").classList.add("hidden");
   $("viewChart").classList.remove("hidden");
-  $("pbName").textContent = `${lastFirst(current.name)}   (${current.age} yr ${current.sex})`;
+  $("viewChart").dataset.mrn = current.mrn;
+  $("pbName").textContent = `${lastFirst(current.name)}   (${ageOn(current.dob, DATA.meta.generated)} yr ${current.sex})`;
   $("pbRow").innerHTML = `
     <td><b>MRN:</b> ${esc(current.mrn)}</td>
     <td><b>DOB:</b> ${esc(current.dob)}</td>
@@ -112,19 +135,22 @@ function openChart(mrn) {
     <td><b>Phone:</b> ${esc(current.phone)}</td>`;
   const al = current.allergies.map((a) => `${a.agent} (${a.reaction})`).join("; ");
   $("pbAllergy").textContent = "ALLERGIES: " + al;
-  setTab("summary");
   status(`Chart opened: ${current.mrn} ${lastFirst(current.name)}`);
   NudgBus.emit(APP_ID, "ehr_patient_opened", { mrn: current.mrn, name: current.name });
+  setTab("summary");
+  return true;
 }
 
 function closeChart() {
   current = null;
+  delete $("viewChart").dataset.mrn;
   $("viewChart").classList.add("hidden");
   $("viewHome").classList.remove("hidden");
   status("Ready.");
 }
 
 function setTab(tab) {
+  if (!current) return;
   document.querySelectorAll("#chartTabs a").forEach((a) =>
     a.classList.toggle("active", a.dataset.tab === tab)
   );
@@ -200,16 +226,16 @@ function renderNotesTab() {
     ${all.length
       ? `<table class="mc-grid" id="noteRows"><tr><th>Date</th><th>Type</th><th>Author</th><th>Status</th></tr>${all
           .map(
-            (n, i) => `<tr class="click" data-i="${i}"><td>${esc(n.date)}</td><td>${esc(n.type)}</td><td>${esc(n.author)}</td><td>${esc(n.status || "Signed")}</td></tr>`
+            (n, i) => `<tr class="click" data-i="${i}" aria-label="Open ${esc(n.type)} dated ${esc(n.date)}"><td>${esc(n.date)}</td><td>${esc(n.type)}</td><td>${esc(n.author)}</td><td>${esc(n.status || "Signed")}</td></tr>`
           )
           .join("")}</table><div class="mc-hint">Click a row to read the document.</div><div id="noteRead"></div>`
       : '<div class="mc-hint">No documents on file.</div>'}
     <h4 style="margin-top:14px">New Note</h4>
     <table class="mc-form"><tr>
-      <td>Type:</td>
-      <td><select id="noteType"><option>Progress Note</option><option>Telephone Encounter</option><option>Result Letter</option><option>Addendum</option></select></td>
+      <td><label for="noteType">Type:</label></td>
+      <td><select id="noteType" aria-label="Note type"><option>Progress Note</option><option>Telephone Encounter</option><option>Result Letter</option><option>Addendum</option></select></td>
     </tr></table>
-    <textarea id="noteText" rows="11" placeholder="Type or paste note text here..."></textarea>
+    <textarea id="noteText" rows="11" aria-label="Note text for ${esc(current.name)}, ${esc(current.mrn)}" placeholder="Type or paste note text here. Include the MRN shown above."></textarea>
     <div style="margin-top:6px">
       <button id="btnDraft">Save Draft</button>
       <button id="btnFile">File Note</button>
@@ -217,14 +243,14 @@ function renderNotesTab() {
     </div>`;
 
   const drafts = store("ehr_draft_" + current.mrn, "");
-  if (drafts) $("noteText").value = drafts;
+  $("noteText").value = drafts || `MRN: ${current.mrn}\nPatient: ${current.name}\n\n`;
 
-  document.querySelectorAll("#noteRows tr.click").forEach((r) =>
-    r.addEventListener("click", () => {
-      const n = all[Number(r.dataset.i)];
+  const rows = document.querySelector("#noteRows");
+  if (rows) makeRowsInteractive(rows, (row) => {
+      const n = all[Number(row.dataset.i)];
       $("noteRead").innerHTML = `<div class="mc-readbox">${esc(n.date)}  ${esc(n.type)}  (${esc(n.author)})\n\n${esc(n.text || n.preview)}</div>`;
-    })
-  );
+      NudgBus.emit(APP_ID, "ehr_document_opened", { mrn: current.mrn, name: current.name, type: n.type, date: n.date });
+    });
   $("btnDraft").addEventListener("click", () => {
     save("ehr_draft_" + current.mrn, $("noteText").value);
     flash("noteMsg", "Draft saved locally.", "ok");
@@ -239,10 +265,22 @@ function flash(id, text, cls) {
 }
 
 function fileNote() {
+  if (!current) return;
   const text = $("noteText").value.trim();
   const type = $("noteType").value;
   if (!text) {
     flash("noteMsg", "Note text is required.", "err");
+    return;
+  }
+  const match = text.match(/^MRN:\s*(SYN-[A-Z0-9-]+)\s*$/im);
+  if (!match) {
+    flash("noteMsg", `BLOCKED: include “MRN: ${current.mrn}” in the note before filing.`, "err");
+    return;
+  }
+  const noteMrn = match[1].toUpperCase();
+  if (noteMrn !== current.mrn.toUpperCase()) {
+    flash("noteMsg", `BLOCKED: note MRN ${noteMrn} does not match open chart ${current.mrn}.`, "err");
+    NudgBus.emit(APP_ID, "ehr_note_mismatch_blocked", { openMrn: current.mrn, noteMrn });
     return;
   }
   if (!window.confirm(`File this ${type} to the chart for ${lastFirst(current.name)}?`)) return;
@@ -250,7 +288,7 @@ function fileNote() {
   filed.unshift({ date: mcDate(), type, author: "RIVERA.A", status: "Filed " + mcTime(), text });
   save("ehr_notes_" + current.mrn, filed);
   save("ehr_draft_" + current.mrn, "");
-  NudgBus.emit(APP_ID, "ehr_note_filed", { mrn: current.mrn, type, chars: text.length });
+  NudgBus.emit(APP_ID, "ehr_note_filed", { mrn: current.mrn, name: current.name, type, chars: text.length });
   status(`Note filed ${mcDate()} ${mcTime()} by RIVERA.A`);
   renderNotesTab();
   flash("noteMsg", `Note filed ${mcDate()} ${mcTime()} by RIVERA.A.`, "ok");
@@ -267,17 +305,17 @@ function renderOrdersTab() {
     <h4>New Order</h4>
     <table class="mc-form">
       <tr>
-        <td>Category:</td>
-        <td><select id="ordCat">${Object.keys(ORDER_CATALOG).map((c) => `<option>${c}</option>`).join("")}</select></td>
-        <td>Order:</td>
-        <td><select id="ordItem"></select></td>
+        <td><label for="ordCat">Category:</label></td>
+        <td><select id="ordCat" aria-label="Order category">${Object.keys(ORDER_CATALOG).map((c) => `<option>${c}</option>`).join("")}</select></td>
+        <td><label for="ordItem">Order:</label></td>
+        <td><select id="ordItem" aria-label="Order item"></select></td>
       </tr>
       <tr>
         <td>Priority:</td>
         <td><label><input type="radio" name="ordPri" value="Routine" checked> Routine</label>
             <label><input type="radio" name="ordPri" value="STAT"> STAT</label></td>
-        <td>Comment/Dx:</td>
-        <td><input id="ordDx" size="28" placeholder="e.g. E11.9"></td>
+        <td><label for="ordDx">Comment/Dx:</label></td>
+        <td><input id="ordDx" size="28" aria-label="Order comment or diagnosis" placeholder="e.g. E11.9"></td>
       </tr>
     </table>
     <div style="margin-top:6px"><button id="btnAddOrd">Add to Order Cart</button> <span class="mc-msg" id="ordMsg"></span></div>
@@ -339,12 +377,31 @@ function renderCart() {
   });
 }
 
+/* The buddy can walk the user to a document: open the chart, the Notes tab, then spotlight the row. */
+function openDocFromBuddy(d) {
+  if (!openChart(d.mrn)) return;
+  setTab("notes");
+  setTimeout(() => {
+    const rows = [...document.querySelectorAll("#noteRows tr.click")];
+    const row = rows.find((r) => d.match && r.textContent.includes(d.match)) || rows[0];
+    if (!row) return;
+    row.click();
+    row.classList.add("nudg-spotlight");
+    row.scrollIntoView({ block: "center" });
+    setTimeout(() => row.classList.remove("nudg-spotlight"), 4500);
+  }, 60);
+}
+
 /* ---------------- Init ---------------- */
 async function init() {
   $("mcDate").textContent = mcDate();
   $("schedLegend").textContent = `Today's Schedule — RIVERA.A — ${mcDate()}`;
   const res = await fetch("/data/patients.json");
   DATA = await res.json();
+  for (let i = localStorage.length - 1; i >= 0; i -= 1) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith("ehr_")) localStorage.removeItem(key);
+  }
   renderSchedule();
 
   $("btnSearch").addEventListener("click", doSearch);
@@ -371,6 +428,20 @@ async function init() {
       setTab(a.dataset.tab);
     })
   );
+  document.querySelectorAll(".navbtn").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (current) closeChart();
+      if (button.dataset.nav === "lookup") $("qMrn").focus();
+      if (button.dataset.nav === "schedule") $("scheduleBox").scrollIntoView({ block: "start" });
+    });
+  });
+  $("resetDemo").addEventListener("click", () => {
+    if (window.confirm("Reset both synthetic demo tabs and clear locally stored demo artifacts?")) resetLocal();
+  });
+  NudgBus.on((evt) => {
+    if (evt.type === "demo_reset" && evt.app !== APP_ID) resetLocal({ broadcast: false });
+    if (evt.type === "nudg_cmd" && evt.detail && evt.detail.action === "ehr_open_doc") openDocFromBuddy(evt.detail);
+  });
 
   setInterval(() => {
     const s = Math.floor((Date.now() - sessionStart) / 1000);
@@ -378,6 +449,27 @@ async function init() {
   }, 1000);
 
   NudgBus.emit(APP_ID, "app_loaded", { patients: DATA.patients.length });
+}
+
+function resetLocal({ broadcast = true } = {}) {
+  for (let i = sessionStorage.length - 1; i >= 0; i -= 1) {
+    const key = sessionStorage.key(i);
+    if (key && key.startsWith("ehr_")) sessionStorage.removeItem(key);
+  }
+  for (let i = localStorage.length - 1; i >= 0; i -= 1) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith("ehr_")) localStorage.removeItem(key);
+  }
+  cart = [];
+  sessionStart = Date.now();
+  closeChart();
+  $("qMrn").value = "";
+  $("qName").value = "";
+  $("searchMsg").textContent = "";
+  $("searchResults").classList.add("hidden");
+  renderSchedule();
+  status("Synthetic demo reset. Local notes, drafts, orders, and event history were cleared.");
+  if (broadcast) NudgBus.reset(APP_ID);
 }
 
 init();

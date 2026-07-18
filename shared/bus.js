@@ -25,6 +25,12 @@ window.NudgBus = (function () {
     return (Array.isArray(log) ? log : []).filter((evt) => {
       const ts = Date.parse(evt && evt.ts);
       return Number.isFinite(ts) && ts >= cutoff;
+    }).map((evt) => {
+      const detail = { ...(evt.detail || {}) };
+      delete detail.q;
+      delete detail.text;
+      delete detail.note;
+      return { ...evt, detail };
     });
   }
 

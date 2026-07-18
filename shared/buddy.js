@@ -18,22 +18,29 @@
 
   const esc = (s) =>
     String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const trunc = (s, n) => (String(s).length > n ? String(s).slice(0, n - 1) + "…" : String(s));
 
   /* ---------- plain-language event labels (specific-or-silent) ---------- */
   const LABELS = {
     encounter_selected: (d) => `Opened ${d.name}'s visit`,
     encounter_added: (d) => `Added encounter — ${d.name}`,
-    recording_started: (d) => `Recording started — ${d.name}`,
-    recording_stopped: (d) => `Recording stopped after ${d.seconds}s`,
+    recording_started: (d) => `Simulated visit timer started — ${d.name}`,
+    recording_stopped: (d) => `Simulated visit timer stopped after ${d.seconds}s`,
     note_generated: (d) => `Note drafted for ${d.name}`,
-    note_copied: () => "Note copied — ready to file in the EHR",
-    note_reviewed: () => "Note marked reviewed",
-    ai_question_asked: (d) => `Asked Abridge AI: “${trunc(d.q, 44)}”`,
+    note_generation_cancelled: () => "Note generation cancelled after patient switch",
+    note_copied: (d) => `Copied note for ${d.name} (${d.mrn}) — ready for matching-chart check`,
+    note_copy_failed: (d) => `Copy failed for note ${d.mrn}`,
+    note_reviewed: (d) => `Note marked reviewed for ${d.name} (${d.mrn})`,
+    ai_question_asked: (d) => `Asked scripted assistant about ${d.name} (${d.mrn})`,
     ehr_patient_opened: (d) => `Opened EHR chart — ${d.name}`,
     ehr_tab_viewed: (d) => `EHR: viewed ${d.tab} tab`,
-    ehr_note_filed: (d) => `Filed ${d.type} in the EHR`,
+    ehr_note_filed: (d) => `Filed ${d.type} for ${d.name} (${d.mrn})`,
+    ehr_note_mismatch_blocked: (d) => `Blocked note mismatch: ${d.noteMrn} ≠ ${d.openMrn}`,
     ehr_orders_signed: (d) => `Signed ${d.count} EHR order(s)`,
+    ehr_document_opened: (d) => `Read ${d.type} (${d.date})`,
+    nudge_committed: (d) => `Nudge: ${d.headline}`,
+    nudge_acted: (d) => `Acted on a nudge: ${d.action}`,
+    nudge_dismissed: (d) => `Dismissed a nudge: ${d.reason}`,
+    nudge_superseded: () => "A nudge resolved itself and left",
   };
 
   function labelFor(evt) {
@@ -53,17 +60,22 @@
   const PULSE = '<svg viewBox="0 0 24 24"><path d="M2.5 12h4l2.5-6 4.5 12 2.5-6h5.5"/></svg>';
   const root = document.createElement("div");
   root.innerHTML = `
-    <button id="nudgOrb" class="nudg-hidden" title="NUDG MD buddy" aria-label="NUDG MD buddy">${PULSE}<span class="nudg-badge nudg-hidden"></span></button>
-    <button id="nudgCur" class="nudg-hidden" title="NUDG MD buddy" aria-label="NUDG MD buddy">${PULSE}<span class="nudg-badge nudg-hidden"></span></button>
-    <div id="nudgPop" class="nudg-hidden" role="dialog" aria-label="NUDG MD buddy preview">
+    <button id="nudgOrb" class="nudg-hidden" title="NUDG MD buddy" aria-label="Open NUDG MD buddy preview" aria-haspopup="dialog" aria-expanded="false" aria-controls="nudgPop">${PULSE}<span class="nudg-badge nudg-hidden"></span></button>
+    <button id="nudgCur" class="nudg-hidden" title="NUDG MD buddy — press Shift+P to open" aria-label="Open NUDG MD buddy preview; keyboard shortcut Shift+P" aria-haspopup="dialog" aria-expanded="false" aria-controls="nudgPop">${PULSE}<span class="nudg-badge nudg-hidden"></span></button>
+    <div id="nudgPop" class="nudg-hidden" role="dialog" aria-modal="false" aria-labelledby="nudgPopTitle" tabindex="-1">
       <div class="nudg-pop-head">
-        <div class="nudg-pop-title">NUDG MD<span>buddy preview</span></div>
+        <div class="nudg-pop-title" id="nudgPopTitle">NUDG MD<span>your buddy</span></div>
         <button class="nudg-close" aria-label="Close">✕</button>
       </div>
-      <div class="nudg-list"></div>
-      <div class="nudg-pop-foot">SYNTHETIC DEMO · nudge cards arrive in Step 2 · <a id="nudgSwitch">Switch style (Shift+B)</a></div>
+      <div class="nudg-tabs">
+        <button class="nudg-tab active" type="button" data-view="nudges">Nudges</button>
+        <button class="nudg-tab" type="button" data-view="activity">Activity</button>
+      </div>
+      <div id="nudgCards"></div>
+      <div class="nudg-list nudg-hidden" role="log" aria-live="polite"></div>
+      <div class="nudg-pop-foot">SYNTHETIC DEMO · event preview, not clinical guidance · <button id="nudgSwitch" type="button">Switch style (Shift+B)</button></div>
     </div>
-    <div id="nudgToast" aria-hidden="true"></div>`;
+    <div id="nudgToast" role="status" aria-live="polite"></div>`;
   document.body.appendChild(root);
 
   const orb = root.querySelector("#nudgOrb");
@@ -72,16 +84,32 @@
   const list = pop.querySelector(".nudg-list");
   const toast = root.querySelector("#nudgToast");
   const badges = root.querySelectorAll(".nudg-badge");
+  const cardsEl = pop.querySelector("#nudgCards");
+  const tabs = pop.querySelectorAll(".nudg-tab");
+  let lastFocus = null;
+  let nudgeCount = 0;
+  let view = "nudges";
 
   /* ---------- badges / bloom ---------- */
   function renderBadges() {
+    const shown = nudgeCount > 0 ? nudgeCount : unseen;
     for (const b of badges) {
-      b.textContent = unseen > 99 ? "99+" : String(unseen);
-      b.classList.toggle("nudg-hidden", unseen === 0);
+      b.textContent = shown > 99 ? "99+" : String(shown);
+      b.classList.toggle("nudg-hidden", shown === 0);
     }
-    orb.classList.toggle("nudg-alive", unseen > 0);
-    cur.classList.toggle("nudg-alive", unseen > 0);
+    orb.classList.toggle("nudg-alive", shown > 0);
+    cur.classList.toggle("nudg-alive", shown > 0);
+    const nudgeTab = pop.querySelector('.nudg-tab[data-view="nudges"]');
+    if (nudgeTab) nudgeTab.textContent = nudgeCount > 0 ? `Nudges (${nudgeCount})` : "Nudges";
   }
+
+  function showView(name) {
+    view = name;
+    for (const t of tabs) t.classList.toggle("active", t.dataset.view === name);
+    cardsEl.classList.toggle("nudg-hidden", name !== "nudges");
+    list.classList.toggle("nudg-hidden", name !== "activity");
+  }
+  tabs.forEach((t) => t.addEventListener("click", () => showView(t.dataset.view)));
   function bloom() {
     const el = variant === "dock" ? orb : cur;
     el.classList.remove("nudg-bloom");
@@ -92,7 +120,7 @@
   /* ---------- popover ---------- */
   function renderList() {
     if (!events.length) {
-      list.innerHTML = `<div class="nudg-empty">I'm listening to your workflow. Work in either tab — what I hear shows up here, and becomes nudge cards in Step 2.</div>`;
+      list.innerHTML = `<div class="nudg-empty">I'm listening to your workflow. Work in either tab: everything I hear lands here, and the moments that matter become nudges.</div>`;
       return;
     }
     list.innerHTML = events
@@ -108,7 +136,7 @@
   }
 
   function positionPop(rect) {
-    const W = 304;
+    const W = pop.offsetWidth || 304;
     const H = Math.min(360, pop.offsetHeight || 340);
     let left = Math.min(Math.max(12, rect.left - W + rect.width), window.innerWidth - W - 12);
     pop.style.left = `${left}px`;
@@ -120,16 +148,24 @@
   }
 
   function openPop(anchorEl) {
+    lastFocus = document.activeElement;
     popOpen = true;
     unseen = 0;
     renderBadges();
     renderList();
     pop.classList.remove("nudg-hidden");
     positionPop(anchorEl.getBoundingClientRect());
+    orb.setAttribute("aria-expanded", "true");
+    cur.setAttribute("aria-expanded", "true");
+    pop.querySelector(".nudg-close").focus();
   }
-  function closePop() {
+  function closePop({ restoreFocus = true } = {}) {
     popOpen = false;
     pop.classList.add("nudg-hidden");
+    orb.setAttribute("aria-expanded", "false");
+    cur.setAttribute("aria-expanded", "false");
+    if (restoreFocus && lastFocus && document.contains(lastFocus)) lastFocus.focus();
+    lastFocus = null;
   }
   pop.querySelector(".nudg-close").addEventListener("click", closePop);
   document.addEventListener("pointerdown", (e) => {
@@ -141,7 +177,7 @@
   function applyVariant() {
     orb.classList.toggle("nudg-hidden", variant !== "dock");
     cur.classList.toggle("nudg-hidden", variant !== "cursor");
-    if (popOpen) closePop();
+    if (popOpen) closePop({ restoreFocus: false });
   }
   function setVariant(v, { silent } = {}) {
     if (v === variant) return;
@@ -149,7 +185,7 @@
     localStorage.setItem(VKEY, v);
     applyVariant();
     if (!silent) {
-      showToast(v === "dock" ? "Buddy style: calm dock (Option A)" : "Buddy style: cursor companion (Option B)");
+      showToast(v === "dock" ? "Buddy style: calm dock (Option A)" : "Cursor companion active — Shift+P opens its preview");
       NudgBus.emit("buddy", "buddy_variant_changed", { variant: v });
     }
   }
@@ -159,6 +195,14 @@
     if (!typing && e.shiftKey && (e.key === "B" || e.key === "b")) {
       e.preventDefault();
       setVariant(variant === "dock" ? "cursor" : "dock");
+    }
+  });
+  document.addEventListener("keydown", (e) => {
+    const t = e.target;
+    const typing = t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable);
+    if (!typing && variant === "cursor" && e.shiftKey && (e.key === "P" || e.key === "p")) {
+      e.preventDefault();
+      popOpen ? closePop() : openPop(cur);
     }
   });
   pop.querySelector("#nudgSwitch").addEventListener("click", () => setVariant(variant === "dock" ? "cursor" : "dock"));
@@ -247,15 +291,16 @@
 
   /* ---------- bus wiring ---------- */
   NudgBus.on((evt) => {
-    if (evt.type === "buddy_variant_changed") {
-      if (evt.detail && evt.detail.variant && evt.detail.variant !== variant) setVariant(evt.detail.variant, { silent: true });
-      return;
-    }
     if (evt.type === "demo_reset") {
       events = [];
       unseen = 0;
       renderBadges();
-      if (popOpen) renderList();
+      renderList();
+      if (popOpen) closePop();
+      return;
+    }
+    if (evt.type === "buddy_variant_changed") {
+      if (evt.detail && evt.detail.variant && evt.detail.variant !== variant) setVariant(evt.detail.variant, { silent: true });
       return;
     }
     const text = labelFor(evt);
@@ -277,10 +322,26 @@
     .slice(-8);
 
   applyVariant();
+  showView("nudges");
   renderBadges();
 
   if (!sessionStorage.getItem("nudg_hint_shown")) {
     sessionStorage.setItem("nudg_hint_shown", "1");
-    setTimeout(() => showToast("Buddy preview active — press Shift+B to switch style"), 1200);
+    setTimeout(() => showToast("Your buddy is here: click the pulse to open it. Shift+B switches style."), 1200);
   }
+
+  /* ---------- public API for the nudge engine (shared/nudges.js) ---------- */
+  window.NudgBuddy = {
+    open() { if (!popOpen) openPop(variant === "dock" ? orb : cur); },
+    close: closePop,
+    isOpen: () => popOpen,
+    anchorEl: () => (variant === "dock" ? orb : cur),
+    variant: () => variant,
+    toast: showToast,
+    bloom,
+    cardsEl,
+    showView,
+    setWide(w) { pop.classList.toggle("nudg-pop-wide", Boolean(w)); if (popOpen) positionPop((variant === "dock" ? orb : cur).getBoundingClientRect()); },
+    setNudgeCount(n) { nudgeCount = n; renderBadges(); },
+  };
 })();
