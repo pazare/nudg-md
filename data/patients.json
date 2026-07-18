@@ -1,0 +1,356 @@
+{
+  "meta": {
+    "synthetic": true,
+    "generated": "2026-07-18",
+    "clinic": "Riverbend Medical Group — Internal Medicine (Synthetic Demo)",
+    "note": "Every patient, clinician, result, and note in this file is fictitious and generated for a hackathon demo."
+  },
+  "clinician": { "name": "Alex Rivera, MD", "user": "RIVERA.A", "dept": "IM CLINIC" },
+  "patients": [
+    {
+      "mrn": "SYN-004821",
+      "name": "Margaret Holloway",
+      "dob": "1954-03-22",
+      "age": 72,
+      "sex": "F",
+      "phone": "(415) 555-0182",
+      "pcp": "Rivera, Alex MD",
+      "insurance": "SynHealth Medicare Advantage",
+      "time": "9:00 AM",
+      "reason": "Diabetes follow-up",
+      "status": "Checked In",
+      "allergies": [{ "agent": "Penicillin", "reaction": "Rash" }],
+      "problems": [
+        "Type 2 diabetes mellitus (E11.9)",
+        "Essential hypertension (I10)",
+        "Chronic kidney disease, stage 3a (N18.31)",
+        "Osteoarthritis, bilateral knees (M17.0)"
+      ],
+      "meds": [
+        "Metformin 1,000 mg PO BID",
+        "Lisinopril 20 mg PO daily",
+        "Atorvastatin 40 mg PO daily",
+        "Acetaminophen 500 mg PO PRN knee pain"
+      ],
+      "vitals": { "bp": "142/84", "hr": "76", "temp": "98.1 °F", "wt": "168 lb", "bmi": "29.4" },
+      "labs": [
+        { "test": "HbA1c", "result": "8.4 %", "flag": "H", "ref": "4.0–5.6 %", "date": "2026-07-02" },
+        { "test": "HbA1c (prior)", "result": "7.9 %", "flag": "H", "ref": "4.0–5.6 %", "date": "2026-03-14" },
+        { "test": "eGFR", "result": "52 mL/min/1.73m²", "flag": "L", "ref": "> 60", "date": "2026-07-02" },
+        { "test": "Creatinine", "result": "1.18 mg/dL", "flag": "H", "ref": "0.5–1.1", "date": "2026-07-02" },
+        { "test": "Potassium", "result": "4.2 mmol/L", "flag": "", "ref": "3.5–5.1", "date": "2026-07-02" },
+        { "test": "LDL cholesterol", "result": "96 mg/dL", "flag": "", "ref": "< 100", "date": "2026-07-02" },
+        { "test": "Urine alb/creat ratio", "result": "64 mg/g", "flag": "H", "ref": "< 30", "date": "2026-07-02" }
+      ],
+      "priorNotes": [
+        {
+          "date": "2026-04-02",
+          "type": "Progress Note",
+          "author": "RIVERA.A",
+          "preview": "T2DM follow-up. A1c 7.9, trending up. Reinforced diet, continued metformin. Plan: recheck A1c in 3 months; consider adding second agent (SGLT2i) if above goal, given CKD 3a."
+        },
+        {
+          "date": "2026-01-08",
+          "type": "Telephone Encounter",
+          "author": "NGO.T (RN)",
+          "preview": "Patient called re: knee pain after walking program. Advised acetaminophen, avoid NSAIDs given CKD. Will discuss at next visit."
+        }
+      ],
+      "note": {
+        "cc": "Type 2 diabetes follow-up.",
+        "hpi": "Ms. Holloway is a 72-year-old woman with type 2 diabetes, hypertension, and stage 3a chronic kidney disease who returns for scheduled diabetes follow-up. Since April she reports good adherence to metformin but more frequent evening snacking. Home fasting glucose runs 150–190 mg/dL. No polyuria, polydipsia, blurred vision, chest pain, or hypoglycemic episodes. She walks about 20 minutes most days; knee pain is controlled with acetaminophen. No numbness, tingling, or foot lesions.",
+        "ros": "Constitutional: no weight loss, fevers, or fatigue. Cardiovascular: no chest pain, palpitations, orthopnea, or edema. Neurologic: no paresthesias. All other systems reviewed and negative.",
+        "exam": "BP 142/84, HR 76, BMI 29.4. Well-appearing, in no distress. Heart: regular rate and rhythm, no murmurs. Lungs: clear to auscultation. Extremities: no edema; monofilament sensation intact bilaterally; skin of both feet without lesions.",
+        "ap": [
+          "Type 2 diabetes, above goal (HbA1c 8.4%, up from 7.9%): reinforced dietary changes with focus on evening snacking. Continue metformin 1,000 mg BID. Start empagliflozin 10 mg daily given CKD stage 3a and cardiovascular risk; counseled on genital mycotic infections and volume symptoms. Repeat HbA1c and BMP in 3 months.",
+          "CKD stage 3a with albuminuria (eGFR 52, UACR 64): continue lisinopril. Recheck BMP and urine albumin/creatinine in 3 months. Continue to avoid NSAIDs.",
+          "Hypertension, above goal today (142/84): home BP log for 2 weeks; if persistently above 130/80, will increase lisinopril to 40 mg daily.",
+          "Preventive: pneumococcal vaccine due — ordered today. Diabetic eye exam scheduled with ophthalmology. Flu vaccine in the fall."
+        ]
+      },
+      "qa": [
+        {
+          "keys": ["a1c", "glyc", "sugar", "trend", "control"],
+          "a": "Her HbA1c on 2026-07-02 was 8.4% (high), up from 7.9% on 2026-03-14. In today's visit she reported home fasting readings of 150–190 mg/dL, which is consistent with that trend. The drafted plan adds empagliflozin and repeats the HbA1c in 3 months.",
+          "sources": ["Chart — labs 07/02/2026", "Today's visit (synthetic transcript)"]
+        },
+        {
+          "keys": ["sglt2", "empagliflozin", "jardiance", "kidney", "ckd"],
+          "a": "With an eGFR of 52, albuminuria, and type 2 diabetes above goal, adding an SGLT2 inhibitor aligns with current ADA/KDIGO direction for combined glycemic, kidney, and cardiovascular benefit. Typical initiation is empagliflozin 10 mg daily with counseling on mycotic infections and volume status. (Synthetic demo summary — verify against your institution's formulary and current guidance.)",
+          "sources": ["ADA Standards of Care 2026 (summary)", "KDIGO CKD guidance (summary)"]
+        },
+        {
+          "keys": ["metformin", "renal", "dose"],
+          "a": "Metformin is generally continued at full dose when eGFR is 45 or above. Her eGFR is 52, so current dosing is acceptable with renal function rechecked at least every 6 months, and sooner given the new SGLT2 inhibitor. (Synthetic demo summary.)",
+          "sources": ["UpToDate® (summary)", "Chart — labs 07/02/2026"]
+        }
+      ],
+      "aiFallback": "Grounded in this visit and the synthetic chart: Ms. Holloway's central issue today is diabetes above goal (HbA1c 8.4%) in the setting of CKD 3a with albuminuria and borderline blood pressure. The drafted plan adds empagliflozin, keeps metformin, and tightens BP follow-up. You can ask me about her A1c trend, the SGLT2 rationale, or metformin renal dosing."
+    },
+    {
+      "mrn": "SYN-007310",
+      "name": "James Okafor",
+      "dob": "1968-01-15",
+      "age": 58,
+      "sex": "M",
+      "phone": "(415) 555-0417",
+      "pcp": "Rivera, Alex MD",
+      "insurance": "SynHealth PPO",
+      "time": "9:40 AM",
+      "reason": "Palpitations follow-up",
+      "status": "Checked In",
+      "allergies": [{ "agent": "No known drug allergies", "reaction": "—" }],
+      "problems": [
+        "Paroxysmal atrial fibrillation (I48.0)",
+        "Prior transient ischemic attack, 2024 (Z86.73)",
+        "Essential hypertension (I10)",
+        "Obesity, BMI 32 (E66.9)"
+      ],
+      "meds": [
+        "Apixaban 5 mg PO BID",
+        "Metoprolol succinate 50 mg PO daily",
+        "Amlodipine 5 mg PO daily"
+      ],
+      "vitals": { "bp": "128/79", "hr": "72 (irregularly irregular)", "temp": "98.4 °F", "wt": "224 lb", "bmi": "32.1" },
+      "labs": [
+        { "test": "TSH", "result": "2.1 mIU/L", "flag": "", "ref": "0.4–4.5", "date": "2026-06-20" },
+        { "test": "Creatinine", "result": "1.02 mg/dL", "flag": "", "ref": "0.6–1.2", "date": "2026-06-20" },
+        { "test": "Hemoglobin", "result": "14.8 g/dL", "flag": "", "ref": "13.5–17.5", "date": "2026-06-20" },
+        { "test": "Potassium", "result": "4.0 mmol/L", "flag": "", "ref": "3.5–5.1", "date": "2026-06-20" }
+      ],
+      "priorNotes": [
+        {
+          "date": "2026-05-12",
+          "type": "Progress Note",
+          "author": "RIVERA.A",
+          "preview": "New paroxysmal AF confirmed on 14-day monitor. CHA2DS2-VASc 3 (HTN, prior TIA). Started apixaban 5 mg BID and metoprolol. Cardiology referral placed."
+        }
+      ],
+      "note": {
+        "cc": "Follow-up of paroxysmal atrial fibrillation and palpitations.",
+        "hpi": "Mr. Okafor is a 58-year-old man with paroxysmal atrial fibrillation (CHA2DS2-VASc 3: hypertension, prior TIA), on apixaban and metoprolol, returning for follow-up. Palpitation episodes are down from several per week to roughly one brief episode per week, without syncope, chest pain, or dyspnea. He admits missing apixaban doses roughly twice a month while traveling for work. Exercise tolerance is stable; he climbs three flights without symptoms.",
+        "ros": "Cardiovascular: intermittent palpitations as above; no chest pain, presyncope, or edema. Neurologic: no focal weakness, speech change, or visual loss since 2024 TIA. All other systems reviewed and negative.",
+        "exam": "BP 128/79, HR 72, irregularly irregular rhythm. No murmurs or gallops. Lungs clear. No jugular venous distention. No peripheral edema.",
+        "ap": [
+          "Paroxysmal atrial fibrillation: symptoms improved on metoprolol succinate 50 mg daily; continue current dose. Rate adequately controlled today.",
+          "Stroke prevention (CHA2DS2-VASc 3): continue apixaban 5 mg BID — no dose-reduction criteria met. Discussed the risk of missed doses given prior TIA; patient will use a travel pill organizer and phone reminders.",
+          "Hypertension: at goal today on amlodipine and metoprolol; continue current regimen.",
+          "Obesity: discussed weight goals; offered nutrition referral — patient will consider and decide at next visit.",
+          "Follow-up: cardiology visit already scheduled in August; repeat visit here in 3 months or sooner for new symptoms."
+        ]
+      },
+      "qa": [
+        {
+          "keys": ["apixaban", "eliquis", "dose", "adherence", "missed"],
+          "a": "Apixaban 5 mg BID is the appropriate dose here: he meets no dose-reduction criteria (under 80, over 60 kg, creatinine 1.02). The visit surfaced missed doses about twice monthly while traveling — notable given his prior TIA — and the plan documents a pill organizer plus phone reminders. (Synthetic demo summary.)",
+          "sources": ["Chart — medications", "Today's visit (synthetic transcript)"]
+        },
+        {
+          "keys": ["chads", "cha2ds2", "stroke", "risk"],
+          "a": "His documented CHA2DS2-VASc score is 3 (hypertension, prior TIA counting 2 points), which supports ongoing anticoagulation. This is recorded in the May 2026 progress note. (Synthetic demo summary.)",
+          "sources": ["Chart — note 05/12/2026"]
+        },
+        {
+          "keys": ["rate", "rhythm", "ablation", "cardiolog"],
+          "a": "He is currently on a rate-control strategy with metoprolol, with symptoms improving. Rhythm-control options (including ablation) are on the cardiology agenda for his August consult; nothing in today's synthetic visit forces that decision earlier.",
+          "sources": ["Chart — referral 05/12/2026", "Today's visit (synthetic transcript)"]
+        }
+      ],
+      "aiFallback": "Grounded in this visit and the synthetic chart: Mr. Okafor's AF symptoms are improving on rate control, and the key safety thread is anticoagulation adherence while traveling, given his prior TIA. Ask me about his apixaban dosing, stroke-risk score, or the rate-versus-rhythm plan."
+    },
+    {
+      "mrn": "SYN-002194",
+      "name": "Rosa Delgado",
+      "dob": "1960-05-09",
+      "age": 66,
+      "sex": "F",
+      "phone": "(415) 555-0233",
+      "pcp": "Rivera, Alex MD",
+      "insurance": "SynHealth Medicare Advantage",
+      "time": "10:20 AM",
+      "reason": "COPD / dyspnea follow-up",
+      "status": "Checked In",
+      "allergies": [{ "agent": "Sulfa antibiotics", "reaction": "Hives" }],
+      "problems": [
+        "COPD, GOLD 2 group B (J44.9)",
+        "Tobacco use disorder, active (F17.210)",
+        "Essential hypertension (I10)"
+      ],
+      "meds": [
+        "Tiotropium 18 mcg inhaled daily",
+        "Albuterol HFA 90 mcg 2 puffs PRN",
+        "Hydrochlorothiazide 25 mg PO daily"
+      ],
+      "vitals": { "bp": "134/80", "hr": "82", "temp": "98.0 °F", "wt": "151 lb", "spo2": "94% RA" },
+      "labs": [
+        { "test": "Spirometry FEV1", "result": "58 % predicted", "flag": "L", "ref": "> 80 %", "date": "2026-05-28" },
+        { "test": "FEV1/FVC", "result": "0.61", "flag": "L", "ref": "> 0.70", "date": "2026-05-28" },
+        { "test": "Eosinophils, absolute", "result": "250 cells/µL", "flag": "", "ref": "0–500", "date": "2026-05-28" }
+      ],
+      "priorNotes": [
+        {
+          "date": "2026-05-28",
+          "type": "Progress Note",
+          "author": "RIVERA.A",
+          "preview": "COPD confirmed on spirometry (FEV1 58%, ratio 0.61). One moderate exacerbation this spring, treated outpatient. Smoking down from 20 to ~5 cigarettes/day. Started tiotropium."
+        }
+      ],
+      "note": {
+        "cc": "COPD follow-up with persistent exertional dyspnea.",
+        "hpi": "Ms. Delgado is a 66-year-old woman with GOLD 2 group B COPD and a 40 pack-year history, now smoking about 5 cigarettes daily (down from 20). On tiotropium since May she still becomes short of breath after two flights of stairs and uses albuterol about three times per week. One moderate exacerbation this spring treated as an outpatient; none since. No orthopnea, chest pain, hemoptysis, or weight loss. She is interested in quitting smoking completely and asks about medication support.",
+        "ros": "Respiratory: exertional dyspnea and rare morning cough, minimal sputum. Cardiovascular: no chest pain or edema. Constitutional: no weight loss or night sweats. All other systems reviewed and negative.",
+        "exam": "BP 134/80, HR 82, SpO2 94% on room air. Prolonged expiratory phase with scattered end-expiratory wheezes, no crackles. Heart regular without murmurs. No cyanosis, clubbing, or edema.",
+        "ap": [
+          "COPD, GOLD 2 group B, symptomatic on LAMA alone: step up to combination LABA/LAMA inhaler (tiotropium/olodaterol) replacing tiotropium monotherapy. Inhaler technique reviewed with teach-back today. Continue albuterol PRN.",
+          "Tobacco use disorder: patient motivated to quit — started varenicline with standard titration and set a quit date of August 1. Quitline referral placed. Discussed that blood eosinophils (250) and any further exacerbations would prompt reassessment for an ICS-containing regimen.",
+          "Hypertension: at goal; continue hydrochlorothiazide.",
+          "Preventive: RSV vaccine and updated pneumococcal vaccine due — both ordered today. Low-dose CT lung cancer screening discussed and scheduled (age and pack-year criteria met).",
+          "Follow-up: 6 weeks to review symptoms on the new inhaler and quit progress."
+        ]
+      },
+      "qa": [
+        {
+          "keys": ["inhaler", "laba", "lama", "step", "olodaterol", "tiotropium"],
+          "a": "She remains symptomatic (mMRC-level exertional dyspnea, albuterol 3×/week) on LAMA monotherapy, so today's plan steps up to a LABA/LAMA combination, which is the usual next move for group B disease. Technique was re-taught with teach-back. (Synthetic demo summary — confirm against current GOLD guidance.)",
+          "sources": ["GOLD 2026 (summary)", "Today's visit (synthetic transcript)"]
+        },
+        {
+          "keys": ["smok", "quit", "varenicline", "cessation", "cigarette"],
+          "a": "She is down to ~5 cigarettes/day and asked for help quitting. The plan starts varenicline with a quit date of August 1 plus quitline support — the combination of pharmacotherapy and counseling has the strongest quit evidence. (Synthetic demo summary.)",
+          "sources": ["USPSTF tobacco cessation (summary)", "Today's visit (synthetic transcript)"]
+        },
+        {
+          "keys": ["eos", "ics", "steroid", "exacerbation"],
+          "a": "Her blood eosinophil count is 250 cells/µL with one moderate exacerbation this year. Today's plan stays with LABA/LAMA, documenting that another exacerbation — especially with eosinophils in this range — would prompt consideration of an ICS-containing regimen. (Synthetic demo summary.)",
+          "sources": ["Chart — labs 05/28/2026", "GOLD 2026 (summary)"]
+        }
+      ],
+      "aiFallback": "Grounded in this visit and the synthetic chart: Ms. Delgado is still symptomatic on tiotropium alone, so the draft steps up to LABA/LAMA, starts varenicline with an August 1 quit date, and orders due vaccines plus lung cancer screening. Ask me about the inhaler step-up, cessation plan, or when an ICS would come into play."
+    },
+    {
+      "mrn": "SYN-009467",
+      "name": "Ethan Park",
+      "dob": "1992-09-30",
+      "age": 34,
+      "sex": "M",
+      "phone": "(415) 555-0664",
+      "pcp": "Rivera, Alex MD",
+      "insurance": "SynHealth HMO",
+      "time": "11:00 AM",
+      "reason": "Asthma check + med refill",
+      "status": "Scheduled",
+      "allergies": [{ "agent": "No known drug allergies", "reaction": "—" }],
+      "problems": [
+        "Mild persistent asthma (J45.30)",
+        "Generalized anxiety disorder (F41.1)"
+      ],
+      "meds": [
+        "Albuterol HFA 90 mcg 2 puffs PRN",
+        "Sertraline 50 mg PO daily"
+      ],
+      "vitals": { "bp": "118/72", "hr": "68", "temp": "98.2 °F", "wt": "172 lb", "bmi": "24.6" },
+      "labs": [],
+      "priorNotes": [
+        {
+          "date": "2026-02-19",
+          "type": "Progress Note",
+          "author": "RIVERA.A",
+          "preview": "Asthma stable over winter with rare albuterol use. GAD well controlled on sertraline 50 mg. Refills provided."
+        }
+      ],
+      "note": {
+        "cc": "Asthma follow-up and medication refills.",
+        "hpi": "Mr. Park is a 34-year-old man with asthma and generalized anxiety disorder presenting for refills and asthma review. Since spring his albuterol use has increased to about three times per week with occasional nighttime symptoms roughly once a month, worse with pollen and exercise. No urgent visits or oral steroids. Anxiety remains well controlled on sertraline 50 mg; sleep is good apart from the asthma awakenings; no medication side effects.",
+        "ros": "Respiratory: intermittent wheeze and chest tightness as above; no fevers or productive cough. Psychiatric: mood stable, no anhedonia, no suicidal ideation. All other systems reviewed and negative.",
+        "exam": "BP 118/72, HR 68. Comfortable, speaking in full sentences. Lungs: clear at rest, no wheezes today. Heart regular. No accessory muscle use.",
+        "ap": [
+          "Asthma, now partly controlled (reliever use 3×/week, monthly nocturnal symptoms): switch from albuterol-only to as-needed budesonide–formoterol (anti-inflammatory reliever approach). Reviewed technique and a written action plan; albuterol may be finished as backup.",
+          "Generalized anxiety disorder: stable on sertraline 50 mg daily — continue; refill sent. Reinforced existing CBT skills; no dose change.",
+          "Preventive: influenza vaccine in the fall; no other gaps identified.",
+          "Follow-up: 8 weeks to reassess asthma control (ACT score), sooner for any exacerbation."
+        ]
+      },
+      "qa": [
+        {
+          "keys": ["smart", "mart", "formoterol", "budesonide", "reliever"],
+          "a": "His reliever use (3×/week with monthly night symptoms) signals partial control on albuterol alone. The draft moves him to as-needed ICS–formoterol, the anti-inflammatory reliever strategy modern asthma guidance prefers at this step, and includes an updated action plan. (Synthetic demo summary — confirm against current GINA guidance.)",
+          "sources": ["GINA 2026 (summary)", "Today's visit (synthetic transcript)"]
+        },
+        {
+          "keys": ["sertraline", "anxiety", "gad", "dose"],
+          "a": "His GAD is stable on sertraline 50 mg with no side effects and good sleep apart from asthma awakenings, so the plan continues the current dose with refills — no escalation indicated in this synthetic visit.",
+          "sources": ["Today's visit (synthetic transcript)", "Chart — note 02/19/2026"]
+        }
+      ],
+      "aiFallback": "Grounded in this visit and the synthetic chart: Mr. Park's asthma has drifted to partly controlled, so the draft switches him to as-needed budesonide–formoterol with an action plan, while his anxiety stays stable on sertraline. Ask me about the reliever switch or his anxiety management."
+    },
+    {
+      "mrn": "SYN-005583",
+      "name": "Priya Natarajan",
+      "dob": "1981-11-02",
+      "age": 45,
+      "sex": "F",
+      "phone": "(415) 555-0925",
+      "pcp": "Rivera, Alex MD",
+      "insurance": "SynHealth PPO",
+      "time": "11:40 AM",
+      "reason": "Annual physical",
+      "status": "Scheduled",
+      "allergies": [{ "agent": "Latex", "reaction": "Contact dermatitis" }],
+      "problems": [
+        "Prediabetes (R73.03)",
+        "Hypothyroidism (E03.9)",
+        "Hyperlipidemia (E78.5)",
+        "Family history of premature CAD — father, MI at 52 (Z82.49)"
+      ],
+      "meds": ["Levothyroxine 75 mcg PO daily"],
+      "vitals": { "bp": "122/76", "hr": "70", "temp": "98.3 °F", "wt": "148 lb", "bmi": "26.2" },
+      "labs": [
+        { "test": "HbA1c", "result": "5.9 %", "flag": "H", "ref": "4.0–5.6 %", "date": "2026-07-01" },
+        { "test": "TSH", "result": "3.4 mIU/L", "flag": "", "ref": "0.4–4.5", "date": "2026-07-01" },
+        { "test": "LDL cholesterol", "result": "128 mg/dL", "flag": "H", "ref": "< 100", "date": "2026-07-01" },
+        { "test": "HDL cholesterol", "result": "58 mg/dL", "flag": "", "ref": "> 50", "date": "2026-07-01" },
+        { "test": "Triglycerides", "result": "110 mg/dL", "flag": "", "ref": "< 150", "date": "2026-07-01" }
+      ],
+      "priorNotes": [
+        {
+          "date": "2025-07-10",
+          "type": "Progress Note",
+          "author": "RIVERA.A",
+          "preview": "Annual exam. A1c 5.8 — prediabetes counseling. TSH in range on levothyroxine 75. Cervical screening performed, results normal. Mammogram ordered."
+        }
+      ],
+      "note": {
+        "cc": "Annual preventive examination.",
+        "hpi": "Ms. Natarajan is a 45-year-old woman with prediabetes, treated hypothyroidism, hyperlipidemia, and a family history of premature coronary disease (father, MI at 52), here for her annual physical. She feels well. She exercises twice weekly and has held her weight steady. No chest pain, palpitations, cold intolerance, or menstrual changes. She asks specifically what screenings are due at 45.",
+        "ros": "Complete review of systems performed and negative in detail, including constitutional, cardiovascular, endocrine, and gastrointestinal systems.",
+        "exam": "BP 122/76, HR 70, BMI 26.2. General, cardiac, pulmonary, abdominal, thyroid, skin, and lymphatic examinations normal. No thyromegaly or nodules.",
+        "ap": [
+          "Prediabetes (HbA1c 5.9, was 5.8): continue lifestyle focus — offered structured Diabetes Prevention Program referral; repeat HbA1c in 6 months.",
+          "Hyperlipidemia with family history of premature CAD (LDL 128): 10-year ASCVD risk calculated at 6.8% (borderline). Shared decision-making held — patient chose a 6-month intensive lifestyle trial before deciding on a statin; recheck lipids then. Would favor statin initiation if LDL remains ≥130 or risk factors progress.",
+          "Hypothyroidism: TSH 3.4 in range — continue levothyroxine 75 mcg daily; annual TSH.",
+          "Preventive, age 45: colorectal cancer screening now due — colonoscopy referral placed today (patient preferred colonoscopy over FIT). Mammogram scheduled. Cervical screening up to date (2025). Dental and eye reminders given.",
+          "Follow-up: 6 months for lipid and A1c recheck; annual physical in 12 months."
+        ]
+      },
+      "qa": [
+        {
+          "keys": ["colon", "colorectal", "screen", "colonoscopy", "45"],
+          "a": "Yes — average-risk colorectal cancer screening now starts at age 45, and she turned 45 in November. Today's plan places a colonoscopy referral (her stated preference over stool-based testing). (Synthetic demo summary — confirm against current USPSTF/ACS guidance.)",
+          "sources": ["USPSTF colorectal screening (summary)", "Today's visit (synthetic transcript)"]
+        },
+        {
+          "keys": ["statin", "ascvd", "cholesterol", "ldl", "lipid"],
+          "a": "Her LDL is 128 with a calculated 10-year ASCVD risk of 6.8% (borderline) and a father with MI at 52 as a risk enhancer. The documented shared decision is a 6-month lifestyle trial with lipid recheck, with statin initiation favored if LDL stays ≥130 or risk progresses. (Synthetic demo summary.)",
+          "sources": ["Chart — labs 07/01/2026", "ACC/AHA prevention guideline (summary)"]
+        },
+        {
+          "keys": ["thyroid", "tsh", "levothyroxine"],
+          "a": "TSH is 3.4 mIU/L — within range on levothyroxine 75 mcg — so the plan continues the current dose with annual monitoring.",
+          "sources": ["Chart — labs 07/01/2026"]
+        }
+      ],
+      "aiFallback": "Grounded in this visit and the synthetic chart: Ms. Natarajan's annual centers on borderline cardiovascular risk (LDL 128, family history), prediabetes at 5.9%, and the age-45 colorectal screening milestone — the draft places that referral today. Ask me about the statin decision, her screening checklist, or the A1c plan."
+    }
+  ]
+}

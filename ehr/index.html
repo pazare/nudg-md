@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MediCore EHR 4.2 — TRAIN</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" fill="%23003399"/><text x="16" y="22" font-family="Tahoma,sans-serif" font-size="16" font-weight="bold" fill="white" text-anchor="middle">M</text></svg>'>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="chrome">
+
+  <div class="mc-titlebar">
+    <span class="mc-logo">MediCore<span class="mc-r">®</span> Enterprise EHR</span>
+    <span class="mc-ver">v4.2.1 (build 2009.114) — TRAIN</span>
+    <span class="mc-user">User: <b>RIVERA.A, MD</b> &nbsp;|&nbsp; Dept: IM CLINIC &nbsp;|&nbsp; <span id="mcDate"></span> &nbsp;|&nbsp; <a href="#" id="logoff">Log Off</a></span>
+  </div>
+
+  <div class="mc-banner">*** SYNTHETIC TRAINING ENVIRONMENT — NOT FOR CLINICAL USE — ALL PATIENTS FICTITIOUS ***</div>
+
+  <div class="mc-toolbar">
+    <button data-nav="home" class="navbtn">Patient Lookup</button>
+    <button data-nav="home" class="navbtn">Schedule</button>
+    <button disabled title="Not available in this demo">Results Review</button>
+    <button disabled title="Not available in this demo">Message Center</button>
+    <button disabled title="Not available in this demo">Reports</button>
+    <button disabled title="Not available in this demo">Help</button>
+  </div>
+
+  <div id="viewHome">
+    <fieldset class="mc-box">
+      <legend>Patient Lookup</legend>
+      <table class="mc-form"><tr>
+        <td>MRN:</td><td><input id="qMrn" size="14"></td>
+        <td>Last Name:</td><td><input id="qName" size="18"></td>
+        <td><button id="btnSearch">Search</button> <button id="btnClear">Clear</button></td>
+      </tr></table>
+      <div id="searchMsg" class="mc-msg"></div>
+      <table class="mc-grid hidden" id="searchResults"></table>
+    </fieldset>
+
+    <fieldset class="mc-box">
+      <legend id="schedLegend">Today's Schedule — RIVERA.A</legend>
+      <table class="mc-grid" id="schedule"></table>
+      <div class="mc-hint">Click a row to open the patient chart.</div>
+    </fieldset>
+  </div>
+
+  <div id="viewChart" class="hidden">
+    <div class="mc-crumb"><a id="backHome" href="#">&laquo; Back to Schedule</a></div>
+    <div class="mc-patbanner">
+      <div class="mc-patname" id="pbName"></div>
+      <table class="mc-patgrid"><tr id="pbRow"></tr></table>
+      <div class="mc-allergy" id="pbAllergy"></div>
+    </div>
+    <div class="mc-tabs" id="chartTabs">
+      <a href="#" data-tab="summary" class="active">Summary</a><a href="#" data-tab="problems">Problems</a><a href="#" data-tab="meds">Medications</a><a href="#" data-tab="allergies">Allergies</a><a href="#" data-tab="labs">Labs</a><a href="#" data-tab="notes">Notes</a><a href="#" data-tab="orders">Orders</a>
+    </div>
+    <div class="mc-tabbody" id="tabBody"></div>
+  </div>
+
+  <div class="mc-status">
+    <span id="statusMsg">Ready.</span>
+    <span id="sessClock">Session: 00:00:00</span>
+    <span>&copy; 2009 MediCore Systems, Inc. — Synthetic demo</span>
+  </div>
+
+</div>
+<script src="/shared/bus.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
