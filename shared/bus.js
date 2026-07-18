@@ -1,13 +1,23 @@
 // NUDG demo event bus — same-origin, dependency-free.
 // Both demo apps (scribe, EHR) emit workflow events here; the buddy companion
-// (Step 2) subscribes to this channel to decide when a nudge is warranted.
-// Transport: BroadcastChannel for live listeners + a rolling localStorage log
-// so a late-joining window can replay recent context.
+// subscribes to decide when a nudge is warranted.
+// Transport: BroadcastChannel for other tabs + a local fanout for same-tab
+// listeners (BroadcastChannel never delivers to its own context) + a rolling
+// localStorage log so a late-joining window can replay recent context.
 window.NudgBus = (function () {
   const CHANNEL = "nudg-demo";
   const LOG_KEY = "nudg_demo_events";
   const LOG_MAX = 300;
   const ch = "BroadcastChannel" in window ? new BroadcastChannel(CHANNEL) : null;
+  const handlers = [];
+
+  function fanout(evt) {
+    for (const h of handlers) {
+      try { h(evt); } catch (e) { /* one bad listener must not break the bus */ }
+    }
+  }
+
+  if (ch) ch.onmessage = (m) => fanout(m.data);
 
   function emit(app, type, detail) {
     const evt = { ts: new Date().toISOString(), app, type, detail: detail || {} };
@@ -18,12 +28,13 @@ window.NudgBus = (function () {
     } catch (e) {
       /* storage full or unavailable — live channel still works */
     }
-    if (ch) ch.postMessage(evt);
+    if (ch) ch.postMessage(evt); // other tabs
+    fanout(evt);                 // this tab
     return evt;
   }
 
   function on(handler) {
-    if (ch) ch.onmessage = (m) => handler(m.data);
+    handlers.push(handler);
   }
 
   function history() {

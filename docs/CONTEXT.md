@@ -19,11 +19,12 @@ machinery stays hidden.
 | 2026-07-18 ~11:30 | Demo staging = two Chrome tabs: synthetic Abridge-style scribe + synthetic legacy "MediCore" EHR. One localhost origin (:4800) so BroadcastChannel spans tabs. |
 | 2026-07-18 ~11:35 | Buddy will be browser-based (Document Picture-in-Picture window, Chrome 116+), NOT Electron — Electron cannot join Chrome's BroadcastChannel; PiP is genuinely always-on-top and same-origin. |
 | 2026-07-18 ~11:40 | Public repo `pazare/nudg-md` created day-of; public from first commit for verifiable provenance. |
+| 2026-07-18 ~12:10 | Collapsed buddy presence built as two live-switchable variants — A "calm dock orb" (draggable, snaps to edges) vs B "cursor companion" (lagged follower, NUDG heritage). Shift+B or popover link switches; choice synced across tabs via bus. Bus gained same-tab fanout (BroadcastChannel skips own context). Pablo picks a variant at validation. |
 
 ## Step ladder
 
 - [x] **S1 — Synthetic environment.** Scribe (worklist → record → drafted note → Ask panel) + MediCore EHR (schedule, chart, notes filing, orders) + shared synthetic panel + event bus. → *Awaiting Pablo validation round 1.*
-- [ ] **S2 — Buddy skeleton.** `companion/` page opened as Document PiP: header with tempo-mode pill, professional nudge-card stack, acted/dismissed lifecycle, event feed debug toggle (hidden by default).
+- [ ] **S2 — Buddy skeleton.** *(started — collapsed presence + live event-preview popover shipped in both tabs, two variants pending Pablo's pick)* Remaining: professional nudge-card stack, acted/dismissed lifecycle, optional Document-PiP window.
 - [ ] **S3 — Context wiring.** Deterministic rules: workflow event patterns → grounded nudges with per-nudge "why am I seeing this" traceability (every nudge must trace to an event + rule; no free-floating notifications).
 - [ ] **S4 — Nudge content packs.** Per-patient synthetic packs: research, prior-note flags, hospital-guideline considerations (synthetic "Riverbend protocol"), network insights, questions. Optional live-LLM lane if time allows, clearly labeled.
 - [ ] **S5 — Demo script + polish.** 4-minute script, fallback ladder, honest-limits slide, build manifest finalized.
