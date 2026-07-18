@@ -7,7 +7,8 @@
 window.NudgBus = (function () {
   const CHANNEL = "nudg-demo";
   const LOG_KEY = "nudg_demo_events";
-  const LOG_MAX = 300;
+  const LOG_MAX = 100;
+  const LOG_TTL_MS = 4 * 60 * 60 * 1000;
   const ch = "BroadcastChannel" in window ? new BroadcastChannel(CHANNEL) : null;
   const handlers = [];
 
@@ -19,10 +20,18 @@ window.NudgBus = (function () {
 
   if (ch) ch.onmessage = (m) => fanout(m.data);
 
+  function recent(log) {
+    const cutoff = Date.now() - LOG_TTL_MS;
+    return (Array.isArray(log) ? log : []).filter((evt) => {
+      const ts = Date.parse(evt && evt.ts);
+      return Number.isFinite(ts) && ts >= cutoff;
+    });
+  }
+
   function emit(app, type, detail) {
     const evt = { ts: new Date().toISOString(), app, type, detail: detail || {} };
     try {
-      const log = JSON.parse(localStorage.getItem(LOG_KEY) || "[]");
+      const log = recent(JSON.parse(localStorage.getItem(LOG_KEY) || "[]"));
       log.push(evt);
       localStorage.setItem(LOG_KEY, JSON.stringify(log.slice(-LOG_MAX)));
     } catch (e) {
@@ -39,11 +48,19 @@ window.NudgBus = (function () {
 
   function history() {
     try {
-      return JSON.parse(localStorage.getItem(LOG_KEY) || "[]");
+      return recent(JSON.parse(localStorage.getItem(LOG_KEY) || "[]")).slice(-LOG_MAX);
     } catch (e) {
       return [];
     }
   }
 
-  return { emit, on, history };
+  function reset(app) {
+    try { localStorage.removeItem(LOG_KEY); } catch (e) { /* storage unavailable */ }
+    const evt = { ts: new Date().toISOString(), app: app || "system", type: "demo_reset", detail: {} };
+    if (ch) ch.postMessage(evt);
+    fanout(evt);
+    return evt;
+  }
+
+  return { emit, on, history, reset };
 })();

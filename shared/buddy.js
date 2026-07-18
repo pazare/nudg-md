@@ -251,6 +251,13 @@
       if (evt.detail && evt.detail.variant && evt.detail.variant !== variant) setVariant(evt.detail.variant, { silent: true });
       return;
     }
+    if (evt.type === "demo_reset") {
+      events = [];
+      unseen = 0;
+      renderBadges();
+      if (popOpen) renderList();
+      return;
+    }
     const text = labelFor(evt);
     if (!text) return;
     events.push({ ts: evt.ts, app: evt.app, text });

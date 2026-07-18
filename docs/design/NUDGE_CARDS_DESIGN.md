@@ -87,17 +87,17 @@ Doctor reviews Holloway's chart in one tab, drafts in the other, and types a rea
 
 - **Trigger:** R-01 on draft text `ibuprofen|naproxen|NSAID` with CKD flag active.
 - **Card (Chart check · FOCUSED · Holloway):**
-  - Headline: *"Before this note is filed — ibuprofen conflicts with two chart signals."*
+  - Headline: *"Before this note is filed — ibuprofen conflicts with documented findings in her chart."*
   - Bullets: eGFR 52 (07/02/2026), CKD 3a `[Chart · Labs]` · RN tele-note 01/08/2026: "advised acetaminophen, avoid NSAIDs given CKD" `[Chart · Notes]` · concurrent lisinopril — NSAID + ACEi compounds renal risk `[Guideline (synthetic summary)]`
-  - Suggestion line: chart-consistent alternatives — acetaminophen (already PRN) or topical diclofenac.
-  - Actions: **Open the RN note** · Insert alternative wording · Dismiss ▾
+  - Suggestion line: chart-consistent alternative — acetaminophen, as the RN advised (already PRN). Topical NSAIDs deliberately not suggested: contradicting the cited "avoid NSAIDs" note on stage is bad optics even where pharmacologically defensible.
+  - Actions: **Open the RN note** · Dismiss ▾ (note-text insertion omitted pending Q4)
 - **States shown in gallery:** collapsed, expanded, dismissed → cooldown chip ("won't repeat for 24 h unless new evidence").
 
 ### S2 — Guided navigation to buried information
 
 Doctor hops across MediCore tabs looking for the RN phone note (or any buried datum). The interface is 2009; the buddy is the wayfinder.
 
-- **Trigger:** R-04 lost-signal heuristic (5 tab views ≈ 30 s, nothing opened).
+- **Trigger:** R-04 lost-signal heuristic — canonical threshold **≥ 4 tab views in 40 s with nothing opened** (the gallery example shows 5 in 32 s; the trace always displays observed vs threshold).
 - **Card (Navigate · NOW-safe · Holloway):**
   - Headline: *"The RN phone note is 3 clicks away."*
   - Steps: 1 · Notes tab → 2 · row "Telephone Encounter · 01/08/2026" → 3 · click to open.
@@ -125,7 +125,7 @@ Header: patient + framed question (*"Should nutrition support start before cycle
 - **Panel review — 4 isolated seats** (Tribunal heritage). Per seat: perspective (Oncology / Nutrition / Pharmacy / Primary care), stance chip (Support / Oppose / Insufficient — requests data), one-line rationale, evidence link. Dissent is preserved on the surface, never averaged away.
   - Aggregate line: **"Panel Support 3/4 · 1 requests data"** — the word is *support*, never *confidence*.
   - Refusal state exists by design: **UNDERDETERMINED** (evidence insufficient → the panel declines to ratify and lists what's missing).
-  - Receipt row: run id, seats-isolated marker, replayable note (hash-style, synthetic in demo).
+  - Receipt row: run id, seat count with an honest isolation disclosure — in the demo the four seats are **one model with isolated contexts** (stated on the surface; cross-model seats are the designed upgrade and the honest answer to "why is this a second opinion?") — and a replayable note (synthetic).
   - Latency/cost chips: "~45–90 s · ~$0.40/case (est.)" vs Quick take "~2 s · ~$0.01".
   - Helper line: *"Use the panel when the question sits outside your specialty or the stakes are high."*
 
@@ -143,7 +143,7 @@ Footer (always visible): *"Decision owner: A. Rivera, MD — decision support on
 
 | | Quick take | Panel review (MA) |
 | --- | --- | --- |
-| Engine | one frontier-model call (Claude) | 4 peer-isolated calls + deterministic aggregate |
+| Engine | one frontier-model call (Claude) | 4 isolated-context calls — single model in demo, disclosed on the receipt; cross-model seats planned — + deterministic aggregate |
 | Latency | ~2 s | ~45–90 s, progress shown per seat |
 | Cost | ~$0.01 | ~$0.30–0.60 (fits $100 credit budget; cents-per-event ethos) |
 | Labeling | `live model` or `scripted in demo` | same + seat receipts |
@@ -186,4 +186,14 @@ Footer (always visible): *"Decision owner: A. Rivera, MD — decision support on
 1. Composite Depth card (research + network together) vs two separate cards?
 2. Panel seat set for the demo: Oncology / Nutrition / Pharmacy / Primary care — right four?
 3. Cost visualization: show dollar ranges (with loud assumptions) or keep costs qualitative until the evidence pack lands?
-4. "Insert alternative wording" action in S1 — acceptable, or is even suggested note text too forward for the demo's framing?
+4. "Insert alternative wording" action in S1 — currently **omitted** (critique: liability optics of the tool writing medication text into a legal document). Restore it, or keep it out?
+5. Demo mode for the live run: zeroed silence floors/dwell timers + popover pinned open (or auto-open on card commit) so judges see cards land — acceptable, since it changes cadence, not content?
+6. Add one cross-model seat (e.g., a GPT seat via your codex CLI) to the panel now, or keep single-model-disclosed and ship it post-hackathon?
+
+## 14 · Critique round 1 (2026-07-18, adversarial Fable agent) — dispositions
+
+**Applied immediately (objective defects):** S1 no longer suggests a topical NSAID under an "avoid NSAIDs" citation and drops "Insert alternative"; headline no longer miscounts findings; clinician surfaces de-jargonized (no "damper armed" / "logged to bus" / "2× bar" / "isolation: identity"); "(illustrative)" added inside the trajectory SVG and value labels moved to ink; seats/aggregate now carry an explicit "scripted in demo" label; cost chart rebuilt on one true shared $0–16k axis with ticks and "7–24×" instead of "order of magnitude"; metrics labeled synthetic; R-04 threshold unified (≥4 in 40 s) with observed-vs-threshold shown in traces; WATCH/quiet copy de-manifestoed.
+
+**Accepted into the wiring plan (next step):** Vasquez + specialist directory in `data/patients.json`; a `?demo=1` mode (zeroed floors/dwell, pinned popover, first-run "your buddy lives here" cue — also answers validation-1's "couldn't find the orb"); per-seat progress/loading/error states for the live panel lane; research-row efficacy phrasing stays conditional until the evidence pack cites it.
+
+**Positioning answers to carry into the demo script (S5):** data boundary — events stay on-machine; only the card's context leaves when a live lane is explicitly invoked; non-device CDS framing (clinician can review the basis of every recommendation — say it out loud); rule governance — every rule carries a version + clinical author slot in its trace; per-day nudge budget across a panel + off-hours WATCH escalation targets are HYPOTHESIZED scale work, labeled as such; desktop-first by design.

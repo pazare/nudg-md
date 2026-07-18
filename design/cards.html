@@ -34,17 +34,16 @@
         <span class="chip tempo focused">Focused</span>
         <span class="chip patient">M. Holloway · SYN-004821</span>
       </div>
-      <h4>Before this note is filed — ibuprofen conflicts with two chart signals.</h4>
+      <h4>Before this note is filed — ibuprofen conflicts with documented findings in her chart.</h4>
       <ul class="nc-evi">
         <li>eGFR 52 mL/min (07/02) — CKD stage 3a <span class="src">Chart · Labs</span></li>
         <li>RN note 01/08: “avoid NSAIDs given CKD” <span class="src">Chart · Notes</span></li>
       </ul>
       <div class="nc-actions">
         <button class="nbtn primary">Open the RN note</button>
-        <button class="nbtn">Insert alternative</button>
         <button class="nbtn dismiss">Dismiss ▾</button>
       </div>
-      <div class="nc-trace"><span class="why">Why this, why now</span> · R-01 · 1st time shown · damper armed</div>
+      <div class="nc-trace"><span class="why">Why this, why now</span> · R-01 · 1st time shown · won’t repeat unless new evidence</div>
     </div>
     <ol>
       <li><b>Context row.</b> Type chip (color-coded), tempo mode, and always a patient chip — a nudge about nobody is not a nudge.</li>
@@ -95,31 +94,30 @@
           <span class="chip tempo focused">Focused</span>
           <span class="chip patient">M. Holloway · SYN-004821</span>
         </div>
-        <h4>Before this note is filed — ibuprofen conflicts with two chart signals.</h4>
+        <h4>Before this note is filed — ibuprofen conflicts with documented findings in her chart.</h4>
         <ul class="nc-evi">
           <li>eGFR 52 mL/min (07/02/2026) — CKD stage 3a <span class="src">Chart · Labs</span></li>
           <li>RN telephone note 01/08/2026: “advised acetaminophen, <b>avoid NSAIDs given CKD</b>” <span class="src">Chart · Notes</span></li>
           <li>Concurrent lisinopril — NSAID + ACE inhibitor compounds renal risk <span class="src">Guideline · synthetic summary</span></li>
         </ul>
-        <div class="nc-suggest">Chart-consistent alternatives: acetaminophen (already PRN) or topical diclofenac.</div>
+        <div class="nc-suggest">Chart-consistent alternative: acetaminophen — as the RN advised, and already on her PRN list.</div>
         <div class="nc-actions">
           <button class="nbtn primary">Open the RN note</button>
-          <button class="nbtn">Insert alternative</button>
           <button class="nbtn dismiss">Dismiss ▾</button>
         </div>
         <div class="nc-trace"><span class="why">Why this, why now</span> · “ibuprofen” typed in draft for patient with eGFR&lt;60 · R-01 · 1st time</div>
       </div>
-      <div class="caption">Expanded state — fires once, while the draft is still editable. Never after filing (that would be blame, not help).</div>
+      <div class="caption">Expanded state — fires once, while the draft is still editable. Never after filing (that would be blame, not help). Note-text insertion is deliberately omitted pending validation (spec Q4).</div>
     </div>
     <div class="stack">
       <div class="ncard a-chart is-dismissed">
         <div class="nc-context">
           <span class="chip t-chart"><span class="dot" style="background:#b3701f"></span>Chart check</span>
-          <span class="chip cooldown">cooling down · 24 h · 2× bar</span>
+          <span class="chip cooldown">cooling down · 24 h</span>
           <span class="chip patient">M. Holloway</span>
         </div>
-        <h4>Before this note is filed — ibuprofen conflicts with two chart signals.</h4>
-        <div class="nc-trace">Dismissed: “Already considered” · outcome logged to bus · repeat requires new evidence at 2× threshold</div>
+        <h4>Before this note is filed — ibuprofen conflicts with documented findings in her chart.</h4>
+        <div class="nc-trace">Dismissed: “Already considered” · recorded · won’t repeat for 24 h unless meaningfully new evidence appears</div>
       </div>
       <div class="caption">Dismissed state — the reason is data. A repeat without new evidence is a design failure, and the metrics strip counts it.</div>
     </div>
@@ -129,7 +127,7 @@
 <!-- ============ 4 · SCENARIO 2 ============ -->
 <section>
   <h2>4 · Scenario 2 — guided navigation to buried information</h2>
-  <p class="intro">MediCore is the portal time forgot. When the doctor starts hunting (five tab-views, thirty seconds, nothing opened),
+  <p class="intro">MediCore is the portal time forgot. When the doctor starts hunting (several tab views in under a minute, nothing opened),
      the buddy offers the path — and admits it might have guessed the wrong target.</p>
   <div class="row">
     <div class="stack">
@@ -150,7 +148,7 @@
           <button class="nbtn primary">Show me</button>
           <button class="nbtn dismiss">Not this ▾</button>
         </div>
-        <div class="nc-trace"><span class="why">Why this, why now</span> · 5 chart tabs in 32 s, nothing opened · R-04 · disappears on first successful open</div>
+        <div class="nc-trace"><span class="why">Why this, why now</span> · 5 tab views in 32 s, nothing opened (threshold: ≥4 in 40 s) · R-04 · disappears on first successful open</div>
       </div>
       <div class="caption">“Show me” will spotlight the actual on-screen element when wired. The card self-expires the moment the doctor finds anything — superseded, not dismissed.</div>
     </div>
@@ -216,7 +214,7 @@
         <h4>Watching: oncology-nutrition referral — response due Fri Jul 25.</h4>
         <ul class="nc-evi">
           <li>Owner: Dr. Rivera · backup: care coordination <span class="src">R-12</span></li>
-          <li>If unacknowledged by the deadline, this card returns and escalates — it does not go quietly.</li>
+          <li>If unacknowledged by the deadline, this card returns and escalates until someone owns it.</li>
         </ul>
         <div class="nc-actions">
           <button class="nbtn primary">Acknowledge</button>
@@ -264,8 +262,8 @@
       <div class="seat"><div class="seat-name">Nutrition</div><span class="stance support">SUPPORT</span><div class="seat-say">Meets screening criteria for intervention (≥5 % loss + reduced intake, synthetic criteria set); oral-first pathway available.</div></div>
       <div class="seat"><div class="seat-name">Pharmacy</div><span class="stance insuff">INSUFFICIENT — REQUESTS DATA</span><div class="seat-say">No intake or antiemetic-adherence data on file; requests a 24-h recall before any regimen change.</div></div>
       <div class="seat"><div class="seat-name">Primary care</div><span class="stance support">SUPPORT</span><div class="seat-say">Consistent with hypertension management and functional goals; no conflicts identified.</div></div>
-      <div class="agg">Panel Support 3/4 <small>· 1 requests data · dissent preserved · “support”, never “confidence”</small></div>
-      <div class="receipt"><span>run r-20260718-004</span><span>seats: 4 · isolation: identity</span><span>replay: verify --run r-…004 (synthetic)</span></div>
+      <div class="agg">Panel Support 3/4 <small>· 1 requests data · dissent preserved · “support”, never “confidence” · <b>scripted in demo</b></small></div>
+      <div class="receipt"><span>run r-20260718-004</span><span>4 seats · one model, isolated contexts (disclosed; cross-model seats planned)</span><span>replay: verify --run r-…004 (synthetic)</span></div>
 
       <!-- viz 1: weight trajectory -->
       <div class="viz">
@@ -289,7 +287,7 @@
             <text x="446" y="101" fill="#26221b">70.4</text>
             <text x="446" y="152" fill="#26221b">66.8</text>
           </g>
-          <text x="248" y="96" font-size="10" fill="#2b5fd9" font-weight="600">+3.6 kg preserved</text>
+          <text x="248" y="96" font-size="10" fill="#26221b" font-weight="600">+3.6 kg preserved (illustrative)</text>
         </svg>
         <div class="legend"><span><i style="background:#6e675c"></i>observed</span><span><i style="background:#b3701f"></i>current plan (proj.)</span><span><i style="background:#2b5fd9"></i>with nutrition support (proj.)</span></div>
         <details class="assump"><summary>Assumptions (E1) ▾</summary>
@@ -311,8 +309,8 @@
           <rect x="150" y="28" width="311" height="22" rx="4" fill="#b3701f"><title>Manual: literature search 8 + directory search 9 + coordination 6 = 23 min</title></rect>
           <rect x="150" y="70" width="81" height="22" rx="4" fill="#2b5fd9"><title>Guided: 6 min total</title></rect>
           <g font-size="10.5" fill="#26221b" font-weight="600">
-            <text x="455" y="43" text-anchor="end" fill="#fff">23 min</text>
-            <text x="238" y="85">6 min (A1–A3)</text>
+            <text x="456" y="22" text-anchor="end">23 min (A1–A3)</text>
+            <text x="238" y="85">6 min</text>
           </g>
         </svg>
         <details class="assump"><summary>Assumptions (A1–A3) ▾</summary>
@@ -324,20 +322,27 @@
       <!-- viz 3: cost -->
       <div class="viz">
         <h5>Cost consideration (ranges, not forecasts)</h5>
-        <div class="take">Under C1–C3 the potential avoided-cost range sits an order of magnitude above the intervention cost — illustrative, synthetic unit costs.</div>
-        <svg viewBox="0 0 460 118" role="img" aria-label="Range bars comparing potential avoided complication costs versus intervention cost">
+        <div class="take">Under C1–C3 the potential avoided-cost range is roughly 7–24× the intervention cost — illustrative, synthetic unit costs, one shared $0–16k axis.</div>
+        <svg viewBox="0 0 460 128" role="img" aria-label="Range bars on one shared dollar axis comparing potential avoided complication costs versus intervention cost">
           <line x1="150" y1="16" x2="150" y2="102" stroke="#e2ddd2" stroke-width="1"/>
+          <line x1="300" y1="98" x2="300" y2="104" stroke="#d8d2c4" stroke-width="1"/>
+          <line x1="450" y1="98" x2="450" y2="104" stroke="#d8d2c4" stroke-width="1"/>
           <g font-size="10.5" fill="#26221b">
             <text x="142" y="42" text-anchor="end">Potential avoided cost</text>
             <text x="142" y="84" text-anchor="end">Intervention cost</text>
           </g>
-          <rect x="260" y="30" width="145" height="18" rx="4" fill="#b3701f" opacity="0.9"><title>Malnutrition-related complication cost range $8.2k–$14.5k (C1–C2)</title></rect>
-          <line x1="260" y1="26" x2="260" y2="52" stroke="#b3701f" stroke-width="2"/><line x1="405" y1="26" x2="405" y2="52" stroke="#b3701f" stroke-width="2"/>
-          <rect x="164" y="72" width="12" height="18" rx="4" fill="#2b5fd9"><title>MNT program + visits $0.6k–$1.1k (C3)</title></rect>
-          <line x1="164" y1="68" x2="164" y2="94" stroke="#2b5fd9" stroke-width="2"/><line x1="176" y1="68" x2="176" y2="94" stroke="#2b5fd9" stroke-width="2"/>
+          <g font-size="9" fill="#9a927f">
+            <text x="150" y="116">$0</text>
+            <text x="300" y="116" text-anchor="middle">$8k</text>
+            <text x="450" y="116" text-anchor="end">$16k</text>
+          </g>
+          <rect x="304" y="30" width="118" height="18" rx="4" fill="#b3701f" opacity="0.9"><title>Malnutrition-related complication cost range $8.2k–$14.5k (C1–C2)</title></rect>
+          <line x1="304" y1="26" x2="304" y2="52" stroke="#b3701f" stroke-width="2"/><line x1="422" y1="26" x2="422" y2="52" stroke="#b3701f" stroke-width="2"/>
+          <rect x="161" y="72" width="10" height="18" rx="4" fill="#2b5fd9"><title>MNT program + visits $0.6k–$1.1k (C3)</title></rect>
+          <line x1="161" y1="68" x2="161" y2="94" stroke="#2b5fd9" stroke-width="2"/><line x1="171" y1="68" x2="171" y2="94" stroke="#2b5fd9" stroke-width="2"/>
           <g font-size="10.5" fill="#26221b" font-weight="600">
-            <text x="332" y="22" text-anchor="middle">$8.2k–$14.5k (C1–C2)</text>
-            <text x="182" y="85">$0.6k–$1.1k (C3)</text>
+            <text x="363" y="22" text-anchor="middle">$8.2k–$14.5k (C1–C2)</text>
+            <text x="178" y="85">$0.6k–$1.1k (C3)</text>
           </g>
         </svg>
         <details class="assump"><summary>Assumptions (C1–C3) ▾</summary>
@@ -366,14 +371,14 @@
           <span class="chip t-question"><span class="dot" style="background:#5b6472"></span>Quiet</span>
         </div>
         <h4 style="color:#6e675c;font-weight:500">Nothing needs your attention.</h4>
-        <ul class="nc-evi"><li>I only speak when I can point at something specific in this patient’s chart. Silence is a feature, not a failure.</li></ul>
+        <ul class="nc-evi"><li>You’ll only hear from me when I can point at something specific in this patient’s chart.</li></ul>
       </div>
       <div class="caption">The quiet state — specific-or-silent, stated to the user in their language.</div>
     </div>
     <div class="stack" style="flex:1;min-width:340px">
       <div class="metrics">
-        <div class="metric"><b>3 / 11</b><span>nudges shown / rules evaluated</span></div>
-        <div class="metric"><b>0</b><span>repeats after dismissal</span></div>
+        <div class="metric"><b>3 / 11</b><span>nudges shown / rules evaluated (synthetic session)</span></div>
+        <div class="metric"><b>0</b><span>repeats after dismissal (synthetic session)</span></div>
         <div class="metric"><b>14 s</b><span>median glance → action (synthetic)</span></div>
       </div>
       <div class="limits">
