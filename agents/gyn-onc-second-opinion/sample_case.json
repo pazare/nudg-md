@@ -1,0 +1,36 @@
+{
+  "case_id": "EMR-2026-0042",
+  "cancer_type": "endometrial",
+  "demographics": {
+    "age": 64,
+    "menopausal_status": "postmenopausal",
+    "ecog_status": 1,
+    "comorbidities": ["type 2 diabetes", "obesity (BMI 36)", "hypertension"]
+  },
+  "diagnosis": {
+    "histology": "endometrioid adenocarcinoma",
+    "grade": "FIGO grade 2",
+    "stage": {
+      "system": "FIGO 2009",
+      "value": "IIIC1",
+      "tnm": "pT3bN1M0"
+    }
+  },
+  "biomarkers": {
+    "MMR_MSI": "mismatch-repair deficient (dMMR) -- loss of MLH1 and PMS2 by IHC; MLH1 promoter hypermethylation confirmed",
+    "POLE": "not tested",
+    "ER": "positive (90%)",
+    "PR": "positive (80%)",
+    "HER2": "not applicable for endometrioid histology",
+    "p53": "wild-type pattern",
+    "BRCA1_2": "not indicated"
+  },
+  "imaging_summary": "CT chest/abdomen/pelvis: 4.8 cm uterine mass invading >50% myometrium; two enlarged left pelvic lymph nodes (up to 1.6 cm); no para-aortic adenopathy; no distant metastatic disease. No suspicious pulmonary nodules.",
+  "pathology_summary": "TAH-BSO with pelvic and para-aortic lymphadenectomy: endometrioid adenocarcinoma, FIGO grade 2, invading 70% of myometrium, positive lymphovascular space invasion. 2 of 12 left pelvic nodes positive; 0 of 8 para-aortic nodes positive. Margins negative.",
+  "prior_treatment_history": [
+    "Total abdominal hysterectomy with bilateral salpingo-oophorectomy and pelvic/para-aortic lymphadenectomy (staging surgery), completed 3 weeks ago",
+    "No prior systemic therapy or radiation"
+  ],
+  "proposed_plan": "Adjuvant carboplatin AUC 5 plus paclitaxel 175 mg/m2 every 21 days for 6 cycles, followed by external beam pelvic radiotherapy. No immunotherapy planned.",
+  "patient_preferences": "Wants the most effective treatment for cure; willing to accept added toxicity if it improves survival; prefers to avoid prolonged treatment courses if two options are otherwise equivalent."
+}

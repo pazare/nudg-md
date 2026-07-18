@@ -1,0 +1,27 @@
+{
+  "case_id": "EMR-2026-0080",
+  "cancer_type": "vulvar",
+  "demographics": {
+    "age": 68,
+    "menopausal_status": "postmenopausal",
+    "ecog_status": 0,
+    "comorbidities": ["none"]
+  },
+  "diagnosis": {
+    "histology": "squamous cell carcinoma",
+    "grade": "well differentiated",
+    "stage": {
+      "system": "FIGO 2021",
+      "value": "IA"
+    }
+  },
+  "biomarkers": {
+    "HPV": "positive",
+    "p16": "positive"
+  },
+  "imaging_summary": "Exam: 1.2 cm lesion on the right labium; no palpable groin nodes.",
+  "pathology_summary": "Biopsy: superficially invasive squamous cell carcinoma, depth of invasion 0.8 mm.",
+  "prior_treatment_history": ["none"],
+  "proposed_plan": "Wide local excision without inguinofemoral lymph node dissection.",
+  "patient_preferences": "Prefers the least extensive surgery that is still appropriate."
+}

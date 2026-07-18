@@ -1,0 +1,27 @@
+{
+  "case_id": "EMR-2026-0071",
+  "cancer_type": "cervical",
+  "demographics": {
+    "age": 45,
+    "menopausal_status": "premenopausal",
+    "ecog_status": 0,
+    "comorbidities": ["none"]
+  },
+  "diagnosis": {
+    "histology": "squamous cell carcinoma",
+    "grade": "moderately differentiated",
+    "stage": {
+      "system": "FIGO 2018",
+      "value": "IB1"
+    }
+  },
+  "biomarkers": {
+    "HPV": "positive",
+    "PD_L1": "not tested"
+  },
+  "imaging_summary": "Pelvic MRI: 2.5 cm cervical tumor confined to the cervix; no parametrial involvement; no enlarged lymph nodes.",
+  "pathology_summary": "Cervical biopsy: invasive squamous cell carcinoma. Tumor size 2.5 cm on exam and imaging.",
+  "prior_treatment_history": ["none"],
+  "proposed_plan": "Radical hysterectomy with pelvic lymph node assessment.",
+  "patient_preferences": "Wants standard curative treatment; would like to understand fertility implications."
+}

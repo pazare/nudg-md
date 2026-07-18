@@ -1,0 +1,34 @@
+{
+  "case_id": "EMR-2026-0058",
+  "cancer_type": "endometrial",
+  "demographics": {
+    "age": 58,
+    "menopausal_status": "postmenopausal",
+    "ecog_status": 0,
+    "comorbidities": ["well-controlled hypertension"]
+  },
+  "diagnosis": {
+    "histology": "endometrioid adenocarcinoma",
+    "grade": "FIGO grade 1",
+    "stage": {
+      "system": "FIGO 2009",
+      "value": "IA",
+      "tnm": "pT1aN0M0"
+    }
+  },
+  "biomarkers": {
+    "MMR_MSI": "mismatch-repair proficient (pMMR) by IHC",
+    "POLE": "not tested",
+    "ER": "positive",
+    "PR": "positive",
+    "p53": "wild-type pattern"
+  },
+  "imaging_summary": "Pelvic MRI: 2.1 cm endometrial lesion with <50% myometrial invasion; no cervical stromal involvement; no suspicious pelvic or para-aortic lymph nodes. CT chest/abdomen/pelvis negative for metastatic disease.",
+  "pathology_summary": "TAH-BSO with sentinel lymph node mapping: endometrioid adenocarcinoma, FIGO grade 1, invading 20% of myometrium, no lymphovascular space invasion. Bilateral sentinel nodes negative. Margins negative.",
+  "prior_treatment_history": [
+    "Total hysterectomy with bilateral salpingo-oophorectomy and sentinel lymph node biopsy (staging surgery), completed 2 weeks ago",
+    "No prior systemic therapy or radiation"
+  ],
+  "proposed_plan": "Observation with routine surveillance; no adjuvant chemotherapy or radiotherapy.",
+  "patient_preferences": "Prefers to avoid additional treatment if surveillance is appropriate; wants to understand her recurrence risk."
+}
