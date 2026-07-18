@@ -37,6 +37,8 @@ machinery stays hidden.
 | Round | When | Verdict / feedback |
 | --- | --- | --- |
 | 1 | 2026-07-18 ~12:49 | Environment validated (worked after refresh; initial confusion finding the orb — onboarding cue worth considering). **Variant decision: A (calm dock) is default; keep B switchable via Shift+B.** Directive: develop efficiently; next = nudge card design (design only), 3 demo scenarios; second-opinion panel with calculations/visualizations; frontier-vs-MA toggle. |
+| 2 | 2026-07-18 ~13:4x | Cards "almost good": fix in-card overflow; friendlier copy (strong verbs, colons, capitalization); make it intuitive and "nudgy"; moat = cursor integration. Oncology (vaginal cancer) case arrives after research; GPT-5.6 Pro evidence run in flight. Next: wire the companion + AI (done ~14:0x, commit ef12d06). |
+| 3 | pending | Full live test per docs/TESTING.md (all 6 phases). **Variant default may shift to B (cursor companion) — Pablo signaled "we might be shifting towards B."** Claude lane lights up when Pablo exports ANTHROPIC_API_KEY and restarts the relay. |
 
 ## Architecture (current)
 

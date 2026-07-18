@@ -1,0 +1,109 @@
+# NUDG MD — full test script (validation round 3)
+
+Written 2026-07-18 ~14:3x PT. Every step, in order. The buddy engine, rules, peek cards,
+EHR commands, and AI lanes are live as of commit `ef12d06`.
+
+## Phase 0 · Setup (1 minute)
+
+1. Check the static server: open http://localhost:4800/scribe/ — if it loads, it is up.
+2. Check the AI relay: open http://127.0.0.1:4809/api/health — expect `{"ok": true, "lanes": {...}}`.
+   `codex` should read `ready`; `claude` reads `no-key` until the Anthropic key is set (Phase 5).
+3. If either is down: `cd "$HOME/Desktop/Summer 2026/nudg-md" && ./scripts/serve.sh` (starts both).
+4. Hard-reload both app tabs: press **⌘⇧R** in the Scribe tab and in the LegacyChart tab
+   (a normal reload can keep old JS cached).
+5. Expect in each tab: the white pulse orb on the right side, and (once per tab session) a toast:
+   "Your buddy is here: click the pulse to open it."
+6. Clean slate if you tested earlier: click **Reset demo** (Scribe: bottom-left; EHR: toolbar).
+   This clears worklist state, notes, orders, the event log, and nudge cooldowns in BOTH tabs.
+
+## Phase 1 · Scenario 1 — the omitted-context catch (Scribe, ~2 minutes)
+
+1. Scribe tab: click **James Okafor** (9:40 AM) in the worklist.
+2. Click **Generate note** (bottom center). After ~1 s the scripted note appears;
+   the header notes "Editable — verify before filing".
+3. Click at the end of the Assessment & Plan section and TYPE, with your keyboard:
+   `Impression: palpitations, likely anxiety related.`
+4. Within ~1 second of pausing: the orb pulses, the badge shows 1, and a peek card slides in
+   beside the orb: **"Anxiety can wait: Rule out recurrent AF first."**
+5. Click **Open buddy** on the peek (or the primary button directly). The full card shows:
+   Chart check + FOCUSED + patient chips; three facts, each with a source chip; the framed
+   suggestion; and the "Why this, why now" trace ending in R-01.
+6. Click **Open the rhythm note**. Switch to the EHR tab: it has opened Okafor's chart, jumped to
+   the Notes tab, and opened + spotlighted (blue outline) the 05/12 note. A toast confirmed it
+   in the Scribe tab.
+7. Back in the buddy: the card is gone (acted). Open the **Activity** tab in the popover:
+   the nudge and your actions are logged in plain language.
+8. Repeat-respect: type "anxiety" again somewhere in the note — no second card appears.
+9. Dismiss path (optional): Reset demo, redo steps 1–4, then click **Dismiss ▾** → pick
+   "Already considered" → the card leaves, the reason is logged, and it cools down for 24 h
+   (Reset demo clears cooldowns).
+
+## Phase 2 · Scenario 2 — wayfinding (EHR, ~1 minute)
+
+1. EHR tab: click the **HOLLOWAY** row in the schedule.
+2. Quickly click four different chart tabs — Problems → Medications → Allergies → Labs —
+   within ~30 seconds, without opening any document row.
+3. On the fourth view: peek slides in: **"Find the progress note in 3 clicks."**
+   The card lists numbered steps plus alternate targets.
+4. Click **Show me**: the chart jumps to Notes and opens + spotlights the top document.
+5. Self-expiry variant: trigger it again (four quick tab views), then ignore the card and open
+   any Notes row yourself — the card leaves on its own (superseded, not dismissed).
+
+## Phase 3 · Scenario 3 — depth + second opinion (EHR, ~4 minutes incl. live wait)
+
+1. With Holloway's chart open, idle on Summary for ~8 seconds (demo pacing).
+2. Peek: **"A1c 8.4 and climbing: The plan names diet but gives it no owner."**
+3. Open the buddy: the Depth card shows the research row (placeholder citation — the oncology
+   case from your research swaps in here), the in-network specialist, and **More specialists ▾**
+   (three more, all marked Synthetic network).
+4. Click **Start the referral**: toast "Referral drafted for your sign-off: Nothing is sent
+   without you." The Depth card leaves and a green WATCH card appears with owner, backup,
+   deadline, and the escalation promise. Read it, then click **Acknowledge**.
+5. Re-trigger the Depth card (acted cards may return): Back to Schedule → reopen Holloway →
+   idle 8 s.
+6. Click **Second opinion ▸**. The popover widens. **Quick take** paints a scripted answer
+   INSTANTLY, chipped "SCRIPTED · LIVE LANE DELIBERATING…". After ~60–90 s the live text
+   replaces it in place and the chip flips to "LIVE: GPT VIA CODEX CLI" with a latency receipt.
+7. Click **Panel review**: four scripted seats paint instantly (same honest chip). After ~1–2
+   minutes the LIVE seats replace them — expect real rationales and possibly real dissent
+   (in my verification run, Primary care voted OPPOSE; aggregate read "Panel support: 3/4").
+8. Honesty checks while you wait: every scripted surface is chipped; the receipt line shows the
+   run mode and latency; the footer names the decision owner and states nothing is sent without you.
+9. **← Back to nudges** returns to the card stack and normal width.
+
+## Phase 4 · Variant B — the cursor companion (both tabs, ~2 minutes)
+
+We may shift the default to B (the moat: integration with the cursor). Judge it hard.
+
+1. Click anywhere outside a text field and press **Shift+B**. Toast: "Cursor companion active —
+   Shift+P opens its preview." The orb disappears; a smaller circle now trails your cursor.
+   The OTHER tab switches style too (synced over the bus).
+2. Move the mouse: the companion follows with a soft lag, offset below-right. Start typing in
+   any field: it fades to near-invisible. Stop: it returns.
+3. To click it: stop moving, then drift slowly onto it — it freezes under your pointer when
+   hovered. Click it (or press **Shift+P**) to open the popover.
+4. Trigger any rule while in B (e.g., redo Phase 2): the peek slides in near the companion —
+   the nudge arrives at your cursor. This is the moat moment.
+5. **Shift+B** returns to the calm dock (A). In A, also try dragging the orb: it snaps to the
+   nearest edge and remembers its spot.
+
+## Phase 5 · Claude quick lane (once you have the API key, ~2 minutes)
+
+1. Stop the old relay so the key takes effect: `lsof -ti tcp:4809 | xargs kill`
+2. In that same terminal: `export ANTHROPIC_API_KEY=sk-ant-...` (env only; never committed).
+3. Restart the relay: `python3 "$HOME/Desktop/Summer 2026/nudg-md/server/relay.py" &`
+4. Verify: http://127.0.0.1:4809/api/health now shows `"claude": "ready"`.
+5. Rerun Phase 3 step 6: Quick take should answer in ~2 s, chipped "LIVE: CLAUDE (ANTHROPIC API)".
+
+## Troubleshooting
+
+- No orb after reload: hard-reload (⌘⇧R); check the console for errors and tell Claude.
+- A rule will not fire: you may be inside a 24 h dismissal cooldown — click Reset demo.
+- Panel stays scripted: the relay is down (health URL fails) — restart `./scripts/serve.sh`.
+- Live lanes feel slow: codex carries ~30 s fixed CLI overhead; 1–2 minutes is normal, and the
+  scripted content stays on screen the whole time, labeled.
+
+## What to report
+
+(a) Anything that felt un-nudgy or noisy; (b) copy that reads wrong (style: simple, direct,
+strong verbs, colons); (c) A or B as default; (d) anything that did not fire, with what you did.
