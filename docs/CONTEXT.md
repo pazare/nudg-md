@@ -20,6 +20,7 @@ machinery stays hidden.
 | 2026-07-18 ~11:35 | Buddy will be browser-based (Document Picture-in-Picture window, Chrome 116+), NOT Electron — Electron cannot join Chrome's BroadcastChannel; PiP is genuinely always-on-top and same-origin. |
 | 2026-07-18 ~11:40 | Public repo `pazare/nudg-md` created day-of; public from first commit for verifiable provenance. |
 | 2026-07-18 ~12:10 | Collapsed buddy presence built as two live-switchable variants — A "calm dock orb" (draggable, snaps to edges) vs B "cursor companion" (lagged follower, NUDG heritage). Shift+B or popover link switches; choice synced across tabs via bus. Bus gained same-tab fanout (BroadcastChannel skips own context). Pablo picks a variant at validation. |
+| 2026-07-18 ~12:3x | Validation 1 passed. Variant A default, B retained. Demo = 3 live scenarios: (1) omitted-context catch during note writing; (2) guided navigation to buried chart info; (3) depth prompt — specific research + in-network specialist (expandable) + second-opinion panel with well-being/time/cost visuals and a single-model ↔ multi-agent (Tribunal-heritage) toggle. Scenario 3 needs one added synthetic oncology patient (design first, data next step). |
 
 ## Step ladder
 
@@ -33,7 +34,7 @@ machinery stays hidden.
 
 | Round | When | Verdict / feedback |
 | --- | --- | --- |
-| 1 | pending | — |
+| 1 | 2026-07-18 ~12:3x | Environment validated (worked after refresh; initial confusion finding the orb — onboarding cue worth considering). **Variant decision: A (calm dock) is default; keep B switchable via Shift+B.** Directive: develop efficiently; next = nudge card design (design only), 3 demo scenarios; second-opinion panel with calculations/visualizations; frontier-vs-MA toggle. Always end replies with next steps. |
 
 ## Architecture (current)
 
