@@ -75,6 +75,8 @@ section > p.intro { color: var(--muted); font-size: 13px; max-width: 780px; line
   font-size: 10.5px; color: var(--muted); border: 1px solid var(--line);
   background: #faf7f0; border-radius: 999px; padding: 2px 7px; white-space: nowrap; flex: none;
 }
+a.src { color: #214ba8; text-decoration: none; }
+a.src:hover { text-decoration: underline; }
 
 /* ---------- card ---------- */
 .ncard {
@@ -261,6 +263,8 @@ footer.end { margin-top: 60px; font-size: 10.5px; color: var(--faint); border-to
   .seat-say { flex-basis: 100%; }
   .viz .legend { flex-wrap: wrap; }
   .limit { min-width: 0; }
+  .src { white-space: normal; overflow-wrap: anywhere; max-width: 100%; }
+  .chip.patient { margin-left: 0; white-space: normal; overflow-wrap: anywhere; }
 }
 
 @media (prefers-reduced-motion: reduce) {

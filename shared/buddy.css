@@ -41,6 +41,12 @@
   pointer-events: none;
 }
 
+/* Activity-only state: a quiet neutral dot, no number, no red. */
+.nudg-badge.nudg-dot {
+  min-width: 0; width: 10px; height: 10px; padding: 0; border-radius: 50%;
+  margin-top: 0; background: #98a1b3;
+}
+
 /* ---------- Variant B: cursor companion ---------- */
 #nudgCur {
   position: fixed; left: 0; top: 0; z-index: 2147483000;
@@ -53,6 +59,7 @@
   will-change: transform;
   pointer-events: none;
 }
+#nudgCur.nudg-catchable { pointer-events: auto; }
 #nudgCur svg { width: 17px; height: 17px; }
 #nudgCur.nudg-alive { opacity: 0.98; }
 #nudgCur.nudg-typing { opacity: 0.1; }
@@ -61,7 +68,8 @@
 
 /* ---------- Popover ---------- */
 #nudgPop {
-  position: fixed; z-index: 2147483001; width: 304px;
+  position: fixed; z-index: 2147483001; width: min(304px, calc(100vw - 24px));
+  max-height: calc(100vh - 24px); display: flex; flex-direction: column;
   background: #ffffff; border: 1px solid #e2ddd2; border-radius: 14px;
   box-shadow: 0 14px 44px rgba(38, 34, 27, 0.22);
   color: #26221b; overflow: hidden;
@@ -77,7 +85,7 @@
   color: #6e675c; font-size: 15px; line-height: 1; font-family: inherit;
 }
 #nudgPop button.nudg-close:hover { color: #26221b; }
-.nudg-list { max-height: 264px; overflow-y: auto; }
+.nudg-list { min-height: 0; max-height: 264px; overflow-y: auto; }
 .nudg-item { display: flex; gap: 9px; padding: 9px 14px; border-bottom: 1px solid #f6f2e9; }
 .nudg-item:last-child { border-bottom: none; }
 .nudg-dot { width: 7px; height: 7px; border-radius: 50%; margin-top: 5px; flex: none; }
@@ -115,8 +123,8 @@
   border: none; border-radius: 999px; padding: 5px 12px; background: transparent; color: #6e675c;
 }
 .nudg-tab.active { background: #f2eee5; color: #26221b; }
-#nudgCards { max-height: 420px; overflow-y: auto; padding: 10px; }
-#nudgPop.nudg-pop-wide { width: 448px; }
+#nudgCards { min-height: 0; max-height: 420px; overflow-y: auto; padding: 10px; }
+#nudgPop.nudg-pop-wide { width: min(448px, calc(100vw - 24px)); }
 
 /* ---------- Runtime nudge cards ---------- */
 .nbc {
@@ -141,7 +149,9 @@
 .nbc h4 { font-size: 13.5px; font-weight: 650; line-height: 1.4; margin: 8px 0 0; color: #26221b; }
 .nbc-evi { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
 .nbc-evi li { font-size: 12px; line-height: 1.5; color: #3a352c; display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; justify-content: space-between; }
-.nbc-src { font-size: 9.5px; color: #6e675c; border: 1px solid #e9e3d6; background: #faf7f0; border-radius: 999px; padding: 1px 7px; white-space: nowrap; }
+.nbc-src { font-size: 9.5px; color: #6e675c; border: 1px solid #e9e3d6; background: #faf7f0; border-radius: 999px; padding: 1px 7px; white-space: normal; overflow-wrap: anywhere; max-width: 100%; }
+.nbc-src-link { text-decoration: none; color: #214ba8; }
+.nbc-src-link:hover { text-decoration: underline; }
 .nbc-frame { font-size: 12px; line-height: 1.5; color: #3a352c; background: #faf7f0; border: 1px solid #efeadf; border-radius: 8px; padding: 6px 9px; margin-top: 8px; }
 .nbc-steps { list-style: none; counter-reset: ns; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
 .nbc-steps li { counter-increment: ns; display: flex; gap: 8px; font-size: 12px; color: #3a352c; align-items: baseline; }
@@ -179,7 +189,7 @@
 
 /* ---------- Peek (the nudge itself, sliding in near the buddy) ---------- */
 #nudgPeek {
-  position: fixed; z-index: 2147483001; width: 296px;
+  position: fixed; z-index: 2147483001; width: min(296px, calc(100vw - 24px));
   background: #fff; border: 1px solid #e2ddd2; border-left-width: 3px; border-radius: 12px;
   box-shadow: 0 12px 34px rgba(38, 34, 27, 0.22); padding: 10px 12px;
   opacity: 0; transform: translateY(8px); transition: opacity 0.25s ease, transform 0.25s ease;
@@ -193,7 +203,7 @@
 /* ---------- Second-opinion panel (runtime) ---------- */
 .nbp-head { font-size: 13px; font-weight: 650; color: #26221b; }
 .nbp-q { font-size: 11.5px; color: #6e675c; margin-top: 3px; line-height: 1.45; }
-.nbp-lanes { display: flex; gap: 5px; margin-top: 9px; background: #f2eee5; border-radius: 999px; padding: 3px; width: max-content; }
+.nbp-lanes { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; background: #f2eee5; border-radius: 14px; padding: 3px; width: max-content; max-width: 100%; }
 .nbp-lane {
   font: inherit; font-size: 10.5px; font-weight: 650; cursor: pointer;
   border: none; border-radius: 999px; padding: 5px 11px; background: transparent; color: #6e675c;
@@ -224,6 +234,13 @@
 }
 @keyframes nudgSpin { to { transform: rotate(360deg); } }
 .nbp-back { margin-bottom: 8px; }
+
+@media (max-width: 420px) {
+  .nbp-seat { flex-wrap: wrap; }
+  .nbp-seat-name { width: auto; min-width: 82px; }
+  .nbp-say { flex-basis: 100%; }
+  .nbc-chip.pt { margin-left: 0; max-width: 100%; }
+}
 
 /* ---------- EHR spotlight (driven by buddy commands) ---------- */
 .nudg-spotlight { outline: 3px solid #2b5fd9 !important; outline-offset: -1px; transition: outline-color 0.4s ease; }

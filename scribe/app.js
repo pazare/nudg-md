@@ -428,7 +428,9 @@ function scheduleNoteSignals() {
 function resetLocal({ broadcast = true } = {}) {
   if (recTimerId) clearInterval(recTimerId);
   if (draftTimerId) clearTimeout(draftTimerId);
+  if (signalTimer) clearTimeout(signalTimer);
   recTimerId = null; draftTimerId = null; recordingPatient = null; draftPatient = null; draftGeneration += 1;
+  signalTimer = null; lastSignals = "";
   selected = null; renderedNotePatient = null; recSeconds = 0;
   delete els.states.note.dataset.mrn;
   noteReady.clear(); reviewed.clear(); noteDraftHtml.clear(); assistantThreads.clear();
@@ -446,6 +448,7 @@ function resetLocal({ broadcast = true } = {}) {
 
 /* ---------------- Init ---------------- */
 async function init() {
+  window.name = "nudg-scribe"; // lets the buddy focus this tab by name from its sibling
   els.todayLabel.textContent = todayLabel();
   const res = await fetch("/data/patients.json");
   DATA = await res.json();

@@ -1,9 +1,9 @@
-/* NUDG MD buddy — collapsed presence (Step 2 preview).
+/* NUDG MD buddy — collapsed presence and clinician-facing nudge surface.
    Two variants the demo can switch live (Shift+B, synced across tabs):
      A "dock"   — calm orb pinned to a screen edge (draggable, snaps).
      B "cursor" — small companion that trails the cursor (NUDG heritage).
-   Both listen to the workflow bus and preview what the buddy heard; nudge
-   cards proper arrive in Step 2. */
+   Both listen to the workflow bus; the popover separates actionable Nudges
+   from a plain-language Activity audit trail. */
 (function () {
   "use strict";
   if (window.__nudgBuddyLoaded || !window.NudgBus) return;
@@ -35,7 +35,7 @@
     ehr_tab_viewed: (d) => `EHR: viewed ${d.tab} tab`,
     ehr_note_filed: (d) => `Filed ${d.type} for ${d.name} (${d.mrn})`,
     ehr_note_mismatch_blocked: (d) => `Blocked note mismatch: ${d.noteMrn} ≠ ${d.openMrn}`,
-    ehr_orders_signed: (d) => `Signed ${d.count} EHR order(s)`,
+    ehr_orders_signed: (d) => d.simulated ? `Simulated signing ${d.count} EHR order(s); nothing transmitted` : `Signed ${d.count} EHR order(s)`,
     ehr_document_opened: (d) => `Read ${d.type} (${d.date})`,
     nudge_committed: (d) => `Nudge: ${d.headline}`,
     nudge_acted: (d) => `Acted on a nudge: ${d.action}`,
@@ -60,20 +60,20 @@
   const PULSE = '<svg viewBox="0 0 24 24"><path d="M2.5 12h4l2.5-6 4.5 12 2.5-6h5.5"/></svg>';
   const root = document.createElement("div");
   root.innerHTML = `
-    <button id="nudgOrb" class="nudg-hidden" title="NUDG MD buddy" aria-label="Open NUDG MD buddy preview" aria-haspopup="dialog" aria-expanded="false" aria-controls="nudgPop">${PULSE}<span class="nudg-badge nudg-hidden"></span></button>
-    <button id="nudgCur" class="nudg-hidden" title="NUDG MD buddy — press Shift+P to open" aria-label="Open NUDG MD buddy preview; keyboard shortcut Shift+P" aria-haspopup="dialog" aria-expanded="false" aria-controls="nudgPop">${PULSE}<span class="nudg-badge nudg-hidden"></span></button>
+    <button id="nudgOrb" class="nudg-hidden" title="NUDG MD buddy" aria-label="Open NUDG MD buddy" aria-haspopup="dialog" aria-expanded="false" aria-controls="nudgPop">${PULSE}<span class="nudg-badge nudg-hidden"></span></button>
+    <button id="nudgCur" class="nudg-hidden" title="NUDG MD buddy — press Shift+P to open" aria-label="Open NUDG MD buddy; keyboard shortcut Shift+P" aria-haspopup="dialog" aria-expanded="false" aria-controls="nudgPop">${PULSE}<span class="nudg-badge nudg-hidden"></span></button>
     <div id="nudgPop" class="nudg-hidden" role="dialog" aria-modal="false" aria-labelledby="nudgPopTitle" tabindex="-1">
       <div class="nudg-pop-head">
         <div class="nudg-pop-title" id="nudgPopTitle">NUDG MD<span>your buddy</span></div>
         <button class="nudg-close" aria-label="Close">✕</button>
       </div>
-      <div class="nudg-tabs">
-        <button class="nudg-tab active" type="button" data-view="nudges">Nudges</button>
-        <button class="nudg-tab" type="button" data-view="activity">Activity</button>
+      <div class="nudg-tabs" role="tablist" aria-label="Buddy views">
+        <button class="nudg-tab active" id="nudgTabNudges" type="button" role="tab" aria-selected="true" aria-controls="nudgCards" data-view="nudges">Nudges</button>
+        <button class="nudg-tab" id="nudgTabActivity" type="button" role="tab" aria-selected="false" aria-controls="nudgActivity" tabindex="-1" data-view="activity">Activity</button>
       </div>
-      <div id="nudgCards"></div>
-      <div class="nudg-list nudg-hidden" role="log" aria-live="polite"></div>
-      <div class="nudg-pop-foot">SYNTHETIC DEMO · event preview, not clinical guidance · <button id="nudgSwitch" type="button">Switch style (Shift+B)</button></div>
+      <div id="nudgCards" role="tabpanel" aria-labelledby="nudgTabNudges" aria-live="polite"></div>
+      <div class="nudg-list nudg-hidden" id="nudgActivity" role="tabpanel" aria-labelledby="nudgTabActivity"><div role="log" aria-live="polite"></div></div>
+      <div class="nudg-pop-foot">SYNTHETIC DEMO · decision support, not clinical guidance · <button id="nudgSwitch" type="button">Switch style (Shift+B)</button></div>
     </div>
     <div id="nudgToast" role="status" aria-live="polite"></div>`;
   document.body.appendChild(root);
@@ -92,24 +92,41 @@
 
   /* ---------- badges / bloom ---------- */
   function renderBadges() {
-    const shown = nudgeCount > 0 ? nudgeCount : unseen;
+    /* Red numbers are for nudges only; mere activity earns a quiet dot, never urgency. */
+    const hasNudges = nudgeCount > 0;
     for (const b of badges) {
-      b.textContent = shown > 99 ? "99+" : String(shown);
-      b.classList.toggle("nudg-hidden", shown === 0);
+      b.textContent = hasNudges ? (nudgeCount > 99 ? "99+" : String(nudgeCount)) : "";
+      b.classList.toggle("nudg-hidden", !hasNudges && unseen === 0);
+      b.classList.toggle("nudg-dot", !hasNudges && unseen > 0);
     }
-    orb.classList.toggle("nudg-alive", shown > 0);
-    cur.classList.toggle("nudg-alive", shown > 0);
+    orb.classList.toggle("nudg-alive", hasNudges);
+    cur.classList.toggle("nudg-alive", hasNudges);
     const nudgeTab = pop.querySelector('.nudg-tab[data-view="nudges"]');
-    if (nudgeTab) nudgeTab.textContent = nudgeCount > 0 ? `Nudges (${nudgeCount})` : "Nudges";
+    if (nudgeTab) nudgeTab.textContent = hasNudges ? `Nudges (${nudgeCount})` : "Nudges";
   }
 
   function showView(name) {
     view = name;
-    for (const t of tabs) t.classList.toggle("active", t.dataset.view === name);
+    for (const t of tabs) {
+      const selected = t.dataset.view === name;
+      t.classList.toggle("active", selected);
+      t.setAttribute("aria-selected", String(selected));
+      t.tabIndex = selected ? 0 : -1;
+    }
     cardsEl.classList.toggle("nudg-hidden", name !== "nudges");
     list.classList.toggle("nudg-hidden", name !== "activity");
   }
   tabs.forEach((t) => t.addEventListener("click", () => showView(t.dataset.view)));
+  pop.querySelector(".nudg-tabs").addEventListener("keydown", (e) => {
+    if (!e.target.matches('[role="tab"]') || !["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
+    e.preventDefault();
+    const ordered = [...tabs];
+    const currentIndex = ordered.indexOf(e.target);
+    const nextIndex = e.key === "Home" ? 0 : e.key === "End" ? ordered.length - 1 :
+      (currentIndex + (e.key === "ArrowRight" ? 1 : -1) + ordered.length) % ordered.length;
+    showView(ordered[nextIndex].dataset.view);
+    ordered[nextIndex].focus();
+  });
   function bloom() {
     const el = variant === "dock" ? orb : cur;
     el.classList.remove("nudg-bloom");
@@ -120,10 +137,10 @@
   /* ---------- popover ---------- */
   function renderList() {
     if (!events.length) {
-      list.innerHTML = `<div class="nudg-empty">I'm listening to your workflow. Work in either tab: everything I hear lands here, and the moments that matter become nudges.</div>`;
+      list.innerHTML = `<div class="nudg-empty" role="log" aria-live="polite">I'm listening to your workflow. Work in either tab: the supported events I hear land here, and the moments that matter become nudges.</div>`;
       return;
     }
-    list.innerHTML = events
+    list.innerHTML = `<div role="log" aria-live="polite">${events
       .slice()
       .reverse()
       .map(
@@ -132,19 +149,34 @@
           <div class="nudg-item-time">${esc(rel(e.ts))} · ${e.app === "scribe" ? "Scribe" : e.app === "ehr" ? "EHR" : "Buddy"}</div>
         </div></div>`
       )
-      .join("");
+      .join("")}</div>`;
   }
 
   function positionPop(rect) {
     const W = pop.offsetWidth || 304;
-    const H = Math.min(360, pop.offsetHeight || 340);
+    const H = pop.offsetHeight || 340;
     let left = Math.min(Math.max(12, rect.left - W + rect.width), window.innerWidth - W - 12);
     pop.style.left = `${left}px`;
-    if (rect.top > H + 24) {
-      pop.style.top = `${rect.top - H - 12}px`;
-    } else {
-      pop.style.top = `${Math.min(rect.bottom + 12, window.innerHeight - H - 12)}px`;
-    }
+    const above = rect.top - H - 12;
+    /* Prefer sitting above the anchor; always keep every edge on-screen. */
+    const top = above > 12 ? above : rect.bottom + 12;
+    pop.style.top = `${Math.max(12, Math.min(top, window.innerHeight - H - 12))}px`;
+  }
+
+  /* Tall cards (depth, panel) grow the popover after placement; shift up so the
+     actions and trace never fall below the screen edge. */
+  if (window.ResizeObserver) {
+    let lastPopH = 0;
+    new ResizeObserver(() => {
+      if (!popOpen) return;
+      const h = pop.offsetHeight;
+      if (h === lastPopH) return;
+      lastPopH = h;
+      const r = pop.getBoundingClientRect();
+      if (r.bottom > window.innerHeight - 12 || r.top < 12) {
+        pop.style.top = `${Math.max(12, window.innerHeight - h - 12)}px`;
+      }
+    }).observe(pop);
   }
 
   function openPop(anchorEl) {
@@ -154,6 +186,8 @@
     renderBadges();
     renderList();
     pop.classList.remove("nudg-hidden");
+    cardsEl.scrollTop = 0;
+    list.scrollTop = 0;
     positionPop(anchorEl.getBoundingClientRect());
     orb.setAttribute("aria-expanded", "true");
     cur.setAttribute("aria-expanded", "true");
@@ -166,6 +200,7 @@
     cur.setAttribute("aria-expanded", "false");
     if (restoreFocus && lastFocus && document.contains(lastFocus)) lastFocus.focus();
     lastFocus = null;
+    window.dispatchEvent(new CustomEvent("nudg:buddy-closed"));
   }
   pop.querySelector(".nudg-close").addEventListener("click", closePop);
   document.addEventListener("pointerdown", (e) => {
@@ -257,7 +292,7 @@
   /* ---------- cursor companion: lagged follow, freeze on hover ---------- */
   (function initCursor() {
     let tx = window.innerWidth - 80, ty = Math.max(120, window.innerHeight - 300);
-    let fx = tx, fy = ty, frozen = false, raf = null, typingTimer = null;
+    let fx = tx, fy = ty, frozen = false, parked = false, raf = null, typingTimer = null, catchTimer = null;
     function loop() {
       if (!frozen) {
         fx += (tx - fx) * 0.16;
@@ -269,14 +304,31 @@
     }
     function kick() { if (!raf) raf = requestAnimationFrame(loop); }
     document.addEventListener("pointermove", (e) => {
+      if (parked) {
+        const r = cur.getBoundingClientRect();
+        const distance = Math.hypot(e.clientX - (r.left + r.width / 2), e.clientY - (r.top + r.height / 2));
+        if (distance <= 72) return; // let the user approach and click the parked companion
+        parked = false;
+        frozen = false;
+        cur.classList.remove("nudg-catchable");
+      }
       tx = Math.min(e.clientX + 18, window.innerWidth - 40);
       ty = Math.min(e.clientY + 22, window.innerHeight - 40);
       cur.classList.remove("nudg-gone");
       kick();
+      clearTimeout(catchTimer);
+      catchTimer = setTimeout(() => {
+        if (variant !== "cursor") return;
+        parked = true;
+        frozen = true;
+        cur.classList.add("nudg-catchable");
+      }, 450);
     });
     document.documentElement.addEventListener("pointerleave", () => cur.classList.add("nudg-gone"));
-    cur.addEventListener("pointerenter", () => { frozen = true; });
-    cur.addEventListener("pointerleave", () => { frozen = false; kick(); });
+    cur.addEventListener("pointerenter", () => { frozen = true; parked = true; });
+    cur.addEventListener("pointerleave", () => {
+      frozen = false; parked = false; cur.classList.remove("nudg-catchable"); kick();
+    });
     cur.addEventListener("click", () => (popOpen ? closePop() : openPop(cur)));
     document.addEventListener("keydown", (e) => {
       const t = e.target;
@@ -311,7 +363,6 @@
     else {
       unseen++;
       renderBadges();
-      bloom();
     }
   });
 

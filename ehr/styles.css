@@ -44,7 +44,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 }
 
 /* Boxes and grids */
-.mc-box { background: #fff; border: 1px solid #808080; margin: 10px; padding: 8px 10px 10px; }
+.mc-box { background: #fff; border: 1px solid #808080; margin: 10px; padding: 8px 10px 10px; min-inline-size: 0; width: calc(100% - 20px); max-width: calc(100% - 20px); }
 .mc-box legend { font-size: 11px; font-weight: bold; background: #ece9d8; border: 1px solid #808080; padding: 1px 6px; }
 .mc-form td { padding: 2px 6px 2px 0; font-size: 11px; white-space: nowrap; }
 input, select, textarea {
@@ -74,7 +74,7 @@ textarea { font-family: "Courier New", Courier, monospace; font-size: 12px; widt
 /* Chart */
 .mc-crumb { margin: 8px 10px 0; font-size: 11px; }
 .mc-crumb a, a { color: #003399; }
-.mc-patbanner { background: #fff; border: 1px solid #808080; margin: 8px 10px; padding: 7px 10px; }
+.mc-patbanner { background: #fff; border: 1px solid #808080; margin: 8px 10px; padding: 7px 10px; overflow-x: auto; }
 .mc-patname { font-size: 14px; font-weight: bold; }
 .mc-patgrid { margin-top: 3px; }
 .mc-patgrid td { font-size: 11px; padding: 1px 16px 1px 0; white-space: nowrap; }
@@ -90,7 +90,7 @@ textarea { font-family: "Courier New", Courier, monospace; font-size: 12px; widt
 .mc-tabs a.active { background: #fff; color: #000; font-weight: bold; padding-bottom: 5px; }
 .mc-tabbody {
   background: #fff; border: 1px solid #808080; margin: 0 10px 10px;
-  padding: 10px 12px; min-height: 320px; flex: 1;
+  padding: 10px 12px; min-height: 320px; flex: 1; overflow-x: auto;
 }
 .mc-tabbody h4 { font-size: 12px; margin: 0 0 6px; }
 .mc-cols { display: flex; gap: 16px; flex-wrap: wrap; }
@@ -114,7 +114,7 @@ textarea { font-family: "Courier New", Courier, monospace; font-size: 12px; widt
 
 @media (max-width: 760px) {
   .mc-box { overflow-x: auto; }
-  .mc-form, .mc-patgrid { min-width: 620px; }
+  .mc-box .mc-form, .mc-patgrid { min-width: 620px; }
   .mc-tabs { overflow-x: auto; white-space: nowrap; padding-bottom: 2px; }
   .mc-status { position: static; }
 }

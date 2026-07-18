@@ -10,10 +10,10 @@ Clinicians spend their day juggling portals: an ambient scribe in one tab, a leg
 
 | Step | What | Status |
 | --- | --- | --- |
-| 1 | Synthetic demo environment: ambient-scribe app + fictional legacy EHR, shared event bus | **Built — correctness hardening in progress** |
-| 2 | Collapsed buddy presence (A default, B via Shift+B) + nudge-card design gallery | **Design built; cards not wired** |
-| 3 | Context wiring: workflow events → grounded nudges (tempo-mode cadence) | Not wired |
-| 4 | Nudge content packs + demo script | Design examples only |
+| 1 | Synthetic demo environment: ambient-scribe app + fictional legacy EHR, privacy-bounded event bus | **Built and replay-tested** |
+| 2 | Collapsed buddy presence (A default, B via Shift+B) + live nudge cards | **Built; default variant still under user review** |
+| 3 | Context wiring: workflow events → deterministic R-01/R-04/R-09/R-12 nudges | **Wired with reset, cooldown, and cross-tab behavior** |
+| 4 | Content packs + second-opinion lanes | **Diabetes/CKD sample live; evidence-backed oncology template added, patient-specific integration pending** |
 
 Living plan and decision log: [`docs/CONTEXT.md`](docs/CONTEXT.md).
 
@@ -27,7 +27,7 @@ Living plan and decision log: [`docs/CONTEXT.md`](docs/CONTEXT.md).
 #   http://localhost:4800/design/cards.html  (design-only nudge gallery)
 ```
 
-No dependencies beyond `python3`. Both app tabs share one local origin so the buddy can subscribe to the same `BroadcastChannel` event stream (`shared/bus.js`).
+The static demo needs only `python3`. Both app tabs share one local origin so the buddy can subscribe to the same `BroadcastChannel` event stream (`shared/bus.js`). Live GPT output additionally requires an authenticated local `codex` CLI; the optional Claude quick lane requires `ANTHROPIC_API_KEY`. Scripted fallbacks remain available when neither live lane is connected.
 
 ## What's in the demo environment
 
@@ -35,6 +35,8 @@ No dependencies beyond `python3`. Both app tabs share one local origin so the bu
 - **`ehr/`** — "LegacyChart v4.2," a deliberately dated fictional EHR (schedule, chart tabs, note filing, order entry) representing the legacy portal side of the workflow.
 - **`data/patients.json`** — a fully synthetic five-patient panel (marked `synthetic: true`).
 - **`shared/bus.js`** — the workflow event stream (`BroadcastChannel` + a sanitized, four-hour, 100-event `localStorage` log) the buddy listens to.
+- **`shared/nudges.js`** — deterministic rules, actionable cards, referral-draft state, conservative panel aggregation, and explicit live-lane cancellation.
+- **`server/relay.py`** — localhost-only optional AI relay with strict origin/content-type checks; keys stay server-side and lane changes terminate active Codex subprocesses.
 - **`design/`** — the design-only nudge-card and second-opinion gallery. Its examples, providers, metrics, receipts, model outputs, and calculations are illustrative and not runtime evidence.
 
 Every screen carries a **SYNTHETIC — NOT FOR CLINICAL USE** marker.
@@ -47,8 +49,11 @@ Every screen carries a **SYNTHETIC — NOT FOR CLINICAL USE** marker.
 
 ## Honest limits
 
-- Answers in the demo assistant are scripted synthetic content, not live model output (labeled as such in-app).
-- The professional nudge cards, rules, provider directory, model lanes, receipts, and scenario calculations are currently design artifacts, not wired runtime behavior.
+- Answers in the Abridge-style assistant are scripted synthetic content, not live model output (labeled as such in-app).
+- The core nudge rules and cards are runtime behavior. Provider entries, clinical cases, and fallback panel text remain synthetic; the gallery's calculations and charts remain illustrative design artifacts.
+- The current R-09 runtime pack is a diabetes/CKD sample used to exercise the workflow. A separate evidence-backed oncology template is present but remains non-live until its synthetic patient fields and source applicability are verified; neither pack claims to decide referral timing.
+- Live model lanes are optional and labeled with their served mode. A missing, failed, or cancelled lane leaves an explicitly scripted fallback rather than silently upgrading its provenance.
+- Leaving a Codex lane terminates its local child process. An already-sent Anthropic HTTPS request cannot be recalled by this stdlib relay and may finish server-side even after its UI result is detached.
 - Nudge quality claims are demonstrated on synthetic cases only; nothing here is validated on real clinical data.
 - Any limitation we present as real is one we actually hit; everything else is hypothesized and labeled that way.
 

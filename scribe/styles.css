@@ -52,8 +52,8 @@ svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width:
 .icon-btn:disabled:hover { background: none; }
 
 /* ---------- Left rail: worklist ---------- */
-.rail { border-right: 1px solid var(--line); min-height: 0; display: flex; }
-.rail-work { flex: 1; display: flex; flex-direction: column; padding: 16px 14px 14px; min-height: 0; }
+.rail { border-right: 1px solid var(--line); min-width: 0; min-height: 0; display: flex; }
+.rail-work { flex: 1; display: flex; flex-direction: column; padding: 16px 14px 14px; min-width: 0; min-height: 0; }
 .rail-head { display: flex; align-items: center; gap: 8px; padding: 2px 4px 12px; }
 .rail-head h1 { font-size: 19px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
 
@@ -62,8 +62,9 @@ svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width:
 .date-chip {
   display: inline-flex; align-items: center; gap: 7px;
   border: 1px solid var(--line); background: transparent; color: var(--ink);
-  border-radius: 10px; padding: 7px 11px; font-size: 13px; cursor: pointer;
+  border-radius: 10px; padding: 7px 11px; font-size: 13px; cursor: pointer; min-width: 0;
 }
+.date-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .date-chip svg { width: 15px; height: 15px; }
 .add-btn {
   width: 30px; height: 30px; border-radius: 9px; border: none; cursor: pointer;
@@ -130,7 +131,7 @@ svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width:
 .center-top { display: flex; align-items: center; gap: 12px; padding: 16px 22px; }
 .enc-title {
   flex: 1; max-width: 560px; background: var(--bg-soft); border: none; outline: none;
-  border-radius: 10px; padding: 11px 14px; font-size: 15px; color: var(--ink); font-family: inherit;
+  border-radius: 10px; padding: 11px 14px; font-size: 15px; color: var(--ink); font-family: inherit; min-width: 0;
 }
 .enc-title::placeholder { color: var(--faint); }
 .dictate {
@@ -274,10 +275,19 @@ button:focus-visible, textarea:focus-visible, input:focus-visible, [contentedita
   .rail { min-height: 500px; border-right: 0; border-bottom: 1px solid var(--line); }
   .center { min-height: 680px; }
   .assistant { min-height: 560px; }
-  .center-top { padding: 12px; }
+  .center-top { padding: 12px; flex-wrap: wrap; }
+  .enc-title { flex-basis: calc(100% - 128px); }
+  .rail-foot { flex-wrap: wrap; }
   .note { padding-inline: 18px; }
   .note-head { flex-direction: column; }
   .note-actions { flex-wrap: wrap; }
+}
+
+@media (max-width: 360px) {
+  .enc-title { flex-basis: 100%; max-width: 100%; }
+  .dictate { margin-left: 0; }
+  .rail-tools { align-items: flex-start; }
+  .date-chip { flex: 1 1 auto; }
 }
 
 @media (prefers-reduced-motion: reduce) {

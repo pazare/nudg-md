@@ -20,22 +20,28 @@ window.NudgBus = (function () {
 
   if (ch) ch.onmessage = (m) => fanout(m.data);
 
+  function sanitizedDetail(detail) {
+    const safe = { ...(detail || {}) };
+    // These fields may contain free-text clinical content. The demo's contract is
+    // derived signals only, so do not persist OR broadcast them accidentally.
+    delete safe.q;
+    delete safe.text;
+    delete safe.note;
+    return safe;
+  }
+
   function recent(log) {
     const cutoff = Date.now() - LOG_TTL_MS;
     return (Array.isArray(log) ? log : []).filter((evt) => {
       const ts = Date.parse(evt && evt.ts);
       return Number.isFinite(ts) && ts >= cutoff;
     }).map((evt) => {
-      const detail = { ...(evt.detail || {}) };
-      delete detail.q;
-      delete detail.text;
-      delete detail.note;
-      return { ...evt, detail };
+      return { ...evt, detail: sanitizedDetail(evt.detail) };
     });
   }
 
   function emit(app, type, detail) {
-    const evt = { ts: new Date().toISOString(), app, type, detail: detail || {} };
+    const evt = { ts: new Date().toISOString(), app, type, detail: sanitizedDetail(detail) };
     try {
       const log = recent(JSON.parse(localStorage.getItem(LOG_KEY) || "[]"));
       log.push(evt);

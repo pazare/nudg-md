@@ -1,7 +1,7 @@
 # NUDG MD — full test script (validation round 3)
 
 Written 2026-07-18 ~14:3x PT. Every step, in order. The buddy engine, rules, peek cards,
-EHR commands, and AI lanes are live as of commit `ef12d06`.
+EHR commands, and AI lanes are live. This script reflects the post-validation safety fixes.
 
 ## Phase 0 · Setup (1 minute)
 
@@ -52,24 +52,30 @@ EHR commands, and AI lanes are live as of commit `ef12d06`.
 ## Phase 3 · Scenario 3 — depth + second opinion (EHR, ~4 minutes incl. live wait)
 
 1. With Holloway's chart open, idle on Summary for ~8 seconds (demo pacing).
-2. Peek: **"A1c 8.4 and climbing: The plan names diet but gives it no owner."**
-3. Open the buddy: the Depth card shows the research row (placeholder citation — the oncology
-   case from your research swaps in here), the in-network specialist, and **More specialists ▾**
-   (three more, all marked Synthetic network).
-4. Click **Start the referral**: toast "Referral drafted for your sign-off: Nothing is sent
-   without you." The Depth card leaves and a green WATCH card appears with owner, backup,
-   deadline, and the escalation promise. Read it, then click **Acknowledge**.
+2. Peek: **"A1c rose to 8.4: Nutrition follow-through is still unspecified."**
+3. Open the buddy: the Depth card shows a directly linked ADA–KDIGO source plus a patient-level
+   applicability caveat, the in-network specialist, and **More specialists ▾** (three more, all
+   marked Synthetic network). This is the live diabetes/CKD sample. A separate oncology template
+   exists in the repo but is not live until its patient fields and source applicability are verified.
+4. Click **Draft referral**: the Depth card leaves and an explicit **Referral draft saved locally:
+   Nothing has been sent** card appears. Click **Simulate sign & send** only if you want to test
+   R-12. A green WATCH card then appears and says the send was simulated; no external system was
+   contacted. Read it, then click **Acknowledge**.
 5. Re-trigger the Depth card (acted cards may return): Back to Schedule → reopen Holloway →
    idle 8 s.
 6. Click **Second opinion ▸**. The popover widens. **Quick take** paints a scripted answer
-   INSTANTLY, chipped "SCRIPTED · LIVE LANE DELIBERATING…". After ~60–90 s the live text
-   replaces it in place and the chip flips to "LIVE: GPT VIA CODEX CLI" with a latency receipt.
+   INSTANTLY, chipped "SCRIPTED · LIVE LANE DELIBERATING…". If Claude is ready, the live text
+   usually replaces it within seconds; otherwise the Codex fallback can take ~60–90 s. Verify the
+   served-mode chip and latency receipt instead of assuming which lane answered.
 7. Click **Panel review**: four scripted seats paint instantly (same honest chip). After ~1–2
    minutes the LIVE seats replace them — expect real rationales and possibly real dissent
-   (in my verification run, Primary care voted OPPOSE; aggregate read "Panel support: 3/4").
+   (a seat may oppose or request data). If any seat requests missing data, the aggregate must read
+   **UNDERDETERMINED**, regardless of the support count.
 8. Honesty checks while you wait: every scripted surface is chipped; the receipt line shows the
    run mode and latency; the footer names the decision owner and states nothing is sent without you.
-9. **← Back to nudges** returns to the card stack and normal width.
+9. **← Back to nudges** returns to the card stack and normal width; the Depth card remains.
+10. Cancellation check: reopen Second opinion, start Panel review, then immediately switch to Quick
+    or click Back. The old Codex child should stop instead of continuing hidden paid work.
 
 ## Phase 4 · Variant B — the cursor companion (both tabs, ~2 minutes)
 
@@ -80,8 +86,8 @@ We may shift the default to B (the moat: integration with the cursor). Judge it 
    The OTHER tab switches style too (synced over the bus).
 2. Move the mouse: the companion follows with a soft lag, offset below-right. Start typing in
    any field: it fades to near-invisible. Stop: it returns.
-3. To click it: stop moving, then drift slowly onto it — it freezes under your pointer when
-   hovered. Click it (or press **Shift+P**) to open the popover.
+3. To click it: stop moving for about half a second so it parks, then drift onto it — it freezes
+   under your pointer. Click it (or press **Shift+P**) to open the popover.
 4. Trigger any rule while in B (e.g., redo Phase 2): the peek slides in near the companion —
    the nudge arrives at your cursor. This is the moat moment.
 5. **Shift+B** returns to the calm dock (A). In A, also try dragging the orb: it snaps to the
@@ -89,11 +95,12 @@ We may shift the default to B (the moat: integration with the cursor). Judge it 
 
 ## Phase 5 · Claude quick lane (once you have the API key, ~2 minutes)
 
-1. Stop the old relay so the key takes effect: `lsof -ti tcp:4809 | xargs kill`
+1. In the terminal running `./scripts/serve.sh`, press **Ctrl+C**; the launcher also stops the relay it created.
 2. In that same terminal: `export ANTHROPIC_API_KEY=sk-ant-...` (env only; never committed).
-3. Restart the relay: `python3 "$HOME/Desktop/Summer 2026/nudg-md/server/relay.py" &`
+3. Restart both managed processes: `./scripts/serve.sh`.
 4. Verify: http://127.0.0.1:4809/api/health now shows `"claude": "ready"`.
-5. Rerun Phase 3 step 6: Quick take should answer in ~2 s, chipped "LIVE: CLAUDE (ANTHROPIC API)".
+5. Rerun Phase 3 step 6: Quick take should answer within a few seconds, chipped
+   "LIVE: CLAUDE (ANTHROPIC API)" with its measured latency receipt.
 
 ## Troubleshooting
 

@@ -11,14 +11,15 @@
       "mrn": "SYN-004821",
       "name": "Margaret Holloway",
       "depthPack": {
-        "placeholder": "This pack exercises rule R-09 end to end. Swap in the oncology case from the research when it lands.",
-        "headline": "A1c 8.4 and climbing: The plan names diet but gives it no owner.",
-        "gap": "You reinforced diet today. A renal dietitian can own it between visits: Targets, follow-up, and the CKD-safe food space.",
-        "question": "Should a renal dietitian own the nutrition plan before the 3-month recheck?",
+        "placeholder": "Synthetic diabetes/CKD sample used to exercise R-09. It is not the pending vaginal-cancer evidence pack.",
+        "headline": "A1c rose to 8.4: Nutrition follow-through is still unspecified.",
+        "gap": "The plan reinforces diet but does not document a nutrition owner, dietary intake, patient preference, or access. Consider whether assessment or referral belongs in the plan; the patient and clinician decide.",
+        "question": "Is there enough chart evidence to refer now, or should the missing intake, preference, and access data be collected first?",
         "research": {
-          "title": "Structured nutrition therapy in T2DM with CKD: Guideline synthesis",
-          "cite": "Synthetic summary: The real citation lands with the evidence pack",
-          "url": ""
+          "title": "ADA–KDIGO consensus report: Diabetes management in chronic kidney disease (2022)",
+          "cite": "Diabetes Care 45:3075–3090 · DOI 10.2337/dci22-0027",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/36189689/",
+          "note": "The report supports comprehensive care built on healthy lifestyle; it does not determine referral timing for this synthetic patient."
         },
         "specialists": [
           { "initials": "RO", "name": "R. Osei, RD CSR", "tags": ["Renal nutrition", "Synthetic network", "1.4 mi (mock)", "next: Mon Jul 20 (mock)"] },
@@ -26,12 +27,12 @@
           { "initials": "TG", "name": "Telehealth dietitian group", "tags": ["Telehealth", "Synthetic network", "next: tomorrow (mock)"] },
           { "initials": "AB", "name": "A. Boyd, MD — nephrology clinic RD team", "tags": ["Clinic-embedded", "Synthetic network", "5.9 mi (mock)", "next: Aug 3 (mock)"] }
         ],
-        "quickScripted": "Yes: Her HbA1c rose to 8.4% despite lifestyle-only reinforcement, and CKD 3a narrows the safe diet space (protein, potassium, sodium). A renal dietitian referral this week gives the new empagliflozin a fair three-month test. Nothing in this synthetic chart argues for waiting. (Scripted synthetic answer: The clinician decides.)",
+        "quickScripted": "Underdetermined: The chart supports discussing structured nutrition follow-through, but it lacks a dietary recall, the patient's preference, access constraints, and a documented referral goal. Collect those inputs or discuss a referral now; this scripted lane does not choose the timing. The patient and clinician decide.",
         "seats": [
-          { "id": "endo", "name": "Endocrinology", "stance": "support", "rationale": "The A1c trend plus a new SGLT2 inhibitor favors structured nutrition therapy now; lifestyle-only has not held." },
-          { "id": "renal", "name": "Nephrology", "stance": "support", "rationale": "CKD 3a with albuminuria: Protein, potassium, and sodium targets need professional guidance." },
-          { "id": "pharm", "name": "Pharmacy", "stance": "insufficient", "rationale": "No dietary intake is documented in this synthetic chart.", "requests": "A brief diet recall before layering changes." },
-          { "id": "pcp", "name": "Primary care", "stance": "support", "rationale": "Fits her walking program and knee limits; no conflicts found." }
+          { "id": "endo", "name": "Endocrinology", "stance": "insufficient", "rationale": "The A1c trend makes nutrition follow-through relevant, but this chart does not establish the preferred referral timing.", "requests": "Dietary recall, patient preference, and a concrete nutrition goal." },
+          { "id": "renal", "name": "Nephrology", "stance": "insufficient", "rationale": "CKD 3a makes individualized advice important; the chart does not document current intake or restrictions.", "requests": "Dietary intake and any existing renal-nutrition plan." },
+          { "id": "pharm", "name": "Pharmacy", "stance": "insufficient", "rationale": "Medication initiation is documented, but the referral question depends on missing behavioral and access information.", "requests": "Preference, access, and follow-up ownership." },
+          { "id": "pcp", "name": "Primary care", "stance": "oppose", "rationale": "Do not assign ownership from this record alone; discuss options with the patient and keep primary-care follow-up explicit." }
         ]
       },
       "dob": "1954-03-22",

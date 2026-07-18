@@ -9,18 +9,21 @@ Start:  python3 server/relay.py
 Env:    ANTHROPIC_API_KEY   (optional; enables the live-claude quick lane)
         NUDG_QUICK_MODEL    (optional; default "claude-sonnet-5")
         NUDG_CODEX_MODEL    (optional; passed to `codex exec -m`; default = CLI's own default)
-        NUDG_RELAY_PORT     (optional; default 4809)
+        NUDG_RELAY_PORT     (test-only for standalone relay probes; the browser demo uses 4809)
 
 Endpoints:
   GET  /api/health  -> {ok, lanes:{claude, codex}, ts}
   POST /api/quick   -> {question, patient, context}   grounded single answer
   POST /api/panel   -> {question, patient, seats}     2-4 isolated codex reviewers
+  POST /api/cancel  -> {runId}                        stops active codex children
 
 Keys are never logged, never echoed in responses, never written to disk.
 """
 
 import json
 import os
+import re
+import signal
 import shutil
 import subprocess
 import tempfile
@@ -46,6 +49,14 @@ CODEX_TIMEOUT_S = 120
 MAX_BODY_BYTES = 256 * 1024
 MAX_SEATS = 4
 MIN_SEATS = 2
+MAX_QUESTION_CHARS = 2000
+RUN_ID_RE = re.compile(r"^[A-Za-z0-9._-]{8,100}$")
+RUN_LOCK = threading.Lock()
+RUN_CANCELS = {}
+PROCESS_LOCK = threading.Lock()
+ACTIVE_PROCESSES = set()
+SHUTTING_DOWN = threading.Event()
+INSTANCE_ID = os.environ.get("NUDG_RELAY_INSTANCE_ID", "standalone")
 
 QUICK_SYSTEM_PROMPT = (
     "You are a formal-but-friendly clinical decision-support assistant in a DEMO "
@@ -78,14 +89,46 @@ def codex_ready():
     return shutil.which("codex") is not None
 
 
+def validate_run_id(body):
+    run_id = body.get("runId")
+    if not isinstance(run_id, str) or not RUN_ID_RE.fullmatch(run_id):
+        raise RelayError(400, "runId is required and must be 8-100 safe characters")
+    return run_id
+
+
+def register_run(run_id):
+    with RUN_LOCK:
+        if run_id in RUN_CANCELS:
+            raise RelayError(409, "runId is already active")
+        event = threading.Event()
+        RUN_CANCELS[run_id] = event
+        return event
+
+
+def unregister_run(run_id, event):
+    with RUN_LOCK:
+        if RUN_CANCELS.get(run_id) is event:
+            RUN_CANCELS.pop(run_id, None)
+
+
+def cancel_run(run_id):
+    with RUN_LOCK:
+        event = RUN_CANCELS.get(run_id)
+        if event:
+            event.set()
+        return event is not None
+
+
 # ---------------------------------------------------------------- lanes
 
 
-def call_claude(question, patient, context):
+def call_claude(question, patient, context, cancel_event=None):
     """Anthropic Messages API via urllib. Returns (text, model)."""
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         raise RelayError(503, "claude lane unavailable (no key)")
+    if cancel_event and cancel_event.is_set():
+        raise RelayError(499, "run cancelled")
     user_content = (
         "Chart facts (synthetic patient, JSON):\n"
         + json.dumps(patient, indent=2)
@@ -130,10 +173,44 @@ def call_claude(question, patient, context):
     ).strip()
     if not text:
         raise RelayError(502, "anthropic api returned no text")
+    if cancel_event and cancel_event.is_set():
+        raise RelayError(499, "run cancelled")
     return text, data.get("model", QUICK_MODEL)
 
 
-def run_codex(prompt, timeout_s=CODEX_TIMEOUT_S):
+def stop_process_group(proc):
+    """Terminate the CLI and its children; escalate only if they ignore SIGTERM."""
+    if proc.poll() is not None:
+        return
+    try:
+        os.killpg(proc.pid, signal.SIGTERM)
+    except ProcessLookupError:
+        return
+    try:
+        proc.wait(timeout=1.0)
+    except subprocess.TimeoutExpired:
+        try:
+            os.killpg(proc.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        try:
+            proc.wait(timeout=1.0)
+        except (ChildProcessError, subprocess.TimeoutExpired):
+            pass
+    except ChildProcessError:
+        pass
+
+
+def stop_all_process_groups():
+    """Stop every live CLI child before the relay process exits."""
+    SHUTTING_DOWN.set()
+    with PROCESS_LOCK:
+        processes = list(ACTIVE_PROCESSES)
+    for proc in processes:
+        stop_process_group(proc)
+
+
+def run_codex(prompt, timeout_s=CODEX_TIMEOUT_S, cancel_event=None):
     """Run one non-interactive codex call. Prompt is a single argv element,
     stdin is DEVNULL, final model output is read from a temp file (-o)."""
     codex_bin = shutil.which("codex")
@@ -141,6 +218,7 @@ def run_codex(prompt, timeout_s=CODEX_TIMEOUT_S):
         raise RelayError(503, "codex lane unavailable")
     fd, out_path = tempfile.mkstemp(prefix="nudg-relay-", suffix=".txt")
     os.close(fd)
+    proc = None
     try:
         cmd = [
             codex_bin,
@@ -157,16 +235,26 @@ def run_codex(prompt, timeout_s=CODEX_TIMEOUT_S):
         if CODEX_MODEL:
             cmd += ["-m", CODEX_MODEL]
         cmd.append(prompt)  # prompt as ARGUMENT, never via stdin
-        try:
-            proc = subprocess.run(
+        with PROCESS_LOCK:
+            if SHUTTING_DOWN.is_set():
+                raise RelayError(503, "relay is shutting down")
+            proc = subprocess.Popen(
                 cmd,
                 stdin=subprocess.DEVNULL,
-                capture_output=True,
-                text=True,
-                timeout=timeout_s,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                start_new_session=True,
             )
-        except subprocess.TimeoutExpired:
-            raise RelayError(504, "codex call timed out after %ss" % timeout_s)
+            ACTIVE_PROCESSES.add(proc)
+        deadline = time.monotonic() + timeout_s
+        while proc.poll() is None:
+            if cancel_event and cancel_event.is_set():
+                stop_process_group(proc)
+                raise RelayError(499, "run cancelled")
+            if time.monotonic() >= deadline:
+                stop_process_group(proc)
+                raise RelayError(504, "codex call timed out after %ss" % timeout_s)
+            time.sleep(0.1)
         try:
             with open(out_path, "r", encoding="utf-8") as fh:
                 text = fh.read().strip()
@@ -176,6 +264,10 @@ def run_codex(prompt, timeout_s=CODEX_TIMEOUT_S):
             raise RelayError(502, "codex exited %s with no output" % proc.returncode)
         return text
     finally:
+        if proc is not None:
+            stop_process_group(proc)
+            with PROCESS_LOCK:
+                ACTIVE_PROCESSES.discard(proc)
         try:
             os.unlink(out_path)
         except OSError:
@@ -198,10 +290,12 @@ def quick_codex_prompt(question, patient, context):
     )
 
 
-def handle_quick(body):
+def handle_quick(body, cancel_event=None):
     question = body.get("question")
     if not isinstance(question, str) or not question.strip():
         raise RelayError(400, "question (non-empty string) is required")
+    if len(question) > MAX_QUESTION_CHARS:
+        raise RelayError(400, "question is too long")
     patient = body.get("patient", {})
     if not isinstance(patient, dict):
         raise RelayError(400, "patient must be a JSON object")
@@ -214,7 +308,7 @@ def handle_quick(body):
 
     if claude_ready():
         try:
-            text, model = call_claude(question, patient, context)
+            text, model = call_claude(question, patient, context, cancel_event)
             receipt.update(
                 served_mode="live-claude",
                 model=model,
@@ -227,7 +321,7 @@ def handle_quick(body):
             receipt["note"] = "claude failed (%s); fell through to codex" % exc.message
 
     if codex_ready():
-        text = run_codex(quick_codex_prompt(question, patient, context))
+        text = run_codex(quick_codex_prompt(question, patient, context), cancel_event=cancel_event)
         receipt.update(
             served_mode="live-codex",
             model=CODEX_MODEL or "codex-cli-default",
@@ -291,10 +385,12 @@ def parse_seat_reply(raw):
     }
 
 
-def handle_panel(body):
+def handle_panel(body, cancel_event=None):
     question = body.get("question")
     if not isinstance(question, str) or not question.strip():
         raise RelayError(400, "question (non-empty string) is required")
+    if len(question) > MAX_QUESTION_CHARS:
+        raise RelayError(400, "question is too long")
     patient = body.get("patient", {})
     if not isinstance(patient, dict):
         raise RelayError(400, "patient must be a JSON object")
@@ -320,7 +416,7 @@ def handle_panel(body):
     def seat_worker(i, seat):
         lens = str(seat.get("lens", "general"))
         try:
-            raw = run_codex(seat_prompt(lens, patient, question), CODEX_TIMEOUT_S)
+            raw = run_codex(seat_prompt(lens, patient, question), CODEX_TIMEOUT_S, cancel_event)
             verdict = parse_seat_reply(raw)
         except RelayError as exc:
             verdict = {
@@ -343,6 +439,8 @@ def handle_panel(body):
         t.start()
     for t in threads:
         t.join(CODEX_TIMEOUT_S + 10)
+    if cancel_event and cancel_event.is_set():
+        raise RelayError(499, "run cancelled")
     for i, seat in enumerate(seats):
         if results[i] is None:  # thread never finished
             results[i] = {
@@ -391,18 +489,25 @@ class RelayHandler(BaseHTTPRequestHandler):
         self.send_cors_headers()
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(data)))
+        if self.close_connection:
+            self.send_header("Connection", "close")
         self.end_headers()
         self.wfile.write(data)
+
+    def reject_without_body(self, status, message):
+        """Reject safely when the request body will remain unread."""
+        self.close_connection = True
+        raise RelayError(status, message)
 
     def read_json_body(self):
         try:
             length = int(self.headers.get("Content-Length", "0"))
         except ValueError:
-            raise RelayError(400, "invalid Content-Length")
+            self.reject_without_body(400, "invalid Content-Length")
         if length <= 0:
             raise RelayError(400, "request body required")
         if length > MAX_BODY_BYTES:
-            raise RelayError(413, "request body too large")
+            self.reject_without_body(413, "request body too large")
         raw = self.rfile.read(length)
         try:
             body = json.loads(raw.decode("utf-8"))
@@ -412,6 +517,14 @@ class RelayHandler(BaseHTTPRequestHandler):
             raise RelayError(400, "body must be a JSON object")
         return body
 
+    def require_allowed_origin(self):
+        origin = self.headers.get("Origin", "")
+        if origin not in ALLOWED_ORIGINS:
+            self.reject_without_body(403, "origin is not allowed")
+        content_type = self.headers.get("Content-Type", "").split(";", 1)[0].strip().lower()
+        if content_type != "application/json":
+            self.reject_without_body(415, "Content-Type must be application/json")
+
     def log_message(self, fmt, *args):
         # Method + path + status only; never bodies, headers, or keys.
         print("[relay] %s %s" % (self.log_date_time_string(), fmt % args), flush=True)
@@ -419,6 +532,10 @@ class RelayHandler(BaseHTTPRequestHandler):
     # -- verbs
 
     def do_OPTIONS(self):
+        origin = self.headers.get("Origin", "")
+        if origin not in ALLOWED_ORIGINS:
+            self.send_json(403, {"error": "origin is not allowed"})
+            return
         self.send_response(204)
         self.send_cors_headers()
         self.send_header("Content-Length", "0")
@@ -434,6 +551,7 @@ class RelayHandler(BaseHTTPRequestHandler):
                         "claude": "ready" if claude_ready() else "no-key",
                         "codex": "ready" if codex_ready() else "unavailable",
                     },
+                    "instance": INSTANCE_ID,
                     "ts": iso_ts(),
                 },
             )
@@ -442,13 +560,32 @@ class RelayHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         try:
+            self.require_allowed_origin()
             if self.path == "/api/quick":
-                self.send_json(200, handle_quick(self.read_json_body()))
+                body = self.read_json_body()
+                run_id = validate_run_id(body)
+                event = register_run(run_id)
+                try:
+                    self.send_json(200, handle_quick(body, event))
+                finally:
+                    unregister_run(run_id, event)
             elif self.path == "/api/panel":
-                self.send_json(200, handle_panel(self.read_json_body()))
+                body = self.read_json_body()
+                run_id = validate_run_id(body)
+                event = register_run(run_id)
+                try:
+                    self.send_json(200, handle_panel(body, event))
+                finally:
+                    unregister_run(run_id, event)
+            elif self.path == "/api/cancel":
+                body = self.read_json_body()
+                run_id = validate_run_id(body)
+                self.send_json(200, {"cancelled": cancel_run(run_id), "runId": run_id})
             elif self.path == "/api/health":
+                self.close_connection = True
                 self.send_json(405, {"error": "use GET for /api/health"})
             else:
+                self.close_connection = True
                 self.send_json(404, {"error": "not found"})
         except RelayError as exc:
             self.send_json(exc.status, {"error": exc.message})
@@ -456,8 +593,19 @@ class RelayHandler(BaseHTTPRequestHandler):
             self.send_json(500, {"error": "internal error: %s" % exc.__class__.__name__})
 
 
+class RelayServer(ThreadingHTTPServer):
+    daemon_threads = True
+
+
 def main():
-    server = ThreadingHTTPServer((HOST, PORT), RelayHandler)
+    server = RelayServer((HOST, PORT), RelayHandler)
+
+    def handle_shutdown(_signum, _frame):
+        stop_all_process_groups()
+        raise KeyboardInterrupt
+
+    previous_sigterm = signal.signal(signal.SIGTERM, handle_shutdown)
+    previous_sighup = signal.signal(signal.SIGHUP, handle_shutdown)
     print(
         "[relay] listening on http://%s:%d  lanes: claude=%s codex=%s"
         % (
@@ -473,7 +621,10 @@ def main():
     except KeyboardInterrupt:
         pass
     finally:
+        stop_all_process_groups()
         server.server_close()
+        signal.signal(signal.SIGTERM, previous_sigterm)
+        signal.signal(signal.SIGHUP, previous_sighup)
 
 
 if __name__ == "__main__":

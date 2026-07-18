@@ -79,11 +79,11 @@ Every card's trace row resolves to a rule id. Initial demo set:
 
 "Why this, why now" expands to: triggering event (timestamp), rule id + plain-English rule text, sources cited, times shown, damper state.
 
-**Current wiring gap:** these are contracts, not events the current bus can yet evaluate. R-01 needs a patient-scoped derived impression signal (never raw note text in the persisted log); R-04 needs `ehr_document_opened`; R-09 needs explicit topic-presence and chart-flag signals; R-12 needs an explicit clinician-confirmed referral outcome. Until those events exist and have tests, the cards remain design examples.
+**Current runtime status:** R-01 consumes a patient-scoped derived impression signal, R-04 consumes tab/document events, and R-09 consumes chart-open plus topic-presence signals. Raw free text is stripped before either broadcast or persistence. R-12 starts only after an explicit **Simulate sign & send** action; a draft alone never claims follow-through. The oncology gallery remains a design example; the evidence template is present but cannot become runtime content until patient fields and source applicability are verified.
 
 ## 7 · Scenario storyboards
 
-### S1 — Omitted context at documentation time (Margaret Holloway)
+### S1 — Omitted context at documentation time (James Okafor)
 
 Doctor writes *“palpitations likely anxiety”* after a reassuring conversation with James Okafor. That is a reasonable working diagnosis until omitted context changes the differential: a prior monitor confirmed paroxysmal AF, today’s pulse is irregularly irregular, and anticoagulation adherence is imperfect after a prior TIA.
 
@@ -115,9 +115,9 @@ Oncology visit focused on chemotherapy tolerance; the chart shows 7 % weight los
 - **Card (Depth composite · DEEP · Vasquez):**
   - Headline: *"Eight weeks, −7 % body weight — nutrition isn't in the current plan."*
   - Research row: Muscaritoli et al., *ESPEN practical guideline: Clinical Nutrition in cancer*, Clin Nutr. 2021;40:2898–2913, DOI `10.1016/j.clnu.2021.02.005`. The card states that patient-level applicability still requires missing intake and symptom data → **Open guideline**
-  - Network row: *Lena Chen, MS RD CSO — synthetic oncology-nutrition directory entry · 2.1 mi (mock) · next opening Wed Jul 22 (mock)* → **Start referral** · **More ▾** (expands 3 more synthetic entries with modality/distance/next-slot chips)
+  - Network row: *Lena Chen, MS RD CSO — synthetic oncology-nutrition directory entry · 2.1 mi (mock) · next opening Wed Jul 22 (mock)* → **Draft referral** · **More ▾** (expands 3 more synthetic entries with modality/distance/next-slot chips)
   - Affordance: **Second opinion ▸** opens the panel (§8).
-- **Follow-through:** accepting the referral emits R-12 → Watch card with owner (Rivera), backup (care coordination), deadline (Jul 25), escalation promise.
+- **Follow-through:** drafting creates a locally stored, explicitly unsent draft. Only **Simulate sign & send** emits R-12 → Watch card with owner (Rivera), backup (care coordination), deadline (Jul 25), and escalation promise.
 
 ## 8 · Second-opinion panel (560 px sheet)
 
@@ -125,7 +125,7 @@ Header: patient + framed question (*"Should nutrition support start before cycle
 
 - **Quick take — single model.** One formal 3-sentence synthesis, source chips, latency chip "single pass · ~2 s". Labeled `scripted in demo` until live.
 - **Panel review — 4 scripted AI perspectives** (Tribunal heritage). These are proposed isolated contexts from one model, **not four independent clinicians or models**. Per perspective: Oncology / Nutrition / Pharmacy / Primary care, stance chip, one-line rationale, and evidence link. Disagreement is preserved.
-  - Current design result: **UNDERDETERMINED · 2 support collecting/referring · 2 request data**. Missing intake and symptom-burden evidence prevents a treatment consensus.
+  - Current design result: **UNDERDETERMINED · 1 supports referral · 3 identify assessment or missing-data needs**. Missing intake, symptom-burden, preference, and access evidence prevents a treatment consensus.
   - Refusal state is the aggregate result, not a contradictory footnote: the panel declines to ratify and lists what is missing.
   - Receipt row is explicitly an illustrative schema; no runtime run id or replay command is shown until a verifiable run exists.
   - Latency/cost chips: "~45–90 s · ~$0.40/case (est.)" vs Quick take "~2 s · ~$0.01".
@@ -180,8 +180,8 @@ Footer (always visible): *"Decision owner: A. Rivera, MD — decision support on
 
 1. **Patient 6 — Elena Vasquez (SYNTHETIC).** 61 F. Stage III colon adenocarcinoma, adjuvant FOLFOX cycle 4 of 12. Problems: colon ca, chemotherapy-associated nausea, HTN. Weight series: 74.0 → 68.8 kg over 8 weeks (−7 %). Labs: albumin 3.3 (L), Hgb 11.2 (L), CEA trending down. Meds: FOLFOX, ondansetron, lisinopril. Visit 12:20 PM "Chemo follow-up — cycle 4". Prior note: cycle 3 tolerance, mild neuropathy. Scripted note + QA entries. Weight-loss flag drives R-09.
 2. **Directory — in-network specialists (synthetic):** 4 oncology-nutrition entries (name, credential, modality, distance, next opening, network badge).
-3. **Assumption tables:** A1–A3 (time), C1–C3 (cost), E1 (effect size placeholder pending evidence pack).
-4. **Evidence pack:** the first specific source is now the 2021 ESPEN practical guideline (PMID 33946039; DOI `10.1016/j.clnu.2021.02.005`). Any additional efficacy or patient-outcome wording remains blocked until the deep-research evidence pack lands and is checked.
+3. **Assumption tables:** A1–A3 (time), C1–C3 (cost), E1 remains unavailable for the eventual patient because adjacent-population evidence cannot supply a patient-specific effect size.
+4. **Evidence pack:** the 36-claim registry and verbatim report are present. The oncology `depthPack` is a non-live template; its patient slots and population applicability must be verified before integration. No adjacent study supplies a patient-specific outcome claim.
 
 ## 13 · Open questions for Pablo (validation round 2)
 
@@ -196,6 +196,28 @@ Footer (always visible): *"Decision owner: A. Rivera, MD — decision support on
 
 **Applied immediately (objective defects):** Scenario 1 now matches the requested omitted-context differential rather than a medication conflict; clinician surfaces are de-jargonized; all modeled outputs and metrics carry local illustrative labels; the panel returns UNDERDETERMINED when its required data are absent; Quick take is the default; exact synthetic directory dates have correct weekdays; cost ranges share one axis and are not described as expected savings; R-04 threshold is unified (≥4 in 40 s); WATCH/quiet copy is plain language.
 
-**Accepted into the wiring plan (next step):** Vasquez + specialist directory in `data/patients.json`; a `?demo=1` mode (zeroed floors/dwell, pinned popover, first-run "your buddy lives here" cue — also answers validation-1's "couldn't find the orb"); per-seat progress/loading/error states for the live panel lane; research-row efficacy phrasing stays conditional until the evidence pack cites it.
+**Accepted into the wiring plan (next step):** Vasquez + specialist directory in `data/patients.json`; a `?demo=1` mode (zeroed floors/dwell, pinned popover, first-run "your buddy lives here" cue — also answers validation-1's "couldn't find the orb"); per-seat progress/loading/error states for the live panel lane; research-row efficacy phrasing stays conditional, population-matched, and explicit about indirectness even when a citation exists.
 
 **Positioning answers to carry into the demo script (S5):** data boundary — events stay on-machine; only the card's context leaves when a live lane is explicitly invoked; non-device CDS framing (clinician can review the basis of every recommendation — say it out loud); rule governance — every rule carries a version + clinical author slot in its trace; per-day nudge budget across a panel + off-hours WATCH escalation targets are HYPOTHESIZED scale work, labeled as such; desktop-first by design.
+
+## 15 · Evidence mapping: why this design (2026-07-18 pack)
+
+The GPT-5.6 Pro deep-research pack (verbatim: [`docs/evidence/EVIDENCE_PACK_2026-07-18.md`](../evidence/EVIDENCE_PACK_2026-07-18.md); 36-claim registry: [`data/evidence.json`](../../data/evidence.json)) contextualizes selected mechanisms in this spec; it is not validation of NUDG MD. Grades are the pack's internal scale — **A** authoritative guideline/RCT/review · **B** peer-reviewed with indirectness/observational · **C** older canonical/simulation/single-center/cost model · **U** unverified. Each claim's exact line is quoted once, ≤25 words, with its id.
+
+Mechanism → evidence (mapped honestly; where the trial sits in a different clinical context, the mechanism transfers but the effect size does not):
+
+1. **Dismiss-with-reason on every card** (§2 dismiss menu; §5 lifecycle) → **CDS-04 (A)**, cluster-RCT, Meeker JAMA 2016 — accountable justification. `CDS-04`: "Mean antibiotic prescribing rates decreased from 23.2% at intervention start to 5.2% at intervention month 18 for accountable justification." Reading: this is directional evidence that an accountable workflow intervention can change behavior. NUDG MD's required choice among three dismissal categories is not the trial's prescribing intervention or free-text justification, and it inherits none of the trial's effect size.
+2. **Active-choice cards with executable options** (§3 type system; §7 card actions) → **CDS-05 (A)**, cluster-RCT, Adusumalli JAMA Cardiology 2023. `CDS-05`: "The patient nudge alone did not change statin prescribing relative to usual care." Reading: the clinician-facing active choice moved behavior; the patient-only arm did not — our cards are clinician-facing by design.
+3. **Tempo tiers NOW / FOCUSED / DEEP / WATCH** (§4 cadence contract) → **CDS-03 (C)**, severity tiering, Paterno JAMIA 2009. `CDS-03`: "Tiered alerting by severity was associated with higher compliance rates of DDI alerts in the inpatient setting." Reading: matching interruption to severity is supported, though by a single-center C-grade study.
+4. **No interruptive modal in the demo** (§1 calm-by-default; §4) → **CDS-06 (C)**, simulation, Scott JAMIA 2011. `CDS-06`: "modal alerts were over three times more effective than nonmodal alerts." Reading: modals are potent, so they are reserved for verified high-severity — we deliberately ship none in the demo, so nothing steals focus or blocks typing.
+5. **"n shown / N evaluated" metrics + override-reason logging** (§5 metrics strip) → **CDS-01 (B)** + **CDS-02 (B)**. `CDS-01`: "the overall prevalence of alert override by physicians was 90%." `CDS-02`: "The range of average override alerts was 46.2% to 96.2%." Reading: raw override rate is an invalid safety metric — measured appropriateness ranges 29.4%–100% — so we count appropriate acceptance/override against a denominator, never click-through alone.
+6. **The problem statement — why a buddy at all** (product framing; §7 storyboards) → **TIME-01 (B)**: "Physicians spent an average of 16 minutes and 14 seconds per encounter using EHRs" (chart review 33%); and **TIME-02 (B)**: "physicians spend more than one-half of their workday, nearly 6 hours, interacting with the EHR." Reading: the EHR time burden — a third of the per-encounter minutes on chart review — is what the buddy targets.
+7. **The guided-navigation bet** (§7 S2; Navigate type) → **TIME-06 (C, n=12 — small study)**: "the AI system saved first-time physician users 18% of the time." Reading: promising but a 12-person single-center pilot; we treat the time claim as HYPOTHESIZED, not established.
+8. **Cross-system wayfinding** (§3 Navigate; LegacyChart storyboard) → **TIME-03 (B)**: "an average of a nine-fold difference in time and eightfold difference in clicks." Reading: identical tasks cost wildly different effort across EHRs, which is why wayfinding is worth building.
+
+**Boundary rules carried from the pack (bind every card, visual, and depth pack):**
+- **Relative risks are not individual probabilities.** A risk ratio (e.g., a triple-therapy AKI RR) is never rendered as one patient's "X% chance"; write "studies found XX%–YY% relative increases" instead.
+- **Cost constructs are never summed.** Keep the four lanes separate — program cost / capacity-or-opportunity value / cost-of-illness association / reimbursement — and never total them; avoided cost-of-illness is not achievable savings absent prospective causal evidence.
+- **Guideline authority does not transfer across populations.** A quoted guideline line (ESPEN, ASPEN, ASCO, KDIGO) holds for its studied population; it does not license the same claim for a different patient or tumor type.
+
+Note on the oncology depth-pack template: [`data/depthpack-oncology-draft.json`](../../data/depthpack-oncology-draft.json) keeps NUT-03 (A) conditional on advanced-cancer/appetite-or-weight-loss applicability, labels NUT-05 (B, small trial) as adjacent colorectal evidence, and uses NUT-04 (A) only as a cachexia *diagnostic* criterion (never a referral trigger). NUT-09 (U) describes an unverified colon-cancer/FOLFOX gap and cannot establish the evidence gap for the pending vaginal-cancer case.

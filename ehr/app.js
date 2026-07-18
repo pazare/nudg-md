@@ -142,20 +142,24 @@ function openChart(mrn) {
 }
 
 function closeChart() {
+  const closing = current;
   current = null;
   delete $("viewChart").dataset.mrn;
   $("viewChart").classList.add("hidden");
   $("viewHome").classList.remove("hidden");
   status("Ready.");
+  if (closing) NudgBus.emit(APP_ID, "ehr_chart_closed", { mrn: closing.mrn, name: closing.name });
 }
 
-function setTab(tab) {
+function setTab(tab, opts) {
   if (!current) return;
   document.querySelectorAll("#chartTabs a").forEach((a) =>
     a.classList.toggle("active", a.dataset.tab === tab)
   );
   renderTab(tab);
-  NudgBus.emit(APP_ID, "ehr_tab_viewed", { mrn: current.mrn, tab });
+  /* user:false marks programmatic tab changes (chart open, buddy commands) so the
+     wayfinding rule counts only real clicks. */
+  NudgBus.emit(APP_ID, "ehr_tab_viewed", { mrn: current.mrn, tab, user: !!(opts && opts.user) });
 }
 
 function grid(headers, rows) {
@@ -365,13 +369,13 @@ function renderCart() {
     })
   );
   $("btnSign").addEventListener("click", () => {
-    if (!window.confirm(`Sign and transmit ${cart.length} order(s) for ${lastFirst(current.name)}?`)) return;
+    if (!window.confirm(`Simulate signing ${cart.length} order(s) for ${lastFirst(current.name)}? Nothing will be transmitted.`)) return;
     const signed = signedOrders();
-    for (const o of cart) signed.unshift({ ...o, date: mcDate(), status: "Signed " + mcTime() });
+    for (const o of cart) signed.unshift({ ...o, date: mcDate(), status: "Simulated signed " + mcTime() });
     save("ehr_orders_" + current.mrn, signed);
-    NudgBus.emit(APP_ID, "ehr_orders_signed", { mrn: current.mrn, count: cart.length, items: cart.map((o) => o.item) });
-    status(`${cart.length} order(s) signed and transmitted.`);
-    window.alert(`${cart.length} order(s) signed and transmitted to the receiving department.`);
+    NudgBus.emit(APP_ID, "ehr_orders_signed", { mrn: current.mrn, count: cart.length, items: cart.map((o) => o.item), simulated: true });
+    status(`${cart.length} order(s) simulated as signed; stored only in this tab.`);
+    window.alert(`${cart.length} order(s) simulated as signed. No external system was contacted.`);
     cart = [];
     renderOrdersTab();
   });
@@ -386,14 +390,32 @@ function openDocFromBuddy(d) {
     const row = rows.find((r) => d.match && r.textContent.includes(d.match)) || rows[0];
     if (!row) return;
     row.click();
-    row.classList.add("nudg-spotlight");
     row.scrollIntoView({ block: "center" });
-    setTimeout(() => row.classList.remove("nudg-spotlight"), 4500);
+    spotlightOnArrival(row);
+    const box = document.querySelector("#noteRead .mc-readbox");
+    if (box) spotlightOnArrival(box);
   }, 60);
+}
+
+/* The glow must greet the user: this tab is usually hidden when the command lands,
+   so a timer started now would expire before they switch here. Wait for visibility. */
+function spotlightOnArrival(row) {
+  const glow = () => {
+    row.classList.add("nudg-spotlight");
+    setTimeout(() => row.classList.remove("nudg-spotlight"), 6000);
+  };
+  if (!document.hidden) { glow(); return; }
+  const onVisible = () => {
+    if (document.hidden) return;
+    document.removeEventListener("visibilitychange", onVisible);
+    glow();
+  };
+  document.addEventListener("visibilitychange", onVisible);
 }
 
 /* ---------------- Init ---------------- */
 async function init() {
+  window.name = "nudg-ehr"; // lets the buddy focus this tab by name from its sibling
   $("mcDate").textContent = mcDate();
   $("schedLegend").textContent = `Today's Schedule — RIVERA.A — ${mcDate()}`;
   const res = await fetch("/data/patients.json");
@@ -425,7 +447,7 @@ async function init() {
   document.querySelectorAll("#chartTabs a").forEach((a) =>
     a.addEventListener("click", (ev) => {
       ev.preventDefault();
-      setTab(a.dataset.tab);
+      setTab(a.dataset.tab, { user: true });
     })
   );
   document.querySelectorAll(".navbtn").forEach((button) => {
