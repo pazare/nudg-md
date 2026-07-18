@@ -67,8 +67,8 @@ with palpitations: the conversation was reassuring, so the doctor types an impre
 Okafor**. Read the three facts off the card, pointing at each source chip.]
 
 "Three facts, each with its source. **A 14-day monitor confirmed paroxysmal AF.** **Today's pulse
-is documented irregularly irregular.** **He misses apixaban about twice a month, after a prior
-TIA.** And the frame: **keep anxiety in the differential: confirm the rhythm and his
+is documented as irregularly irregular.** **He misses apixaban about twice a month, with a prior
+TIA in his history.** And the frame: **keep anxiety in the differential: confirm the rhythm and his
 anticoagulation first. You decide.**"
 
 [1:10 — Click **Open the rhythm note**. THE JUMP: Chrome switches itself to the LegacyChart tab.
@@ -100,7 +100,7 @@ says it plainly: **leaves on its own once you open anything**. It nudges, never 
 
 "Now I do the hardest thing in a live demo: nothing. I stop — it notices."
 
-[2:08 — Peek: **"A1c rose to 8.4: Nutrition follow-through is still unspecified."** Click
+[2:08 — Peek: **"A1c rose to 8.4: The plan names no nutrition owner."** Click
 **Open buddy**: the Depth card, **DEEP** chip.]
 
 "Her A1c is climbing and the plan names nobody for nutrition. So the buddy brings depth: one
@@ -138,14 +138,14 @@ it needs first**. That refusal is a feature. Disagreement stays on screen: suppo
 never confidence."
 
 [If the LIVE seats replace the scripted ones while on screen, Santiago reads the real aggregate
-off the screen instead — e.g. **"Supported with dissent: 3/4"**: "Panel support three of four —
+off the screen instead — e.g. **"Supported: 3/4 seats"**: "Panel support three of four —
 we keep disagreement on screen: support counts, never confidence." Never predict the live
 result; read it.]
 
 ### 3:20–3:40 · The moat — Pablo
 
 [3:20 — Click once on empty page background so focus leaves every text box, then press
-**Shift+B**. Toast: **"Cursor companion active — Shift+P opens its preview"**. The orb vanishes;
+**Shift+B**. Toast: **"Buddy style: cursor companion (Option B). Shift+P opens it."** The orb vanishes;
 a small companion now trails the cursor. Note: this closes the buddy and cancels any live panel
 run still deliberating — by design. If a judge asks later, rerun Panel review during Q&A and let
 it land live. Wiggle the mouse. Then click over to the scribe tab: it switched too.]
