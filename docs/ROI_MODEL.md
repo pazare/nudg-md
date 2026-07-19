@@ -54,7 +54,7 @@ Then multiply, and only multiply — never add another lane:
 | Per clinician-year (A6) | ~71 h | ~$10,600 | ~$5,300 |
 | **Per patient-year** (A7) | ~2.8 min | **~$7** | ~$3.50 |
 | Clinic of 10 clinicians | ~3.2 h/day | ~$106k/yr | ~$53k/yr |
-| **Community of 100,000** (A8) | ~21 h/day (17–26 across the FTE range) | **~$0.7M/yr (range $0.5–0.85M)** | ~$0.35M/yr |
+| **Community of 100,000** (A8) | ~21 h/day (16–26 across the FTE range) | **~$0.7M/yr (range $0.5–0.85M)** | ~$0.35M/yr |
 
 The half-transfer column is the sensitivity row: if A1's 18% is really 9%, every dollar halves.
 The community range comes from A8's 50–80 FTE spread, not from new evidence.
@@ -177,7 +177,8 @@ stands next to is a base a pilot has to earn.
 ## §7 · The scoreboard we'd actually build (and partly already run)
 
 The demo bus already logs sanitized events — every nudge shown, accepted, dismissed-with-reason,
-or refused. The pilot scoreboard, per the pack's §15 measurement plan:
+or refused. The pilot scoreboard (the table below is the canonical enumeration; a condensed
+form appears in `docs/JUDGE_QA.md` Q27):
 
 | Metric | Type | Status today |
 |--------|------|--------------|
