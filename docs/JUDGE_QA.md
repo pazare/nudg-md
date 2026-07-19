@@ -158,6 +158,9 @@ Read the **Plain** answer aloud; keep the **Technical** answer for engineers. Ev
 
 ## 6 · ROI — calculations judges can check
 
+> Full scaling ladder — per patient → clinic → community of 100,000, plus long-term and
+> hardware lanes: `docs/ROI_MODEL.md`. Same rules: lanes never sum, every assumption numbered.
+
 **Q23: Show me the time math.**
 
 **Technical:** Inputs first, each labeled. TIME-01 (tier B, 2020; 2018 Cerner Millennium logs, ~100M encounters): 16 min 14 s of EHR time per encounter, 33% of it chart review → 5 min 21 s of review per encounter. TIME-06 (tier C, 2021, n=12 — twelve Stanford gastroenterology physicians answering standardized referral-packet questions, and we say that n out loud): 18% review-time reduction. A1: that 18% transfers to encounter chart review — HYPOTHESIZED; different task, different tool, twelve people. A2: 20 encounters per clinician-day. Arithmetic: 321 s × 0.18 ≈ 58 s per encounter × 20 ≈ 19 minutes per clinician-day. A3: any pricing uses a clinician-hour opportunity value — at an assumed $150/hour, ~19 min ≈ $48 per clinician-day; this sits in the capacity/opportunity lane only and is never summed with other cost lanes. Cost bases, not promised savings — a prospective study would have to earn these.
