@@ -6,8 +6,20 @@
 <style>
   html, body { margin: 0; height: 100%; background: #090f0a; }
   body { display: flex; align-items: center; justify-content: center; }
-  img { max-width: 100vw; max-height: 100vh; display: block; }
+  .frame { position: relative; display: inline-block; }
+  .frame > img { max-width: 100vw; max-height: 100vh; display: block; }
+  /* The real QR sits inside the poster's empty placeholder box, bottom right. */
+  .qr {
+    position: absolute; right: 3.1%; bottom: 6.5%; width: 9.9%; aspect-ratio: 1;
+    background: #f3ecd9; border-radius: 14%; padding: 0.55%; box-sizing: border-box;
+  }
+  .qr img { width: 100%; height: 100%; display: block; }
 </style>
 </head>
-<body><img src="poster.png" alt="NUDG Clinical poster: We don't upgrade doctors. We put AI to work."></body>
+<body>
+  <div class="frame">
+    <img src="poster.png" alt="NUDG Clinical poster: We don't upgrade doctors. We put AI to work.">
+    <div class="qr"><img src="qr.svg" alt="QR code linking to github.com/pazare/nudg-md"></div>
+  </div>
+</body>
 </html>
