@@ -34,6 +34,7 @@ witness (a line, a computation, or a trace) or is marked [C].
 | `SPEC_AI_LANES_PANEL.md` | Lane lifecycle LTS, monotone-provenance theorem, latency-receipt semantics, cancellation non-guarantees, panel aggregation soundness, Holloway refusal theorem | 17 sections, 12 proof blocks |
 | `SPEC_EVIDENCE_ROI.md` | Claim-registry schema, boundary rules as a type system, unit-elasticity lemma, 28-figure machine recomputation, KPI schema, assumption-register template | 9 sections, 3 proof blocks |
 | *(private repo)* `docs/NUDG_MD_INTEGRATION_MAP.md` | Target architecture map, transport gap analysis, mappings M1–M9 with risk registers, sequencing P1–P9 with gating test suites, open questions Q1–Q14 | 700 lines, read-only extraction |
+| *(tribunal repo)* `docs/integration/TRIBUNAL_EXTRACTION.md` | **Ancestral layer** (github.com/pazare/tribunal): subsystems T1–T10, three-generation lineage LIN1–LIN10, design laws DL7–DL11 and obligations OB11–OB21 (both series continue this file's numbering), conjectures K3–K6; plus three formal specs (kernel/ledger 1,046 ln; providers/decoder/scorecard 1,000 ln; clinical-eval 701 ln) | ~2,750 spec lines, line-cited |
 
 Ground truth for all four public specs: `shared/bus.js` (78), `shared/nudges.js` (923,
 canonical incl. commit 345b377), `shared/buddy.js` (435), `ehr/app.js` (530),
