@@ -1,6 +1,7 @@
 /* Abridge-style scribe — synthetic demo logic. No network beyond the local JSON. */
 "use strict";
 const APP_ID = "scribe";
+const PENDING_EHR_COMMAND_KEY = "nudg_pending_ehr_command";
 const SESSION_KEY = "nudg_scribe_state_v1";
 
 const $ = (id) => document.getElementById(id);
@@ -426,6 +427,7 @@ function scheduleNoteSignals() {
 }
 
 function resetLocal({ broadcast = true } = {}) {
+  try { localStorage.removeItem(PENDING_EHR_COMMAND_KEY); } catch (e) { /* optional storage */ }
   if (recTimerId) clearInterval(recTimerId);
   if (draftTimerId) clearTimeout(draftTimerId);
   if (signalTimer) clearTimeout(signalTimer);

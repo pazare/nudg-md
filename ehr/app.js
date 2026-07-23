@@ -1,6 +1,8 @@
 /* LegacyChart fictional legacy EHR — synthetic demo logic. */
 "use strict";
 const APP_ID = "ehr";
+const PENDING_EHR_COMMAND_KEY = "nudg_pending_ehr_command";
+const EHR_INSTANCE_ID = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) =>
@@ -383,17 +385,28 @@ function renderCart() {
 
 /* The buddy can walk the user to a document: open the chart, the Notes tab, then spotlight the row. */
 function openDocFromBuddy(d) {
-  if (!openChart(d.mrn)) return;
+  const acknowledge = (ok, reason) => {
+    if (!d.commandId) return;
+    NudgBus.emit(APP_ID, "ehr_command_ack", { commandId: d.commandId, action: d.action, mrn: d.mrn, ok, reason: reason || "" });
+  };
+  if (!openChart(d.mrn)) {
+    acknowledge(false, "patient_not_found");
+    return;
+  }
   setTab("notes");
   setTimeout(() => {
     const rows = [...document.querySelectorAll("#noteRows tr.click")];
     const row = rows.find((r) => d.match && r.textContent.includes(d.match)) || rows[0];
-    if (!row) return;
+    if (!row) {
+      acknowledge(false, "document_not_found");
+      return;
+    }
     row.click();
     row.scrollIntoView({ block: "center" });
     spotlightOnArrival(row);
     const box = document.querySelector("#noteRead .mc-readbox");
     if (box) spotlightOnArrival(box);
+    acknowledge(true);
   }, 60);
 }
 
@@ -413,9 +426,22 @@ function spotlightOnArrival(row) {
   document.addEventListener("visibilitychange", onVisible);
 }
 
+function consumePendingEhrCommand() {
+  let pending = null;
+  try {
+    pending = JSON.parse(localStorage.getItem(PENDING_EHR_COMMAND_KEY) || "null");
+    localStorage.removeItem(PENDING_EHR_COMMAND_KEY);
+  } catch (e) {
+    return;
+  }
+  if (!pending || pending.action !== "ehr_open_doc" || !Number.isFinite(pending.expiresAt) || pending.expiresAt < Date.now()) return;
+  openDocFromBuddy(pending);
+}
+
 /* ---------------- Init ---------------- */
 async function init() {
   window.name = "nudg-ehr"; // lets the buddy focus this tab by name from its sibling
+  window.__nudgEhrInstanceId = EHR_INSTANCE_ID;
   $("mcDate").textContent = mcDate();
   $("schedLegend").textContent = `Today's Schedule — RIVERA.A — ${mcDate()}`;
   const res = await fetch("/data/patients.json");
@@ -462,8 +488,14 @@ async function init() {
   });
   NudgBus.on((evt) => {
     if (evt.type === "demo_reset" && evt.app !== APP_ID) resetLocal({ broadcast: false });
-    if (evt.type === "nudg_cmd" && evt.detail && evt.detail.action === "ehr_open_doc") openDocFromBuddy(evt.detail);
+    if (evt.type === "nudg_cmd" && evt.detail && evt.detail.action === "ehr_open_doc") {
+      if (evt.detail.targetEhrInstanceId && evt.detail.targetEhrInstanceId !== EHR_INSTANCE_ID) return;
+      try { localStorage.removeItem(PENDING_EHR_COMMAND_KEY); } catch (e) { /* live command still works */ }
+      openDocFromBuddy(evt.detail);
+    }
   });
+  window.__nudgEhrReady = true;
+  consumePendingEhrCommand();
 
   setInterval(() => {
     const s = Math.floor((Date.now() - sessionStart) / 1000);
@@ -474,6 +506,7 @@ async function init() {
 }
 
 function resetLocal({ broadcast = true } = {}) {
+  try { localStorage.removeItem(PENDING_EHR_COMMAND_KEY); } catch (e) { /* optional storage */ }
   for (let i = sessionStorage.length - 1; i >= 0; i -= 1) {
     const key = sessionStorage.key(i);
     if (key && key.startsWith("ehr_")) sessionStorage.removeItem(key);
