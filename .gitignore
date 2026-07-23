@@ -4,3 +4,5 @@ node_modules/
 tmp/
 __pycache__/
 *.py[cod]
+.playwright-cli/
+agents/gyn-onc-second-opinion/*.jsonl
