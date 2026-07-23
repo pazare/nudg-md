@@ -67,6 +67,13 @@ QUICK_SYSTEM_PROMPT = (
     '"Basis: " listing the exact chart facts you used.'
 )
 
+CODEX_ENV_ALLOWLIST = {
+    "PATH", "HOME", "USER", "LOGNAME", "SHELL", "TMPDIR",
+    "LANG", "LC_ALL", "LC_CTYPE", "TERM", "NO_COLOR",
+    "CODEX_HOME", "XDG_CONFIG_HOME", "XDG_CACHE_HOME",
+    "SSL_CERT_FILE", "SSL_CERT_DIR", "NODE_EXTRA_CA_CERTS",
+}
+
 
 class RelayError(Exception):
     """HTTP-mappable relay error (message is safe to return to the client)."""
@@ -86,7 +93,26 @@ def claude_ready():
 
 
 def codex_ready():
-    return shutil.which("codex") is not None
+    codex = shutil.which("codex")
+    if not codex:
+        return False
+    try:
+        status = subprocess.run(
+            [codex, "login", "status"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    output = (status.stdout + status.stderr).lower()
+    return status.returncode == 0 and "logged in" in output and "not logged in" not in output
+
+
+def codex_subprocess_env():
+    """Minimal environment for prompt-bearing Codex children; never forward API keys."""
+    return {name: value for name, value in os.environ.items() if name in CODEX_ENV_ALLOWLIST}
 
 
 def validate_run_id(body):
@@ -244,6 +270,7 @@ def run_codex(prompt, timeout_s=CODEX_TIMEOUT_S, cancel_event=None):
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
                 start_new_session=True,
+                env=codex_subprocess_env(),
             )
             ACTIVE_PROCESSES.add(proc)
         deadline = time.monotonic() + timeout_s
@@ -290,6 +317,20 @@ def quick_codex_prompt(question, patient, context):
     )
 
 
+def valid_quick_reply(text):
+    if not isinstance(text, str):
+        return False
+    stripped = text.strip()
+    lines = [line.strip() for line in stripped.splitlines() if line.strip()]
+    return bool(
+        stripped
+        and len(stripped.split()) <= 120
+        and lines
+        and lines[-1].startswith("Basis: ")
+        and lines[-1][len("Basis: "):].strip()
+    )
+
+
 def handle_quick(body, cancel_event=None):
     question = body.get("question")
     if not isinstance(question, str) or not question.strip():
@@ -305,10 +346,13 @@ def handle_quick(body, cancel_event=None):
 
     started = time.monotonic()
     receipt = {"requested_lane": "quick", "ts": iso_ts()}
+    lane_notes = []
 
     if claude_ready():
         try:
             text, model = call_claude(question, patient, context, cancel_event)
+            if not valid_quick_reply(text):
+                raise RelayError(502, "claude reply failed the quick-lane format contract")
             receipt.update(
                 served_mode="live-claude",
                 model=model,
@@ -316,23 +360,34 @@ def handle_quick(body, cancel_event=None):
             )
             return {"mode": "live-claude", "text": text, "receipt": receipt}
         except RelayError as exc:
-            if not codex_ready():
+            if exc.status == 499:
                 raise
-            receipt["note"] = "claude failed (%s); fell through to codex" % exc.message
+            lane_notes.append("claude failed (%s)" % exc.message)
 
     if codex_ready():
-        text = run_codex(quick_codex_prompt(question, patient, context), cancel_event=cancel_event)
-        receipt.update(
-            served_mode="live-codex",
-            model=CODEX_MODEL or "codex-cli-default",
-            latency_ms=int((time.monotonic() - started) * 1000),
-        )
-        return {"mode": "live-codex", "text": text, "receipt": receipt}
+        try:
+            text = run_codex(quick_codex_prompt(question, patient, context), cancel_event=cancel_event)
+            if not valid_quick_reply(text):
+                raise RelayError(502, "codex reply failed the quick-lane format contract")
+            receipt.update(
+                served_mode="live-codex",
+                model=CODEX_MODEL or "codex-cli-default",
+                latency_ms=int((time.monotonic() - started) * 1000),
+            )
+            if lane_notes:
+                receipt["note"] = "; ".join(lane_notes) + "; fell through to codex"
+            return {"mode": "live-codex", "text": text, "receipt": receipt}
+        except RelayError as exc:
+            if exc.status == 499:
+                raise
+            lane_notes.append("codex failed (%s)" % exc.message)
 
     receipt.update(
         served_mode="scripted",
         latency_ms=int((time.monotonic() - started) * 1000),
     )
+    if lane_notes:
+        receipt["note"] = "; ".join(lane_notes) + "; scripted fallback retained"
     return {"mode": "scripted", "receipt": receipt}
 
 
@@ -353,35 +408,41 @@ def seat_prompt(lens, patient, question):
     )
 
 
-def extract_first_json_obj(text):
-    """Return the first parseable {...} object in text, else None."""
-    decoder = json.JSONDecoder()
-    idx = text.find("{")
-    while idx != -1:
-        try:
-            obj, _ = decoder.raw_decode(text, idx)
-            if isinstance(obj, dict):
-                return obj
-        except ValueError:
-            pass
-        idx = text.find("{", idx + 1)
-    return None
-
-
 def parse_seat_reply(raw):
-    obj = extract_first_json_obj(raw) if isinstance(raw, str) else None
-    if obj is not None:
+    try:
+        obj = json.loads(raw.strip()) if isinstance(raw, str) else None
+    except (TypeError, ValueError):
+        obj = None
+    if isinstance(obj, dict) and set(obj) == {"stance", "rationale", "requests"}:
         stance = obj.get("stance")
-        if stance in ("support", "oppose", "insufficient"):
+        rationale_value = obj.get("rationale", "")
+        requests_value = obj.get("requests", "")
+        rationale = rationale_value.strip() if isinstance(rationale_value, str) else ""
+        requests = requests_value.strip() if isinstance(requests_value, str) else ""
+        if (
+            stance in ("support", "oppose", "insufficient")
+            and isinstance(rationale_value, str)
+            and isinstance(requests_value, str)
+            and rationale
+            and len(rationale) <= 400
+            and len(rationale.split()) <= 40
+            and len(requests) <= 400
+            and (
+                (stance == "insufficient" and requests)
+                or (stance in ("support", "oppose") and not requests)
+            )
+        ):
             return {
                 "stance": stance,
-                "rationale": str(obj.get("rationale", ""))[:400],
-                "requests": str(obj.get("requests", ""))[:400],
+                "rationale": rationale,
+                "requests": requests,
+                "_valid": True,
             }
     return {
         "stance": "insufficient",
-        "rationale": "seat returned unparseable output",
+        "rationale": "seat returned unparseable or incomplete output",
         "requests": "",
+        "_valid": False,
     }
 
 
@@ -423,6 +484,7 @@ def handle_panel(body, cancel_event=None):
                 "stance": "insufficient",
                 "rationale": "seat call failed: %s" % exc.message,
                 "requests": "",
+                "_valid": False,
             }
         results[i] = {
             "id": str(seat.get("id", "seat-%d" % (i + 1))),
@@ -450,7 +512,20 @@ def handle_panel(body, cancel_event=None):
                 "stance": "insufficient",
                 "rationale": "seat call failed: worker did not finish",
                 "requests": "",
+                "_valid": False,
             }
+
+    invalid_count = sum(1 for result in results if not result.get("_valid"))
+    if invalid_count:
+        receipt.update(
+            served_mode="scripted",
+            failed_seats=invalid_count,
+            latency_ms=int((time.monotonic() - started) * 1000),
+        )
+        return {"mode": "scripted", "receipt": receipt}
+
+    for result in results:
+        result.pop("_valid", None)
 
     aggregate = {
         "support": sum(1 for r in results if r["stance"] == "support"),
