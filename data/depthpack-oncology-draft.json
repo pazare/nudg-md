@@ -1,5 +1,5 @@
 {
-  "_note": "DRAFT — SYNTHETIC. Structurally compatible with a patient depthPack only after every {{PATIENT_SLOT_*}} placeholder is resolved and source applicability is checked. It is not loaded by the runtime. It makes no survival claim and asserts no referral mandate. Evidence ids reference data/evidence.json (2026-07-18 pack).",
+  "_note": "DRAFT — SYNTHETIC. Structurally compatible with a patient depthPack only after every {{PATIENT_SLOT_*}} placeholder is resolved, source applicability is checked, and every TEMPLATE-ONLY trigger, gap, quick take, seat stance, rationale, and request is replaced with chart-bound synthetic facts. It is not loaded by the runtime. It makes no survival claim and asserts no referral mandate. Evidence ids reference data/evidence.json (2026-07-18 pack).",
   "patientSlots": {
     "diagnosis": "{{PATIENT_SLOT_DIAGNOSIS}}",
     "treatment": "{{PATIENT_SLOT_TREATMENT}}",
@@ -8,18 +8,19 @@
     "weightLossPct": "{{PATIENT_SLOT_WEIGHT_LOSS_PCT}}",
     "interval": "{{PATIENT_SLOT_INTERVAL}}"
   },
-  "placeholder": "DRAFT oncology depthPack template (synthetic). Resolve every {{PATIENT_SLOT_*}} value and verify population applicability before copying this object into data/patients.json. Not live. No survival claim; the >5% figure is a cachexia diagnostic criterion (NUT-04), never a referral trigger.",
-  "headline": "Weight down {{PATIENT_SLOT_WEIGHT_LOSS_PCT}} in {{PATIENT_SLOT_INTERVAL}}: Nutrition follow-through is still unspecified.",
-  "gap": "The plan manages {{PATIENT_SLOT_DIAGNOSIS}} during {{PATIENT_SLOT_TREATMENT}} but does not document a nutrition owner, an intake history, a weight-trajectory review, or a validated screening score. Consider whether nutrition screening or a dietitian referral belongs in the plan; the patient and clinician decide.",
+  "placeholder": "DRAFT oncology depthPack template (synthetic). Resolve every {{PATIENT_SLOT_*}} value, verify population applicability, and replace every TEMPLATE-ONLY decision field with chart-bound synthetic facts before copying this object into data/patients.json. Not live. No survival claim; the >5% figure is a cachexia diagnostic criterion (NUT-04), never a referral trigger.",
+  "trigger": "TEMPLATE-ONLY: Replace with the exact synthetic chart fact that makes a depth review relevant; do not infer an omission from silence.",
+  "headline": "TEMPLATE-ONLY — Weight change {{PATIENT_SLOT_WEIGHT_LOSS_PCT}} over {{PATIENT_SLOT_INTERVAL}}: Replace with a chart-bound headline.",
+  "gap": "TEMPLATE-ONLY: For {{PATIENT_SLOT_DIAGNOSIS}} during {{PATIENT_SLOT_TREATMENT}}, verify nutrition ownership, intake, weight trajectory, screening, symptoms, preference, and access from the synthetic chart. Replace this sentence with chart-bound facts before runtime integration.",
   "question": "Is there enough chart evidence to refer to a dietitian now, or should a validated screening score (MST or PG-SGA-SF) and an intake history be collected first?",
   "research": {
     "title": "ASCO cancer-cachexia guideline (2020): Applicability must be confirmed",
-    "cite": "Roeland et al., J Clin Oncol · DOI 10.1200/JCO.20.00611 · grade A (NUT-03)",
+    "cite": "Roeland et al., J Clin Oncol · DOI 10.1200/JCO.20.00611 · ASCO: low evidence, moderate-strength recommendation (NUT-03)",
     "url": "https://pubmed.ncbi.nlm.nih.gov/32432946/",
     "note": "This guidance concerns adults with advanced cancer and appetite and/or body-weight loss. Confirm stage ({{PATIENT_SLOT_STAGE}}) and appetite change ({{PATIENT_SLOT_APPETITE_CHANGE}}) before applying it to this synthetic case. It permits referral; it does not mandate one.",
     "supporting": {
       "title": "Individualized nutrition during colorectal-cancer chemotherapy: Small RCT (2025)",
-      "cite": "Wang et al., Nutrition and Cancer · DOI 10.1080/01635581.2025.2449719 · grade B (NUT-05)",
+      "cite": "Wang et al., Nutrition and Cancer · DOI 10.1080/01635581.2025.2449719 · small postoperative colorectal RCT; indirect here (NUT-05)",
       "url": "https://doi.org/10.1080/01635581.2025.2449719",
       "note": "This 88-person study reports chemotherapy-tolerance and quality-of-life outcomes in an adjacent colorectal population, not this tumor type. It does not establish a survival effect or patient-specific benefit."
     },
@@ -31,34 +32,35 @@
     { "initials": "TG", "name": "Telehealth dietitian group (mock)", "tags": ["Telehealth", "Synthetic network", "next: tomorrow (mock)"] },
     { "initials": "SW", "name": "S. Whitfield, MD — supportive oncology (mock)", "tags": ["Supportive oncology", "Synthetic network", "6.2 mi (mock)", "next: Aug 4 (mock)"] }
   ],
-  "quickScripted": "Underdetermined: This template does not yet verify a screening score, intake, symptom burden, stage, appetite change, patient preference, or access. Fill and verify those facts before applying the cited guidance or choosing referral timing. This scripted lane makes no survival claim; the patient and clinician decide.",
+  "quickScripted": "TEMPLATE-ONLY — UNDERDETERMINED: No case-specific quick take is bound to this file. Replace this text after verifying screening, intake, symptoms, stage, appetite change, preference, access, and source applicability. This template makes no survival claim and does not choose referral timing.",
   "seats": [
     {
       "id": "onc",
       "name": "Oncology",
       "stance": "insufficient",
-      "rationale": "The documented weight change makes nutrition risk worth evaluating during treatment, but this record does not establish current intake, symptom burden, stage, appetite change, or a screening score.",
-      "requests": "A 24-hour dietary recall, a symptom-burden grade, stage and appetite-change confirmation, and a documented nutrition-screening score."
+      "rationale": "TEMPLATE-ONLY refusal: No case-specific oncology stance is bound to this file.",
+      "requests": "Bind verified intake, symptom burden, stage, appetite change, screening, and treatment facts; then rewrite this stance."
     },
     {
       "id": "rd",
       "name": "Registered dietitian",
       "stance": "insufficient",
-      "rationale": "Use a validated screening tool before treatment and regularly thereafter. ASPEN 2024 identifies MST (at least 2) and PG-SGA-SF (at least 7 or 8) among valid outpatient-oncology cut points (NUT-02). Weight loss above 5% is a cachexia diagnostic criterion (NUT-04), not a referral mandate.",
-      "requests": "Weight trajectory, an oral-intake estimate, the screening-tool score, and patient preference."
+      "rationale": "TEMPLATE-ONLY refusal: ASPEN 2024 identifies MST (at least 2) and PG-SGA-SF (at least 7 or 8) among valid outpatient-oncology cut points (NUT-02), but this file has no bound case score or dietitian stance. Weight loss above 5% is a cachexia diagnostic criterion (NUT-04), not a referral mandate.",
+      "requests": "Bind the verified weight trajectory, intake estimate, screening score, and patient preference; then rewrite this stance."
     },
     {
       "id": "pharm",
       "name": "Pharmacy",
       "stance": "insufficient",
-      "rationale": "Antiemetic and symptom-control adequacy shapes intake, but current supportive-care medications and adherence are not documented here.",
-      "requests": "Current antiemetic regimen, adherence, and symptom control."
+      "rationale": "TEMPLATE-ONLY refusal: No case-specific supportive-care medication or adherence facts are bound to this file.",
+      "requests": "Bind the verified antiemetic regimen, adherence, and symptom-control facts; then rewrite this stance."
     },
     {
       "id": "pcp",
       "name": "Primary care",
-      "stance": "oppose",
-      "rationale": "Do not assign nutrition ownership from this record alone; confirm the patient's preference and access, and keep the referral a shared decision with explicit follow-up."
+      "stance": "insufficient",
+      "rationale": "TEMPLATE-ONLY refusal: No case-specific patient preference, access, ownership, or follow-up facts are bound to this file.",
+      "requests": "Bind those verified facts; then rewrite this stance."
     }
   ]
 }

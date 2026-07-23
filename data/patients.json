@@ -12,7 +12,8 @@
       "name": "Margaret Holloway",
       "depthPack": {
         "placeholder": "Synthetic diabetes/CKD sample used to exercise R-09. It is not the pending vaginal-cancer evidence pack.",
-        "headline": "A1c rose to 8.4: Nutrition follow-through is still unspecified.",
+        "trigger": "The synthetic plan reinforces diet but names no nutrition owner or follow-up action.",
+        "headline": "A1c rose to 8.4: The plan names no nutrition owner.",
         "gap": "The plan reinforces diet but does not document a nutrition owner, dietary intake, patient preference, or access. Consider whether assessment or referral belongs in the plan; the patient and clinician decide.",
         "question": "Is there enough chart evidence to refer now, or should the missing intake, preference, and access data be collected first?",
         "research": {
@@ -27,8 +28,39 @@
           { "initials": "TG", "name": "Telehealth dietitian group", "tags": ["Telehealth", "Synthetic network", "next: tomorrow (mock)"] },
           { "initials": "AB", "name": "A. Boyd, MD — nephrology clinic RD team", "tags": ["Clinic-embedded", "Synthetic network", "5.9 mi (mock)", "next: Aug 3 (mock)"] }
         ],
-        "quickScripted": "Underdetermined: The chart supports discussing structured nutrition follow-through, but it lacks a dietary recall, the patient's preference, access constraints, and a documented referral goal. Collect those inputs or discuss a referral now; this scripted lane does not choose the timing. The patient and clinician decide.",
-        "seats": [
+      "quickScripted": "Underdetermined: The chart supports discussing structured nutrition follow-through, but it lacks a dietary recall, the patient's preference, access constraints, and a documented referral goal. Collect those inputs or discuss a referral now; this scripted lane does not choose the timing. The patient and clinician decide.",
+      "followUpQuestion": "A synthetic nutrition referral now has an owner and due date. What must follow-up verify before any patient-specific nutrition plan changes?",
+      "followUpQuickScripted": "The simulated referral creates ownership, not clinical closure. Follow-up still needs dietary intake, the patient's goals and preferences, access confirmation, and any kidney-specific nutrition constraints. No patient-specific nutrition plan should change until those inputs are reviewed by the patient and clinician.",
+      "followUpSeats": [
+        {
+          "id": "endo",
+          "name": "Endocrinology",
+          "stance": "insufficient",
+          "rationale": "The A1c trend makes follow-up relevant, but a referral record does not establish the patient's nutrition goal or preferred plan.",
+          "requests": "Dietary recall, patient preference, and a concrete nutrition goal."
+        },
+        {
+          "id": "renal",
+          "name": "Nephrology",
+          "stance": "insufficient",
+          "rationale": "CKD 3a makes individualized review important; the referral record does not add current intake or existing restrictions.",
+          "requests": "Dietary intake and any existing renal-nutrition plan."
+        },
+        {
+          "id": "pharm",
+          "name": "Pharmacy",
+          "stance": "insufficient",
+          "rationale": "The simulated handoff does not establish access, attendance, or how nutrition follow-up will coordinate with the medication plan.",
+          "requests": "Access confirmation and a documented follow-up handoff."
+        },
+        {
+          "id": "pcp",
+          "name": "Primary care",
+          "stance": "oppose",
+          "rationale": "Do not treat a simulated send as completed care; this prototype has no deadline or result monitor."
+        }
+      ],
+      "seats": [
           { "id": "endo", "name": "Endocrinology", "stance": "insufficient", "rationale": "The A1c trend makes nutrition follow-through relevant, but this chart does not establish the preferred referral timing.", "requests": "Dietary recall, patient preference, and a concrete nutrition goal." },
           { "id": "renal", "name": "Nephrology", "stance": "insufficient", "rationale": "CKD 3a makes individualized advice important; the chart does not document current intake or restrictions.", "requests": "Dietary intake and any existing renal-nutrition plan." },
           { "id": "pharm", "name": "Pharmacy", "stance": "insufficient", "rationale": "Medication initiation is documented, but the referral question depends on missing behavioral and access information.", "requests": "Preference, access, and follow-up ownership." },
