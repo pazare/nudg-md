@@ -14,8 +14,8 @@
 <header class="hero">
   <h1>Nudge card design gallery</h1>
   <p>Static design artifacts for the NUDG MD buddy (validation round 2). Cards appear one at a time from the calm dock;
-     everything technical lives one click deep. Spec: <code>docs/design/NUDGE_CARDS_DESIGN.md</code>. Nothing here is wired yet —
-     the toggles marked clickable are interactive so the interaction can be felt.</p>
+     everything technical lives one click deep. Spec: <code>docs/design/NUDGE_CARDS_DESIGN.md</code>. The live apps now implement
+     a bounded subset; this gallery remains illustrative, and only controls marked clickable are interactive.</p>
   <div class="hero-meta">Visual legend: amber = current/manual · blue = guided/intervention · 2026-07-18</div>
   <div class="mock-label">ILLUSTRATIVE DESIGN PREVIEW — NOT RUNTIME OUTPUT</div>
 </header>
@@ -44,13 +44,13 @@
         <button class="nbtn primary">Open the rhythm note</button>
         <button class="nbtn dismiss">Dismiss ▾</button>
       </div>
-      <div class="nc-trace"><span class="why">Why this, why now</span> · R-01 · 1st time shown · won’t repeat unless new evidence</div>
+      <div class="nc-trace"><span class="why">Why this, why now</span> · R-01 · illustrative first display · runtime cooldown is time-based</div>
     </div>
     <ol>
       <li><b>Context row.</b> Type chip (color-coded), tempo mode, and always a patient chip — a nudge about nobody is not a nudge.</li>
       <li><b>Headline.</b> The entire point in ≤ 90 characters, formal and verb-forward. A clinician who reads nothing else has been served.</li>
       <li><b>Evidence bullets.</b> Two to four, each with a provenance chip (chart item, guideline, article). No unsourced sentences.</li>
-      <li><b>Actions.</b> Explicit verbs; the primary action is the safest useful one. Dismiss is a menu that collects a reason and arms the cooldown (2×→6×).</li>
+      <li><b>Actions.</b> Explicit verbs; the primary action is the safest useful one. Dismiss is a menu that collects a reason and arms the 24 h → 48 h → 72 h cooldown.</li>
       <li><b>Trace row.</b> “Why this, why now” — triggering event, rule id, times shown. Every card is auditable; every notification traces to a condition code.</li>
     </ol>
   </div>
@@ -71,7 +71,7 @@
     <span class="chip tempo now">NOW — never gates any action</span>
     <span class="chip tempo focused">FOCUSED — ≤2/visit · 90 s floor</span>
     <span class="chip tempo deep">DEEP — waits for natural pauses</span>
-    <span class="chip tempo watch">WATCH — silent until deadline/result</span>
+    <span class="chip tempo watch">WATCH target — silent until deadline/result · no monitor in POC</span>
   </div>
   <div class="states">
     <span class="state-chip">created → <b>queued</b></span>
@@ -84,9 +84,9 @@
 
 <!-- ============ 3 · SCENARIO 1 ============ -->
 <section>
-  <h2>3 · Scenario 1 — omitted context at documentation time</h2>
-  <p class="intro">The physician drafts “palpitations likely anxiety” after a reassuring conversation. It is a reasonable working diagnosis
-     until omitted chart context changes the differential. The buddy responds in a formal, differential-first style: one claim, three facts,
+  <h2>3 · Scenario 1 — conflicting impression at documentation time</h2>
+  <p class="intro">The generated note already contains the visit facts, then the physician adds “palpitations likely anxiety” after a reassuring conversation.
+     The buddy checks that new impression against the current note and prior chart in a formal, differential-first style: one claim, three facts,
      and a safer next diagnostic question — without pretending to make the diagnosis.</p>
   <div class="row">
     <div class="stack">
@@ -109,7 +109,7 @@
         </div>
         <div class="nc-trace"><span class="why">Why this, why now</span> · “likely anxiety” entered while AF history + irregular rhythm are present · R-01 · 1st time</div>
       </div>
-      <div class="caption">Expanded state — fires once while the working diagnosis is still editable. It challenges the omitted premise, not the clinician, and leaves the final diagnosis to them.</div>
+      <div class="caption">Expanded state — fires once while the working diagnosis is still editable. It challenges the conflicting premise, not the clinician, and leaves the final diagnosis to them.</div>
     </div>
     <div class="stack">
       <div class="ncard a-chart is-dismissed">
@@ -119,9 +119,9 @@
           <span class="chip patient">J. Okafor</span>
         </div>
         <h4>Anxiety is plausible. Recurrent atrial fibrillation must be resolved first.</h4>
-        <div class="nc-trace">Dismissed: “Already considered” · recorded · won’t repeat for 24 h unless meaningfully new evidence appears</div>
+        <div class="nc-trace">Dismissed: “Already considered” · recorded · runtime cooldown: 24 h</div>
       </div>
-      <div class="caption">Dismissed state — the reason is data. A repeat without new evidence is a design failure, and the metrics strip counts it.</div>
+      <div class="caption">Dismissed state — the reason is logged. Evidence-sensitive repeats and a repeat metric are design targets, not current runtime behavior.</div>
     </div>
   </div>
 </section>
@@ -139,11 +139,10 @@
           <span class="chip tempo now">NOW · info only</span>
           <span class="chip patient">M. Holloway · SYN-004821</span>
         </div>
-        <h4>The RN phone note is 3 clicks away.</h4>
+        <h4>The RN phone note is 2 clicks away.</h4>
         <ol class="steps">
           <li>Open the <b>Notes</b> tab</li>
-          <li>Row “<b>Telephone Encounter · 01/08/2026</b>”</li>
-          <li>Click the row to read it</li>
+          <li>Open row “<b>Telephone Encounter · 01/08/2026</b>”</li>
         </ol>
         <div class="alt-row">Looking for something else? <span class="src">UACR result → Labs</span> <span class="src">Signed orders → Orders</span></div>
         <div class="nc-actions">
@@ -152,7 +151,7 @@
         </div>
         <div class="nc-trace"><span class="why">Why this, why now</span> · 5 tab views in 32 s, nothing opened (threshold: ≥4 in 40 s) · R-04 · disappears on first successful open</div>
       </div>
-      <div class="caption">“Show me” will spotlight the actual on-screen element when wired. The card self-expires the moment the doctor finds anything — superseded, not dismissed.</div>
+      <div class="caption">In the live EHR, “Show me” opens and spotlights the note; this gallery card is static. The live card leaves when the doctor finds anything — superseded, not dismissed.</div>
     </div>
   </div>
 </section>
@@ -160,7 +159,7 @@
 <!-- ============ 5 · SCENARIO 3 ============ -->
 <section>
   <h2>5 · Scenario 3 — depth prompt: the dimension the plan doesn’t touch</h2>
-  <p class="intro">Elena Vasquez (synthetic, to be added to the panel): stage III colon cancer, FOLFOX cycle 4, −7 % body weight in 8 weeks.
+  <p class="intro">Elena Vasquez (synthetic, illustrative gallery case—not in the runtime panel): stage III colon cancer, FOLFOX cycle 4, −7 % body weight in 8 weeks.
      The visit is about chemo tolerance; nutrition is nowhere in the draft plan. One composite card carries the missing dimension:
      a specific reference, in-network experts, and the door to a second opinion.</p>
   <div class="row">
@@ -199,7 +198,7 @@
           </details>
         </div>
         <div class="nc-actions" style="margin-top:12px">
-          <button class="nbtn primary">Start referral</button>
+          <button class="nbtn primary">Draft referral</button>
           <button class="nbtn">Second opinion ▸</button>
           <button class="nbtn dismiss">Dismiss ▾</button>
         </div>
@@ -217,16 +216,16 @@
         <h4>Watching: oncology-nutrition referral — response due <time datetime="2026-07-25">Sat Jul 25</time>.</h4>
         <ul class="nc-evi">
           <li>Owner: Dr. Rivera · backup: care coordination <span class="src">R-12</span></li>
-          <li>If unacknowledged by the deadline, this card returns and escalates until someone owns it.</li>
+          <li>Planned behavior: a deadline monitor would return and escalate this card. It is not implemented in the POC. <span class="src">Illustrative</span></li>
         </ul>
         <div class="nc-actions">
           <button class="nbtn primary">Acknowledge</button>
           <button class="nbtn">Reassign</button>
           <button class="nbtn dismiss">Stop watching ▾</button>
         </div>
-        <div class="nc-trace">Created when the referral was accepted from the Depth card · silent until deadline or result</div>
+        <div class="nc-trace">ILLUSTRATIVE PLANNED STATE · runtime creates WATCH only after explicit simulated send · no deadline monitor</div>
       </div>
-      <div class="caption">WATCH follow-through — result ownership with a named owner, backup, deadline, and escalation. Nothing pends anonymously.</div>
+      <div class="caption">WATCH target design — named owner, backup, deadline, and planned escalation. Runtime records the simulated state but does not monitor the deadline.</div>
     </div>
   </div>
 </section>
@@ -257,7 +256,7 @@
         a regimen; it proposes collecting those inputs before cycle 5.
         <div class="srcs"><a class="src" href="https://pubmed.ncbi.nlm.nih.gov/33946039/" target="_blank" rel="noopener noreferrer">ESPEN 2021 · DOI 10.1016/j.clnu.2021.02.005</a><span class="src">Chart · weight series 8 wks</span><span class="src">scripted in demo</span></div>
       </div>
-      <div class="caption" style="max-width:100%">Quick take — one pass, labeled scripted until the live lane is wired. Use when the question sits inside the clinician’s own lane.</div>
+      <div class="caption" style="max-width:100%">Quick take — scripted illustration in this gallery. The live app labels its fallback and replaces it only when the relay answers. Use when the question sits inside the clinician’s own lane.</div>
     </div>
 
     <div class="lane-body" id="bodyPanel" role="tabpanel" aria-labelledby="lanePanel" hidden>

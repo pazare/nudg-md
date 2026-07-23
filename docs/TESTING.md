@@ -11,12 +11,13 @@ EHR commands, and AI lanes are live. This script reflects the post-validation sa
 3. If either is down: `cd "$HOME/Desktop/Summer 2026/nudg-md" && ./scripts/serve.sh` (starts both).
 4. Hard-reload both app tabs: press **⌘⇧R** in the Scribe tab and in the LegacyChart tab
    (a normal reload can keep old JS cached).
-5. Expect in each tab: the white pulse orb on the right side, and (once per tab session) a toast:
-   "Your buddy is here: click the pulse to open it."
-6. Clean slate if you tested earlier: click **Reset demo** (Scribe: bottom-left; EHR: toolbar).
-   This clears worklist state, notes, orders, the event log, and nudge cooldowns in BOTH tabs.
+5. Expect in each tab: the white pulse orb at its saved screen edge and, once per tab session, the
+   onboarding toast. If rehearsal left the orb on the left, drag it right once for the stage layout.
+6. Clean slate if you tested earlier: click **Reset demo** (Scribe: bottom-left; EHR: toolbar) and
+   approve the confirmation. This clears worklist state, notes, orders, the event log, and nudge
+   cooldowns in BOTH tabs; the session-only onboarding toast does not repeat.
 
-## Phase 1 · Scenario 1 — the omitted-context catch (Scribe, ~2 minutes)
+## Phase 1 · Scenario 1 — the conflicting-impression catch (Scribe, ~2 minutes)
 
 1. Scribe tab: click **James Okafor** (9:40 AM) in the worklist.
 2. Click **Generate note** (bottom center). After ~1 s the scripted note appears;
@@ -43,7 +44,7 @@ EHR commands, and AI lanes are live. This script reflects the post-validation sa
 1. EHR tab: click the **HOLLOWAY** row in the schedule.
 2. Quickly click four different chart tabs — Problems → Medications → Allergies → Labs —
    within ~30 seconds, without opening any document row.
-3. On the fourth view: peek slides in: **"Find the progress note in 3 clicks."**
+3. On the fourth view: peek slides in: **"Find the progress note in 2 clicks."**
    The card lists numbered steps plus alternate targets.
 4. Click **Show me**: the chart jumps to Notes and opens + spotlights the top document.
 5. Self-expiry variant: trigger it again (four quick tab views), then ignore the card and open
@@ -52,7 +53,7 @@ EHR commands, and AI lanes are live. This script reflects the post-validation sa
 ## Phase 3 · Scenario 3 — depth + second opinion (EHR, ~4 minutes incl. live wait)
 
 1. With Holloway's chart open, idle on Summary for ~8 seconds (demo pacing).
-2. Peek: **"A1c rose to 8.4: Nutrition follow-through is still unspecified."**
+2. Peek: **"A1c rose to 8.4: The plan names no nutrition owner."**
 3. Open the buddy: the Depth card shows a directly linked ADA–KDIGO source plus a patient-level
    applicability caveat, the in-network specialist, and **More specialists ▾** (three more, all
    marked Synthetic network). This is the live diabetes/CKD sample. A separate oncology template
@@ -60,10 +61,11 @@ EHR commands, and AI lanes are live. This script reflects the post-validation sa
 4. Click **Draft referral**: the Depth card leaves and an explicit **Referral draft saved locally:
    Nothing has been sent** card appears. Click **Simulate sign & send** only if you want to test
    R-12. A green WATCH card then appears and says the send was simulated; no external system was
-   contacted. Read it, then click **Acknowledge**.
-5. Re-trigger the Depth card (acted cards may return): Back to Schedule → reopen Holloway →
-   idle 8 s.
-6. Click **Second opinion ▸**. The popover widens. **Quick take** paints a scripted answer
+   contacted and no deadline monitor runs. Read it, then click **Acknowledge**.
+5. Back to Schedule → reopen Holloway → idle 8 s. Follow-up peek:
+   **"Referral recorded. Review the decision in depth?"**
+6. Click **Open second opinion**. The popover widens. Its follow-up question asks what the
+   simulated handoff must still verify before any patient-specific plan changes. **Quick take** paints a scripted answer
    INSTANTLY, chipped "SCRIPTED · LIVE LANE DELIBERATING…". If Claude is ready, the live text
    usually replaces it within seconds; otherwise the Codex fallback can take ~60–90 s. Verify the
    served-mode chip and latency receipt instead of assuming which lane answered.
@@ -81,8 +83,8 @@ EHR commands, and AI lanes are live. This script reflects the post-validation sa
 
 We may shift the default to B (the moat: integration with the cursor). Judge it hard.
 
-1. Click anywhere outside a text field and press **Shift+B**. Toast: "Cursor companion active —
-   Shift+P opens its preview." The orb disappears; a smaller circle now trails your cursor.
+1. Click anywhere outside a text field and press **Shift+B**. Toast: "Buddy style: cursor
+   companion (Option B). Shift+P opens it." The orb disappears; a smaller circle now trails your cursor.
    The OTHER tab switches style too (synced over the bus).
 2. Move the mouse: the companion follows with a soft lag, offset below-right. Start typing in
    any field: it fades to near-invisible. Stop: it returns.

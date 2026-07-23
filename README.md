@@ -2,7 +2,7 @@
 
 **Hackathon proof of concept.** Built at *The Future of Agentic AI in Healthcare* — Abridge × Anthropic × Lightspeed, San Francisco, **July 18, 2026**. Team: Pablo Zavala & Santiago (team of two).
 
-Clinicians spend their day juggling portals: an ambient scribe in one tab, a legacy EHR in another, guidelines and prior notes somewhere else. **NUDG MD is a desktop buddy that watches the workflow (locally, event-based) and offers timely, grounded nudges** — relevant research, prior notes, hospital-guideline considerations, network insights, and good questions — so the clinician navigates faster and safer without leaving their flow.
+Clinicians spend their day juggling portals: an ambient scribe in one tab, a legacy EHR in another, and prior notes somewhere else. **NUDG MD is a desktop buddy that watches the workflow (locally, event-based) and offers bounded, grounded nudges** — prior-note navigation, one linked research source with applicability limits, a synthetic specialist directory, and explicit follow-up questions — aiming to reduce avoidable navigation without leaving the clinician's flow.
 
 > **Everything in this repository is synthetic.** Every patient, clinician, note, lab, and answer is fictitious and generated for demonstration. This is a decision-support *demo* — a human clinician decides, always. It is not a medical device, and no claim of clinical outcomes, diagnostic performance, or regulatory compliance is made.
 
@@ -13,7 +13,7 @@ Clinicians spend their day juggling portals: an ambient scribe in one tab, a leg
 | 1 | Synthetic demo environment: ambient-scribe app + fictional legacy EHR, privacy-bounded event bus | **Built and replay-tested** |
 | 2 | Collapsed buddy presence (A default, B via Shift+B) + live nudge cards | **Built; default variant still under user review** |
 | 3 | Context wiring: workflow events → deterministic R-01/R-04/R-09/R-12 nudges | **Wired with reset, cooldown, and cross-tab behavior** |
-| 4 | Content packs + second-opinion lanes | **Diabetes/CKD sample live; evidence-backed oncology template added, patient-specific integration pending** |
+| 4 | Content packs + second-opinion lanes | **Diabetes/CKD sample live; evidence-linked oncology template added, patient-specific integration pending** |
 
 Living plan and decision log: [`docs/CONTEXT.md`](docs/CONTEXT.md).
 
@@ -51,9 +51,10 @@ Every screen carries a **SYNTHETIC — NOT FOR CLINICAL USE** marker.
 
 - Answers in the Abridge-style assistant are scripted synthetic content, not live model output (labeled as such in-app).
 - The core nudge rules and cards are runtime behavior. Provider entries, clinical cases, and fallback panel text remain synthetic; the gallery's calculations and charts remain illustrative design artifacts.
-- The current R-09 runtime pack is a diabetes/CKD sample used to exercise the workflow. A separate evidence-backed oncology template is present but remains non-live until its synthetic patient fields and source applicability are verified; neither pack claims to decide referral timing.
+- The current R-09 runtime pack is a diabetes/CKD sample used to exercise the workflow. A separate evidence-linked oncology template is present but remains non-live until its synthetic patient fields, decision copy, seat stances, and source applicability are verified; neither pack claims to decide referral timing.
 - Live model lanes are optional and labeled with their served mode. A missing, failed, or cancelled lane leaves an explicitly scripted fallback rather than silently upgrading its provenance.
 - Leaving a Codex lane terminates its local child process. An already-sent Anthropic HTTPS request cannot be recalled by this stdlib relay and may finish server-side even after its UI result is detached.
+- WATCH records a simulated owner and due date locally; this proof of concept does not run a deadline/result monitor or return the card automatically.
 - Nudge quality claims are demonstrated on synthetic cases only; nothing here is validated on real clinical data.
 - Any limitation we present as real is one we actually hit; everything else is hypothesized and labeled that way.
 

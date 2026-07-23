@@ -6,8 +6,8 @@ This file is the compaction-safe source of truth for the build. Update it at eve
 
 Win *The Future of Agentic AI in Healthcare* (Abridge × Anthropic × Lightspeed, 2026-07-18) with an
 **expert desktop buddy for clinicians**: it watches workflow events across portals (ambient scribe +
-legacy EHR) and surfaces professional, grounded nudges — research, prior notes, hospital-guideline
-considerations, network insights, and questions. Non-technical clinicians see only the nudges; all
+legacy EHR) and surfaces bounded, grounded nudges — prior-note navigation, linked research with
+applicability limits, synthetic network examples, and follow-up questions. Non-technical clinicians see only the nudges; all
 machinery stays hidden.
 
 ## Decision log
@@ -17,13 +17,14 @@ machinery stays hidden.
 | 2026-07-18 ~11:20 | Pivot: do NOT build the Tribunal clinical escalation POC; keep its rigor/honesty standards as reference. |
 | 2026-07-18 ~11:25 | Build = re-designed-from-scratch healthcare version of the NUDG buddy companion. Reference NUDG repo heavily, copy no code (no license; contains secrets). |
 | 2026-07-18 ~11:30 | Demo staging = two Chrome tabs: synthetic Abridge-style scribe + fictional synthetic legacy "LegacyChart" EHR. One localhost origin (:4800) so BroadcastChannel spans tabs. |
-| 2026-07-18 ~11:35 | Buddy will be browser-based (Document Picture-in-Picture window, Chrome 116+), NOT Electron — Electron cannot join Chrome's BroadcastChannel; PiP is genuinely always-on-top and same-origin. |
+| 2026-07-18 ~11:35 | Initial direction: browser-based Document Picture-in-Picture, not Electron. Superseded at ~12:10 by the in-page dock/cursor companion now implemented. |
 | 2026-07-18 ~11:40 | Public repo `pazare/nudg-md` created day-of; public from first commit for verifiable provenance. |
 | 2026-07-18 ~12:10 | Collapsed buddy presence built as two live-switchable variants — A "calm dock orb" (draggable, snaps to edges) vs B "cursor companion" (lagged follower, NUDG heritage). Shift+B or popover link switches; choice synced across tabs via bus. Bus gained same-tab fanout (BroadcastChannel skips own context). Pablo picks a variant at validation. |
-| 2026-07-18 ~12:49 | Validation 1 passed. Variant A default, B retained. Demo = 3 live scenarios: (1) omitted context changes a reasonable differential; (2) guided navigation to buried chart info; (3) depth prompt — specific research + synthetic specialist directory (expandable) + second-opinion panel with well-being/time/cost visuals and a single-model ↔ multi-agent (Tribunal-heritage) toggle. Scenario 3 needs one added synthetic oncology patient (design first, data next step). |
+| 2026-07-18 ~12:49 | Historical validation-1 direction (superseded): omitted-context S1 + oncology S3 + modeled well-being/time/cost visuals. Current live path instead uses a conflicting-impression Okafor check, Holloway diabetes/CKD depth card, synthetic referral state, and a labeled quick/panel review; oncology remains a non-live evidence template/gallery example. |
 | 2026-07-18 ~13:17 | Claude design critique round 1 committed. Codex validation found additional blockers: S1 did not match the diagnosis brief, the panel contradicted its refusal rule, weekdays were wrong, proof-like mocks lacked local labels, Quick take was not default, and narrow reflow/ARIA/contrast failed. A local correction pass addresses those defects before wiring. |
-| 2026-07-18 ~14:0x | **Companion wired live.** `shared/nudges.js` engine: R-01 (derived note signals; raw free text stripped before transport), R-04 (wayfinding, self-supersedes on document open), R-09 (depth prompt via `depthPack`, demo dwell 8 s), and R-12 (an unsent local draft first; Watch only after explicit **Simulate sign & send**). Cards render in Nudges; Activity is the audit trail; EHR obeys safe navigation commands. The localhost AI relay offers optional Claude/Codex lanes, honest scripted fallbacks, strict origin checks, and cancellable Codex runs. The Holloway pack is explicitly a diabetes/CKD sample, not Pablo's pending vaginal-cancer case. |
+| 2026-07-18 ~14:0x | **Companion wired live.** `shared/nudges.js` engine: R-01 (derived note signals; raw free text stripped before transport), R-04 (wayfinding, self-supersedes on document open), R-09 (depth prompt via `depthPack`, demo dwell 8 s), and R-12 (an unsent local draft first; Watch only after explicit **Simulate sign & send**). Cards render in Nudges; Activity is a bounded recent-event log; EHR obeys safe navigation commands. The localhost AI relay offers optional Claude/Codex lanes, honest scripted fallbacks, strict origin checks, and cancellable Codex runs. The Holloway pack is explicitly a diabetes/CKD sample, not Pablo's pending vaginal-cancer case. |
 | 2026-07-18 ~15:05 | **Evidence pack added.** The verbatim report and 36-claim registry are committed. A structurally compatible oncology `depthPack` template is present but not loaded at runtime; its patient slots and population applicability must be resolved before integration. |
+| 2026-07-18 ~15:3x | **Validator correction pass (local, not yet committed).** The registry retains all 36 sources but normalizes key population/study scopes and quarantines U records; visible A/B/C labels are now explicitly internal source-type tiers, not GRADE certainty. The oncology file is a visibly gated template—not a ready patient pack—and its evidence limits now render. |
 
 ## Step ladder
 
@@ -53,10 +54,10 @@ machinery stays hidden.
 
 ## Buddy design notes (for S2/S3, from NUDG recon + rigor brief)
 
-- Nudge model: `{id, type: research|prior_note|guideline|network|question, priority, patientCtx, title, body, source, actions}`; lifecycle `created→queued→shown→acted|dismissed|expired`; decide vs commit split; outcomes logged back onto the bus.
-- Cadence: single silence floor + per-nudge-key escalating cooldown (damper). "Specific-or-silent": no generic nudges.
-- Tempo modes (adopted vocabulary, adapted to nudging): **NOW** (never gate or delay action; only pre-assembled context), **FOCUSED** (bounded, same-visit suggestions), **DEEP** (longer-horizon considerations, e.g. referrals/screening), **WATCH** (result ownership: pending items get owner + deadline + escalation). Mode shown as a pill; stamped on every nudge.
-- Traceability: every nudge shows "why" (triggering event + rule + source). Nudge counts reportable as n/N per rule.
+- Live nudge model: `{id, rule, type: chart|nav|depth|watch, tempo, mrn, name, headline, bullets|steps|frame|research|specialists, actions, why}`. Cards are committed to a patient-scoped stack; acted, dismissed, and superseded outcomes are emitted onto the bus.
+- Cadence: R-09 uses a chart-stillness timer; dismissals use a per-card cooldown that grows by 24 hours per repeat. "Specific-or-silent": no generic nudges.
+- Tempo modes (adopted vocabulary, adapted to nudging): **NOW** (never gate or delay action; only pre-assembled context), **FOCUSED** (bounded, same-visit suggestions), **DEEP** (longer-horizon considerations, e.g. referrals/screening), **WATCH** (intended result ownership: owner + deadline + escalation). Mode shown as a pill; stamped on every nudge. The current POC records a simulated WATCH owner/due date but does not run a deadline or result monitor.
+- Traceability: every nudge shows "why" (triggering event + rule + source). The current prototype stores only global evaluated/shown counts; per-rule n/N is not implemented.
 - Honesty rails: SYNTHETIC banner every surface; decision-support framing (human decides); scripted content labeled; limits = EXHAUSTED (actually hit) vs HYPOTHESIZED.
 
 ## Ops

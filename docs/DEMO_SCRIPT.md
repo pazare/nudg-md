@@ -13,7 +13,7 @@ on-screen text** — read them off the screen, never from memory.
 | Clock | Beat | Voice |
 | --- | --- | --- |
 | 0:00–0:25 | Cold open: the problem, the thesis | Pablo |
-| 0:25–1:30 | Scenario 1 — the omitted context (Okafor) | Pablo |
+| 0:25–1:30 | Scenario 1 — the conflicting impression (Okafor) | Pablo |
 | 1:30–2:00 | Scenario 2 — the maze (Holloway) | Pablo |
 | 2:00–3:20 | Scenario 3 — the depth prompt + second opinion | Pablo, then Santiago |
 | 3:20–3:40 | The moat: Shift+B, the cursor companion | Pablo |
@@ -22,14 +22,19 @@ on-screen text** — read them off the screen, never from memory.
 ## Pre-stage ritual (run it minutes before, every time)
 
 1. Quit the ChatGPT desktop app: its debug banner photobombs Chrome on stage.
-2. Server + relay up: `./scripts/serve.sh`. Health check `http://127.0.0.1:4809/api/health`
-   must show `"claude": "ready"` (export `ANTHROPIC_API_KEY` in that terminal first).
+2. Server + relay up: `./scripts/serve.sh`. For both live replacements, health check
+   `http://127.0.0.1:4809/api/health` must show both `"claude": "ready"` and `"codex": "ready"`
+   (export `ANTHROPIC_API_KEY` in that terminal first). If either lane is unavailable, use and name
+   the labeled scripted fallback; do not promise a live replacement. `ready` is only a local
+   preflight—Claude can still fail authentication or network access at request time.
 3. Hard-reload BOTH tabs: ⌘⇧R in the scribe tab, ⌘⇧R in the LegacyChart tab.
-4. Click **Reset demo** (scribe, bottom-left) — it wipes both tabs: notes, drafts, orders,
-   event log, and every nudge cooldown. The EHR's toolbar twin is **Reset Demo**.
-5. Confirm: white pulse orb on the right side of each tab, badge empty, toast
-   **"Your buddy is here: click the pulse to open it. Shift+B switches style."**
-   If a small circle trails the cursor instead, press Shift+B once: start in the calm dock.
+4. Click **Reset demo** (scribe, bottom-left), then approve its confirmation dialog — it wipes both
+   tabs: notes, drafts, orders, event log, and every nudge cooldown. The EHR's toolbar twin is
+   **Reset Demo** and has the same confirmation.
+5. Confirm: white pulse orb at its saved screen edge in each tab and badge empty. The onboarding
+   toast is session-only and may not repeat after a reset. If the orb was dragged left during
+   rehearsal, drag it back to the right once. If a small circle trails the cursor instead, press
+   Shift+B once: start in the calm dock.
 6. Scribe tab frontmost, worklist visible. Breathe.
 
 ---
@@ -40,20 +45,19 @@ on-screen text** — read them off the screen, never from memory.
 
 [Scribe tab on screen. Stand still. No clicks yet.]
 
-"Doctors spend sixteen minutes and fourteen seconds inside the medical record for every single
-visit. A third of that is not care: it is hunting through the chart for something the chart
-already knows."
+"In 2018 logs from one major EHR, doctors spent sixteen minutes and fourteen seconds in the record
+per visit. A third was chart review. We target the avoidable navigation inside that work."
 
-"NUDG MD is a buddy that lives where the doctor's eyes already are — and nudges at the exact
-moment context is missing. Two real apps, one buddy. Watch."
+"NUDG MD is a buddy that lives where the doctor's eyes already are — and nudges when a new
+conclusion conflicts with the documented context. Two working synthetic apps, one buddy. Watch."
 
-### 0:25–1:30 · Scenario 1 — the omitted context — Pablo
+### 0:25–1:30 · Scenario 1 — the conflicting impression — Pablo
 
 [0:25 — Click **James Okafor** (9:40 AM) in the worklist. Click **Generate note**. The scripted
 note appears in about a second.]
 
-"This is our synthetic scribe. The visit is over, the note wrote itself. Mister Okafor came in
-with palpitations: the conversation was reassuring, so the doctor types an impression."
+"This is our synthetic scribe. It captured the visit, but a reassuring conversation can still
+tempt a casual closing impression. The doctor types one now."
 
 [0:35 — Click at the end of Assessment & Plan and TYPE, live, exactly:
 `Impression: palpitations, likely anxiety related.` — then hands off the keyboard for one second.]
@@ -68,15 +72,15 @@ Okafor**. Read the three facts off the card, pointing at each source chip.]
 
 "Three facts, each with its source. **A 14-day monitor confirmed paroxysmal AF.** **Today's pulse
 is documented as irregularly irregular.** **He misses apixaban about twice a month, with a prior
-TIA in his history.** And the frame: **keep anxiety in the differential: confirm the rhythm and his
+TIA in his history.** And the frame: **Keep anxiety in the differential: Confirm the rhythm and his
 anticoagulation first. You decide.**"
 
 [1:10 — Click **Open the rhythm note**. THE JUMP: Chrome switches itself to the LegacyChart tab.
 Okafor's chart is open, the Notes tab selected, and the 2026-05-12 progress note is open and
 glowing blue. Let the room see it land. Do not touch the tab bar.]
 
-"The scribe wrote what the doctor said. The buddy noticed what the chart knows — and walked us
-to the proof in one click."
+"The scribe captured today's story. The buddy checked the new impression against this visit and
+the prior chart — and walked us to the proof in one click."
 
 ### 1:30–2:00 · Scenario 2 — the maze — Pablo
 
@@ -85,57 +89,61 @@ to the proof in one click."
 "Now the maze every doctor knows: where is that note?"
 
 [1:38 — Click four chart tabs fast, opening nothing: **Problems → Medications → Allergies →
-Labs**. On the fourth, the peek slides in: **"Find the progress note in 3 clicks."**]
+Labs**. On the fourth, the peek slides in: **"Find the progress note in 2 clicks."**]
 
-"Four clicks of hunting: the buddy offers a path — three numbered steps."
+"Four clicks of hunting: the buddy offers a path — two numbered steps."
 
-[1:48 — Click **Show me**. The chart jumps to Notes; the top note opens and glows blue.]
+[1:48 — Click **Open buddy**. Point to the two numbered steps and the “Why this, why now”
+trace. Do not click **Show me** yet.]
 
-"Or it just takes you. And if the doctor finds it first, the card leaves on its own — the trace
+"The path is numbered. If the doctor finds the note first, the card leaves on its own — the trace
 says it plainly: **leaves on its own once you open anything**. It nudges, never nags."
 
 ### 2:00–3:20 · Scenario 3 — the depth prompt + second opinion — Pablo, then Santiago
 
-[2:00 — Holloway's chart is open. Step back from the keyboard. Total stillness for 8 seconds.]
+[2:00 — Click **Show me**. The chart jumps to Notes; the top note opens and glows blue. Then step
+back from the keyboard for 8 seconds.]
 
-"Now I do the hardest thing in a live demo: nothing. I stop — it notices."
+"Or it just takes you. Now I do the hardest thing in a live demo: nothing. I stop — it notices."
 
 [2:08 — Peek: **"A1c rose to 8.4: The plan names no nutrition owner."** Click
 **Open buddy**: the Depth card, **DEEP** chip.]
 
-"Her A1c is climbing and the plan names nobody for nutrition. So the buddy brings depth: one
-specific source, with its own applicability caveat on the card, and an in-network specialist —
-every entry marked **Synthetic network**."
+"Her A1c is climbing and the synthetic plan names nobody for nutrition. So the buddy brings depth:
+one specific source, with its own applicability caveat on the card, and a mock in-network
+specialist — every entry marked **Synthetic network**."
 
 [2:20 — Click **Draft referral**. The card: **"Referral draft saved locally: Nothing has been
 sent."** Point at the headline. Then click **Simulate sign & send**. Toast: **"Synthetic send
 recorded: No external system was contacted."** A green WATCH card appears: **"Simulated referral
 sent: A reply is due by Saturday, Jul 25."**]
 
-"Draft first: nothing leaves without the doctor. I sign — simulated — and the buddy starts a
-watch: **owner, Dr. Rivera; backup, care coordination;** a deadline. **If nobody replies by the
-deadline, this card returns and escalates.** Referrals stop falling through cracks."
+"Draft first: nothing leaves without the doctor. I simulate sign and send, and the buddy records a
+watch: **Owner: Dr. Rivera. Backup: Care coordination.** A due date. The boundary is explicit: this
+prototype does not run the deadline monitor or return the card automatically."
 
 [2:40 — Click **Acknowledge**. Then **« Back to Schedule** → reopen **HOLLOWAY, Margaret** →
-stillness again, 8 seconds. The Depth peek returns.]
+stillness again, 8 seconds. Peek: **"Referral recorded. Review the decision in depth?"**]
 
-[2:52 — Click **Open buddy**, then **Second opinion ▸**. The popover widens: **Quick take** is
+[2:52 — Click **Open second opinion** directly on the peek. The popover widens: **Quick take** is
 the default. A scripted answer paints instantly, chipped **"SCRIPTED · LIVE LANE
-DELIBERATING…"** — and within seconds the live text replaces it, chipped
-**"LIVE: CLAUDE (ANTHROPIC API)"** with a millisecond receipt.]
+DELIBERATING…"**. If live text replaces it while on screen, read the served-mode chip and receipt;
+otherwise keep the labeled scripted answer and move on.]
 
-"One more click: a second opinion. Watch the chip: scripted answer instantly, live answer in
-about two seconds — and a receipt naming which lane served it, and how fast."
+"A simulated send is not clinical closure. This follow-up review asks what the handoff still has
+to verify. Scripted answer instantly; if live lands, the chip and receipt name which lane served it
+and how fast. If it does not, the fallback stays visibly labeled."
 
 [3:02 — Pablo clicks **Panel review** and steps back. Santiago steps in. Four scripted seats
 paint instantly under the chip **"SCRIPTED · LIVE LANE DELIBERATING…"**.]
 
 **Santiago:** "Four specialist seats, instantly — and the chip tells the truth: scripted, while
 the live panel deliberates. Real deliberation takes a minute or two, and we would rather show
-honest work than a fake instant answer. Look at the stances: three seats demand missing data,
-one opposes — so the verdict is **UNDERDETERMINED: the panel declines to ratify and lists what
-it needs first**. That refusal is a feature. Disagreement stays on screen: support counts,
-never confidence."
+honest work than a fake instant answer. Three seats name missing follow-up inputs; one warns that
+a simulated send is not completed care. So the screen says **UNDERDETERMINED · the panel declines
+to ratify and lists what it needs first**. Here, that means what the handoff must verify next. That
+refusal is a feature. Disagreement stays on screen: support
+counts, never confidence."
 
 [If the LIVE seats replace the scripted ones while on screen, Santiago reads the real aggregate
 off the screen instead — e.g. **"Supported: 3/4 seats"**: "Panel support three of four —
@@ -160,7 +168,8 @@ in the exam room, so the nudge arrives exactly where the doctor's eyes already a
 
 "What you saw is honest. Every patient is synthetic. This is decision support: it never decides,
 never orders, never sends. Adjacent evidence is labeled adjacent, and unverified stays labeled
-UNVERIFIED. The repo is public — first commit this morning, every commit today. NUDG MD: it
+UNVERIFIED. The workflow event stream stays local; a structured synthetic case leaves only when we
+explicitly invoke a live lane. The repo is public — first commit this morning, every commit today. NUDG MD: it
 nudges, never nags, and it never leaves the doctor's side."
 
 ---
@@ -169,7 +178,8 @@ nudges, never nags, and it never leaves the doctor's side."
 
 The pre-stage ritual above is rung zero. Then, in order of blast radius:
 
-1. **Relay down** (health URL fails, chips read **"SCRIPTED: NO LIVE LANE CONNECTED"**): the
+1. **Relay down** (health URL fails; chips read **"SCRIPTED: QUICK LANE UNAVAILABLE"** or
+   **"SCRIPTED: PANEL LANE UNAVAILABLE"**): the
    scripted chips carry the whole panel beat. Narrate them as the honesty layer: "Everything
    labeled scripted is exactly that — the labeling is the product." Every other beat — cards,
    the jump, draft, watch — is fully local and unaffected. Do not restart anything on stage.
@@ -178,14 +188,18 @@ The pre-stage ritual above is rung zero. Then, in order of blast radius:
    trigger. Most common cause: an earlier **Dismiss ▾** started a 24-hour cooldown; Reset clears
    it. Micro-recoveries: the peek self-hides after ~14 seconds — the card is still inside, click
    the pulsing orb (badge 1); the S1 trigger needs the word "anxiety" plus a one-second typing
-   pause; S2 needs four different tabs inside 40 seconds with no row opened; the depth prompt
-   needs 8 seconds of true stillness — any click restarts the clock.
-3. **The jump or tab focus fails**: switch tabs by hand and keep the line — "it staged
-   everything for me." True: the chart, the Notes tab, and the note are already open, and the
-   glow waits for the tab to become visible before it fires.
-4. **Chrome dies**: the gallery at `http://localhost:4800/design/cards.html` is the static
-   backup tour — every card state, the panel, and the visuals. Tell the same story pointing at
-   stills, and say plainly that the live rig crashed.
+   pause; S2 needs four different chart tabs inside 40 seconds with no row opened; the depth prompt
+   needs 8 seconds of true stillness — another chart-tab or document action restarts the clock.
+3. **The jump or tab focus fails**: the nudge stays until LegacyChart acknowledges that the note
+   opened. Open the EHR tab manually and retry; do not say the chart is staged unless the note is
+   visibly open. The glow starts only after the tab becomes visible.
+4. **The live state breaks but Chrome remains open**: the gallery at
+   `http://localhost:4800/design/cards.html` is a static design tour of card anatomy and an
+   illustrative oncology depth/panel example. It is not the Holloway story and does not contain
+   the referral-draft/WATCH sequence; narrow the narration and say plainly that the live path
+   failed. If Chrome
+   itself quits, reopen it and use session restore; if the tabs do not return, reopen the three
+   localhost URLs before continuing.
 
 One warning worth repeating: do not press Shift+B while the panel is deliberating unless you
 mean it — closing the buddy cancels the live run. That is intentional (no hidden paid work),
@@ -193,17 +207,18 @@ and the script above spends it as a spoken feature.
 
 ## Judge Q&A appendix
 
-Grades are the evidence pack's internal scale (A authoritative RCT/guideline · B peer-reviewed
-with indirectness · C older/simulation/single-center · U unverified). Full registry:
+The letters are the research run's internal source-type tiers, not formal GRADE certainty or
+patient-level confidence (A authoritative RCT/guideline · B peer-reviewed with indirectness · C
+older/simulation/single-center · U unverified). Full registry:
 `docs/evidence/EVIDENCE_PACK_2026-07-18.md` and `data/evidence.json`.
 
 **1 · "Isn't this just alert fatigue with better fonts?"**
 Override rates in the wild run about 90% (CDS-01, B), and appropriateness varies so widely
 (CDS-02, B) that raw override rate is not a metric we use: we count shown over evaluated, with
-reasons. Our cards are severity-tiered (CDS-03, C), never modal in this demo (CDS-06, C —
-a simulation), and every dismissal requires a reason: the accountable-justification mechanism
-from a cluster RCT (CDS-04, A, Meeker JAMA 2016). We claim the mechanism, not the trial's
-effect size — that trial was antibiotic prescribing, not this product.
+reasons. Our cards are severity-tiered (CDS-03, internal tier C) and never modal in this demo
+(CDS-06, internal tier C — a simulation). A cluster RCT used a different intervention—required
+prescribing justification—and is only directional context (CDS-04, internal tier A, Meeker JAMA
+2016). Our three-choice dismissal menu is not that intervention and inherits none of its effect.
 
 **2 · "Would it actually improve outcomes?"**
 Unproven, and we say so: NUDG MD has zero outcome evidence. The nearest RCT is adjacent —
@@ -211,11 +226,13 @@ individualized nutrition support in colorectal chemotherapy improved treatment t
 (NUT-05, B, n=88) — but that is a different population, and neither it nor the wider pack shows
 a survival benefit; the pack's own bottom line calls survival evidence insufficient. What we
 would measure first is process: appropriate acceptance, time-to-information, and
-repeats-after-dismissal, which our event log already counts.
+repeats-after-dismissal. The current prototype records only global shown/evaluated counts; those
+three evaluation metrics are not implemented yet.
 
 **3 · "Why the cursor? Why not another dashboard?"**
-Physicians average 16 minutes 14 seconds of EHR time per encounter, a third of it chart review
-(TIME-01, B — a large log study, one vendor). The same task can cost nine-fold more time across
+In 2018 Cerner Millennium logs from U.S. adult nonsurgical ambulatory practices, physicians
+averaged 16 minutes 14 seconds of EHR time per encounter, a third of it chart review
+(TIME-01, internal tier B). The same task can cost nine-fold more time across
 EHR systems (TIME-03, B), so navigation is a real, measured tax. Attention is already at the
 cursor: we move context to attention instead of opening one more window that competes for it.
 
@@ -226,9 +243,9 @@ context only when the clinician explicitly invokes it — and today every patien
 so no real patient data existed at any point in this demo.
 
 **5 · "Why show the panel's dissent instead of one clean answer?"**
-Because consensus theater is how clinical tools lose trust: we show support counts — three of
-four — never a confidence percentage the math cannot back. If any seat requests missing data,
-the aggregate refuses outright: UNDERDETERMINED, with the list of what it needs first. A refusal
+Because consensus theater is how clinical tools lose trust: we show any support count as positions,
+never a confidence percentage the math cannot back. Holloway's scripted pack has three seats
+requesting data and one opposing, so the aggregate refuses outright: UNDERDETERMINED. A refusal
 that names its needs is more useful to a doctor than a confident guess.
 
 **6 · "What breaks at scale — and what's fake today?"**
